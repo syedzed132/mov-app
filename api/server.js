@@ -38,6 +38,9 @@ import { stampPut } from './sync-stamps.js';
 import { atomicWrite as durableWrite } from './durable.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
 import { searchFoods, getFoodByKey } from './food/usda.js';
+import { lookupBarcode } from './food/off.js';
+import { parseMealText } from './food/nlp.js';
+import { estimatePhotoMeal } from './food/photo.js';
 
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
@@ -2187,6 +2190,23 @@ const routes = {
     json(res, 200, { food });
   },
 
+  'GET /api/food/barcode/{code}': async (req, res) => {
+    const result = await lookupBarcode(req.barcodeCode);
+    json(res, 200, result);
+  },
+
+  'POST /api/food/parse-text': async (req, res) => {
+    const body = await parseJson(req);
+    const result = await parseMealText(body?.text || '');
+    json(res, 200, result);
+  },
+
+  'POST /api/food/estimate-photo': async (req, res) => {
+    const body = await parseJson(req);
+    const result = await estimatePhotoMeal(body || {});
+    json(res, 200, result);
+  },
+
   'GET /api/nutrition/{month}': async (req, res) => {
     const user = readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
@@ -3100,8 +3120,13 @@ const server = http.createServer(async (req, res) => {
   if (mm) { key = req.method + ' /api/media/{hash}'; req.mediaHash = mm[1]; }
   const nm = /^\/api\/nutrition\/(\d{4}-\d{2})$/.exec(url.pathname);
   if (nm) { key = req.method + ' /api/nutrition/{month}'; req.nutritionMonth = nm[1]; }
+  const bm = /^\/api\/food\/barcode\/([^/]+)$/.exec(url.pathname);
+  if (bm) { key = req.method + ' /api/food/barcode/{code}'; req.barcodeCode = decodeURIComponent(bm[1]); }
   const fm = /^\/api\/food\/([^/]+)$/.exec(url.pathname);
-  if (fm && url.pathname !== '/api/food/search') { key = req.method + ' /api/food/{id}'; req.foodId = decodeURIComponent(fm[1]); }
+  if (fm && url.pathname !== '/api/food/search' && url.pathname !== '/api/food/parse-text' && url.pathname !== '/api/food/estimate-photo' && !bm) {
+    key = req.method + ' /api/food/{id}';
+    req.foodId = decodeURIComponent(fm[1]);
+  }
   const handler = routes[key];
   if (!handler) return json(res, 404, { error: 'not found' });
   if (!csrfOk(req, key)) {

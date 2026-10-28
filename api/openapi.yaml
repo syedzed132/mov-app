@@ -3365,6 +3365,73 @@ paths:
                   food: { type: object }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  /api/food/barcode/{code}:
+    get:
+      tags: [data]
+      operationId: foodBarcodeLookup
+      summary: Look up packaged food by barcode in Open Food Facts
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Barcode lookup result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  found: { type: boolean }
+                  barcode: { type: string }
+                  food: { type: object }
+
+  /api/food/parse-text:
+    post:
+      tags: [data]
+      operationId: foodParseText
+      summary: Natural language meal text parsing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: { type: string }
+      responses:
+        '200':
+          description: Parsed meal items and aggregated nutrients
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/food/estimate-photo:
+    post:
+      tags: [data]
+      operationId: foodEstimatePhoto
+      summary: Estimate food items and nutrients from meal photo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageBase64: { type: string }
+                mimeType: { type: string }
+                hint: { type: string }
+      responses:
+        '200':
+          description: Photo estimation breakdown and items
+          content:
+            application/json:
+              schema:
+                type: object
+
   /api/nutrition/{month}:
     get:
       tags: [data]

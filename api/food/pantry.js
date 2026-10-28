@@ -224,3 +224,14 @@ export const COMMON_PANTRY = [
     dataQuality: 'measured'
   }
 ]
+
+export function pantrySearch(query) {
+  const cleanQ = (query || '').trim().toLowerCase()
+  if (!cleanQ) return []
+  const stem = (cleanQ.endsWith('s') && !cleanQ.endsWith('ss')) ? cleanQ.slice(0, -1) : cleanQ
+  return COMMON_PANTRY.filter(item => {
+    const n = item.name.toLowerCase()
+    const id = item.externalId.toLowerCase()
+    return n.includes(cleanQ) || id.includes(cleanQ) || n.includes(stem) || id.includes(stem)
+  })
+}

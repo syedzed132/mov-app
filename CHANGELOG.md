@@ -2,6 +2,29 @@
 
 ## Unreleased (NXT FORM MVP)
 
+### Milestone 3: Barcode Scanning, Natural Language Parse & Photo Estimation Stub (Complete)
+- **Open Food Facts Integration (`api/food/off.js`):**
+  - Integrated Open Food Facts database with 24-hour in-memory cache to look up packaged food barcodes worldwide (`GET /api/food/barcode/{code}`).
+  - Standardized Open Food Facts nutrients and serving portions into NXT FORM's food model with ODbL attribution.
+  - Unknown barcode graceful fallback: returns structured metadata allowing direct transition to custom food creation.
+- **Natural Language Multi-Item Meal Parser (`api/food/nlp.js`):**
+  - High-speed meal text parser (`POST /api/food/parse-text`) handling multi-item descriptions ("2 scrambled eggs, 2 slices toast with 1 tbsp butter, and a banana").
+  - Automated phrase splitting, fractional quantity extraction, stem/plural normalization, and dual-layer lookup (instant pantry + USDA fallback).
+- **Photo-Assisted Meal Estimation Stub & Confirmation Flow (`api/food/photo.js`, `frontend/src/components/PhotoEstimateSheet.jsx`):**
+  - Complete photo estimation UI supporting camera capture and photo upload with live image preview.
+  - Endpoint `POST /api/food/estimate-photo` delivering simulated meal breakdowns with itemized confidence scores.
+  - Mandatory confirmation flow: users review, adjust quantities, add/remove items, and choose meal categories with live macro updates before committing to the diary.
+  - Clear AI Nutrition Estimation disclaimer banner.
+- **Barcode Camera Scanner Modal (`frontend/src/components/BarcodeScannerModal.jsx`):**
+  - Interactive barcode scanning component supporting live camera stream with targeting reticle overlay on web/PWA and native ML Kit on mobile.
+  - Built-in photo-of-barcode decode and manual barcode number input fallbacks.
+  - Seamless 1-tap logging for recognized products; auto-prefilled custom food creator for unknown barcodes.
+- **UI Integration & Automated Verification:**
+  - Added "Describe" tab in `frontend/src/components/FoodSearchSheet.jsx` for freeform text logging.
+  - Added quick Barcode and Photo triggers in `FoodSearchSheet.jsx` and `views/Food.jsx`.
+  - Added test suite in `api/test/nutrition-m3.test.js` (4/4 passing).
+  - Maintained 100% OpenAPI 3.0 route parity in `api/openapi.yaml`.
+
 ### Milestone 2: Nutrition Core (Complete)
 - **USDA FoodData Central API & Offline Pantry Database:**
   - Integrated `GET /api/food/search` and `GET /api/food/{id}` in `api/server.js`.
