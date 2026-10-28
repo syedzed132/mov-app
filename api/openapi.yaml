@@ -3319,6 +3319,91 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
+  /api/food/search:
+    get:
+      tags: [data]
+      operationId: foodSearch
+      summary: Search foods across pantry and USDA database
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        '200':
+          description: Food items found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  foods:
+                    type: array
+                    items: { type: object }
+
+  /api/food/{id}:
+    get:
+      tags: [data]
+      operationId: foodDetail
+      summary: Get details of a food item by key
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Food item details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  food: { type: object }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/nutrition/{month}:
+    get:
+      tags: [data]
+      operationId: nutritionGetMonth
+      summary: Fetch monthly nutrition diary document
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema: { type: string, example: "2026-10" }
+      responses:
+        '200':
+          description: Monthly diary document
+          content:
+            application/json:
+              schema: { type: object }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    put:
+      tags: [data]
+      operationId: nutritionSaveMonth
+      summary: Save monthly nutrition diary document
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema: { type: string, example: "2026-10" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema: { type: object, properties: { ok: { type: boolean }, rev: { type: integer } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
 components:
   securitySchemes:
     cookieAuth:

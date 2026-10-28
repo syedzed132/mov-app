@@ -2,6 +2,31 @@
 
 ## Unreleased (NXT FORM MVP)
 
+### Milestone 2: Nutrition Core (Complete)
+- **USDA FoodData Central API & Offline Pantry Database:**
+  - Integrated `GET /api/food/search` and `GET /api/food/{id}` in `api/server.js`.
+  - Built `api/food/pantry.js` for instant (0ms) offline search of essential nutrition staples (eggs, chicken breast, oats, whey, rice, etc.).
+  - Added query caching and data normalization in `api/food/usda.js` with structured portion mappings.
+  - Added atomic monthly nutrition storage endpoints (`GET /api/nutrition/{month}`, `PUT /api/nutrition/{month}`).
+  - Full OpenAPI documentation and test coverage in `api/test/nutrition.test.js`.
+- **Domain Calculation Libraries:**
+  - `frontend/src/lib/nutrition/portions.js`: Nutrient portion scaling across grams, ounces, servings, and custom portion sizes with rounding safeguards.
+  - `frontend/src/lib/nutrition/parser.js`: Tier 1 regex engine that automatically extracts quantities, units, unicode/slash fractions, and food queries from natural language input ("2 eggs", "150g oats").
+  - `frontend/src/lib/nutrition/recipes.js`: Recipe nutrition aggregator calculating total and per-serving calories and macronutrients, with conversion into loggable food records.
+  - `frontend/src/lib/nutrition/totals.js`: Daily and meal nutrient aggregation with target percentage calculations and local date helpers.
+  - Unit test suite in `frontend/src/lib/nutrition/nutrition.test.js` (13/13 passing).
+- **Zustand Nutrition Store:**
+  - `frontend/src/store/useNutrition.js`: Client-side reactive store managing daily meals, food logs, water tracking, custom foods, recipes, favorites, recents, localStorage offline persistence, and debounced cloud sync.
+- **Frontend UI & Interactive Diary:**
+  - `frontend/src/views/Food.jsx`: Complete Daily Nutrition and Hydration Diary screen featuring date navigation, remaining calories visual meter, 3 macro pillar gauges (Protein/Carbs/Fat), quick water logging (`-250ml`, `+250ml`, `+500ml`, `+1L`), and 4 meal sections (Breakfast, Lunch, Dinner, Snacks).
+  - `frontend/src/components/FoodSearchSheet.jsx`: Interactive modal sheet with debounced search, regex pre-parsing, portion customization, live macro previews, meal selector, and favorites/recents tabs.
+  - `frontend/src/components/PortionEditSheet.jsx`: Sheet for updating logged portion quantity, unit, meal, or deleting with 1-tap Undo toast.
+  - `frontend/src/components/CustomFoodSheet.jsx`: Modal sheet for creating custom branded foods and supplements with per-serving nutrition.
+  - `frontend/src/components/RecipeSheet.jsx`: Multi-ingredient recipe builder with live per-serving macro calculator and "Log 1 Serving" quick action.
+  - `frontend/src/views/Home.jsx`: Added Daily Nutrition Summary Card on Home dashboard showing calories consumed/remaining, progress bar, mini macro breakdown, water intake status, "+ Log" quick action, and "Diary" deep link.
+  - `frontend/src/components/TabBar.jsx`: Added dedicated Nutrition tab (`/food`) with `utensils` icon.
+  - `frontend/src/components/Icon.jsx`: Added hand-drawn SVG icons (`utensils`, `drop`, `barcode`, `scan`, `apple`) matching openGym design tokens.
+
 ### Milestone 1: Authentication & Onboarding Plan Engine (Complete)
 - **Email/Password Auth by Default:** Enabled password authentication out of the box in `api/server.js` with open sign-up support.
 - **Google Sign-In Support:** Added `POST /api/auth/google` OIDC ID-token verification endpoint in the API and documented in `api/openapi.yaml`.

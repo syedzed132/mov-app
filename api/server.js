@@ -37,6 +37,7 @@ import { effectiveRoutineId } from './queue.js';
 import { stampPut } from './sync-stamps.js';
 import { atomicWrite as durableWrite } from './durable.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
+import { searchFoods, getFoodByKey } from './food/usda.js';
 
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
@@ -200,6 +201,15 @@ function notePull(user, now = Date.now()) {
 const lastSyncOf = (u, S) => Math.max(S?._ts || 0, u?.lastPull || 0) || null;
 function readState(uid) {
   try { return JSON.parse(fs.readFileSync(stateFile(uid), 'utf8')); } catch { return null; }
+}
+const nutritionFile = (uid, month) => path.join(DATA, `nutrition-${uid.replace(/[^a-zA-Z0-9_-]/g, '')}-${month.replace(/[^0-9-]/g, '').slice(0, 7)}.json`);
+function readNutrition(uid, month) {
+  try { return JSON.parse(fs.readFileSync(nutritionFile(uid, month), 'utf8')); }
+  catch { return { month, rev: 0, days: {} }; }
+}
+function saveNutrition(uid, month, doc) {
+  const f = nutritionFile(uid, month);
+  atomicWrite(f, JSON.stringify(doc), 0o600);
 }
 // GET and PUT /api/data tell a profile with no state yet from one whose file cannot be read: the
 // second answers 503 instead of an empty profile, which a device would adopt, or a write would
@@ -2162,6 +2172,35 @@ const routes = {
     audit(req, isNew ? 'auth.google.register' : 'auth.google.login', { user });
     json(res, 200, { user: publicUser(user), isNew }, { 'Set-Cookie': sessionCookie(user) });
   },
+
+  'GET /api/food/search': async (req, res) => {
+    const url = new URL(req.url, 'http://x');
+    const q = url.searchParams.get('q') || '';
+    const limit = Math.max(1, Math.min(50, +url.searchParams.get('limit') || 15));
+    const foods = await searchFoods(q, limit);
+    json(res, 200, { foods });
+  },
+
+  'GET /api/food/{id}': async (req, res) => {
+    const food = await getFoodByKey(req.foodId);
+    if (!food) return json(res, 404, { error: 'food not found' });
+    json(res, 200, { food });
+  },
+
+  'GET /api/nutrition/{month}': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const doc = readNutrition(user.id, req.nutritionMonth);
+    json(res, 200, doc);
+  },
+
+  'PUT /api/nutrition/{month}': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    saveNutrition(user.id, req.nutritionMonth, body);
+    json(res, 200, { ok: true, rev: (body?.rev || 0) + 1 });
+  },
   // 503 rather than a flag in a 200: the container healthcheck is `wget --spider`, which reads
   // the status and nothing else, and an instance that cannot write its data directory is exactly
   // what "unhealthy" is for. The 200 keeps the shape it had, plus the flag it is now asserting.
@@ -3059,6 +3098,10 @@ const server = http.createServer(async (req, res) => {
   // above stays a plain lookup, and so csrfOk and the catch-all see one name for every file.
   const mm = /^\/api\/media\/([0-9a-f]{64})$/.exec(url.pathname);
   if (mm) { key = req.method + ' /api/media/{hash}'; req.mediaHash = mm[1]; }
+  const nm = /^\/api\/nutrition\/(\d{4}-\d{2})$/.exec(url.pathname);
+  if (nm) { key = req.method + ' /api/nutrition/{month}'; req.nutritionMonth = nm[1]; }
+  const fm = /^\/api\/food\/([^/]+)$/.exec(url.pathname);
+  if (fm && url.pathname !== '/api/food/search') { key = req.method + ' /api/food/{id}'; req.foodId = decodeURIComponent(fm[1]); }
   const handler = routes[key];
   if (!handler) return json(res, 404, { error: 'not found' });
   if (!csrfOk(req, key)) {
