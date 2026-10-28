@@ -42,7 +42,8 @@ const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
 const RP_ID = process.env.RP_ID || 'localhost';
 const ORIGIN = process.env.ORIGIN || 'http://localhost:8080';
-const RP_NAME = process.env.RP_NAME || 'openGym';
+const RP_NAME = process.env.RP_NAME || 'NXT FORM';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 // Admin dashboard (issue): admins are matched by uid (or the admin flag FIRST_USER_ADMIN sets);
 // INVITE_ONLY gates new signups behind a code the admin generates. Off by default, so a fresh
 // self-hosted instance stays open.
@@ -72,7 +73,7 @@ const ALLOW_GUEST = !/^(0|false|no|off)$/i.test(process.env.ALLOW_GUEST || '');
 // Name-and-password sign-in next to passkeys (#118). Off by default: it adds a second way into
 // every account that opts in, so an instance has to ask for it. While it is off every password
 // route answers 404 and the app shows none of it; hashes already stored stay where they are.
-const PASSWORD_LOGIN = /^(1|true|yes|on)$/i.test(process.env.PASSWORD_LOGIN || '');
+const PASSWORD_LOGIN = !/^(0|false|no|off)$/i.test(process.env.PASSWORD_LOGIN || '1');
 // The language the sign-in screen, and every profile that never picked one, starts in (#303) —
 // for an instance whose people share a language. Only a tag's shape is checked here; the app
 // matches it against the languages it has and ignores one it does not know. Unset, it is left
@@ -755,7 +756,7 @@ const PASSKEY_ROUTES = new Set([
 // device code in the body is the credential, never a Bearer.
 const SIGN_IN_ROUTES = new Set([
   'POST /api/login/password', 'POST /api/register/password', 'POST /api/login/password-reset',
-  'POST /api/device-link/options', 'POST /api/device-link/verify'
+  'POST /api/device-link/options', 'POST /api/device-link/verify', 'POST /api/auth/google'
 ]);
 // A verify error as the answer's body: a passkey made at an address that is not ORIGIN/RP_ID gets
 // the same `code` as the origin check's 403, so the app explains both alike.
@@ -1079,7 +1080,7 @@ setInterval(() => { AUTH_BURST.sweep(); ADDR_FAILS.sweep(); ACCOUNT_FAILS.sweep(
 // budget; `null` spends only that.
 const THROTTLED = {
   'POST /api/login/password': 'password', 'POST /api/login/password-reset': 'password',
-  'POST /api/register/password': 'signup',
+  'POST /api/register/password': 'signup', 'POST /api/auth/google': 'signup',
   'POST /api/account/password': 'password', 'DELETE /api/account/password': null,
   // Setting an e-mail only spends the budget and asks the address's e-mail pause; an address
   // already in use counts against it (see POST /api/account/email).
@@ -2107,7 +2108,60 @@ function dataWritable() {
   return ok;
 }
 
+async function verifyGoogleToken(idToken) {
+  if (!idToken || typeof idToken !== 'string') return null;
+  try {
+    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`, {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || !data.sub || !data.email) return null;
+    if (GOOGLE_CLIENT_ID && data.aud !== GOOGLE_CLIENT_ID) return null;
+    return {
+      sub: data.sub,
+      email: normalizeEmail(data.email),
+      name: (data.name || data.email.split('@')[0]).slice(0, 40),
+      picture: data.picture || null
+    };
+  } catch {
+    return null;
+  }
+}
+
 const routes = {
+  'POST /api/auth/google': async (req, res) => {
+    const body = await readBody(req);
+    const idToken = body?.credential || body?.idToken || body?.id_token;
+    if (!idToken) return json(res, 400, { error: 'Google credential required', code: 'missing' });
+    const gUser = await verifyGoogleToken(idToken);
+    if (!gUser) return json(res, 401, { error: 'Invalid Google credential', code: 'invalid-token' });
+
+    let user = db.users.find(u => u.googleId === gUser.sub || (u.email && u.email === gUser.email));
+    let isNew = false;
+    if (user) {
+      if (!user.googleId) user.googleId = gUser.sub;
+      if (!user.email) user.email = gUser.email;
+    } else {
+      if (INVITE_ONLY) {
+        return json(res, 403, { error: 'This instance is invite-only', code: 'invite' });
+      }
+      isNew = true;
+      const created = new Date().toISOString();
+      user = {
+        id: crypto.randomBytes(12).toString('base64url'),
+        name: gUser.name,
+        email: gUser.email,
+        googleId: gUser.sub,
+        created
+      };
+      claimFirstAdmin(req, user);
+      db.users.push(user);
+    }
+    saveDb();
+    audit(req, isNew ? 'auth.google.register' : 'auth.google.login', { user });
+    json(res, 200, { user: publicUser(user), isNew }, { 'Set-Cookie': sessionCookie(user) });
+  },
   // 503 rather than a flag in a 200: the container healthcheck is `wget --spider`, which reads
   // the status and nothing else, and an instance that cannot write its data directory is exactly
   // what "unhealthy" is for. The 200 keeps the shape it had, plus the flag it is now asserting.
@@ -2144,6 +2198,7 @@ const routes = {
       // Public like the two flags above: the caps are not a secret, and the absence of the
       // block is how the app knows this server does not take photos and videos at all.
       ...(MEDIA_ON ? { media: mediaConfig(MEDIA_LIMITS) } : {}),
+      ...(GOOGLE_CLIENT_ID ? { google_client_id: GOOGLE_CLIENT_ID } : {}),
       ...(readSession(req) ? { coach: coachConfig.publicConfig() } : {})
     });
   },

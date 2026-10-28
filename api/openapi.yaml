@@ -791,6 +791,34 @@ paths:
         '429': { $ref: '#/components/responses/TooManyRequests' }
         '503': { $ref: '#/components/responses/Busy' }
 
+  /api/auth/google:
+    post:
+      tags: [auth]
+      operationId: authGoogle
+      summary: Sign in or register with Google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credential]
+              properties:
+                credential: { type: string }
+      responses:
+        '200':
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user: { $ref: '#/components/schemas/PublicUser' }
+                  isNew: { type: boolean }
+        '400': { $ref: '#/components/responses/Missing' }
+        '401': { description: Invalid Google credential }
+
   /api/register/password:
     post:
       tags: [password]

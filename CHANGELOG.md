@@ -2,7 +2,19 @@
 
 ## Unreleased (NXT FORM MVP)
 
-### Milestone 0: Fork, Audit & Baseline Setup (Complete)
+### Milestone 1: Authentication & Onboarding Plan Engine (Complete)
+- **Email/Password Auth by Default:** Enabled password authentication out of the box in `api/server.js` with open sign-up support.
+- **Google Sign-In Support:** Added `POST /api/auth/google` OIDC ID-token verification endpoint in the API and documented in `api/openapi.yaml`.
+- **Target Calculation Engine:** Created `frontend/src/lib/targets.js` containing deterministic formulas for:
+  - BMR via Mifflin–St Jeor (or Katch–McArdle when body fat % is provided).
+  - TDEE via activity multipliers.
+  - Safe calorie targets with 25% TDEE deficit cap and strict sex/BMR safety floors.
+  - Complete macronutrient splits (protein 1.8–2.2g/kg with BMI >= 30 cap protection, fat 25–30% with 0.6g/kg floor, carbs remainder).
+  - Hydration (35ml/kg + workout volume) and fibre guidelines.
+  - Initial workout routine matching (Full Body, Upper/Lower, or PPL).
+- **Interactive Onboarding UI:** Created `frontend/src/views/Onboarding.jsx` providing a step-by-step user experience that previews the personalized plan in real time, saves to `targetHistory`, and transitions to the main app dashboard.
+- **Automated Verification:** Added unit tests in `frontend/src/lib/targets.test.js` (14/14 passing) and verified API OpenAPI route parity.
+
 - **Forked codebase:** Initialized NXT FORM from upstream openGym v1.4.3 base.
 - **Licensing Compliance:** Excluded and removed all proprietary Gym visual media assets (`catalogue/media/`) to ensure full compliance with commercial AGPL-3.0 obligations.
 - **Brand Foundation:** Rebranded app title, metadata, package manifests, and PWA configurations to **NXT FORM** ("Gamified Fitness & Calorie Coach").
