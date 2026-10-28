@@ -2,6 +2,21 @@
 
 ## Unreleased (NXT FORM MVP)
 
+### Milestone 4: Gamification & RPG Character Progression (Complete)
+- **Gamification Engine (`frontend/src/lib/gamification/`):**
+  - `xp.js`: Pure functional XP formula calculating levels (`round(100 * n^1.5)`), daily caps, meal bonuses (all 3 main meals +15 XP, in-target calorie band +20 XP, protein hit +15 XP, water hit +10 XP), workout completions (40 XP / 20 XP), PRs (15 XP each), weigh-ins (5 XP), and tamper-proof state recalculation (`calculateTotalUserXp`).
+  - `titles.js`: Tiered title progression (Rookie -> Trainee -> Athlete -> Contender -> Elite -> Champion -> Legend -> Mythic).
+  - `forms.js`: Evolving Avatar Form system unlocking Form I (Novice) through Form VIII (NXT FORM) at level milestones with custom iconography and archetype lore.
+  - `stats.js`: 5 RPG Character Sheet attributes clamped 1–99 (Strength, Endurance, Agility, Vitality, Discipline) with overall average score.
+  - `quests.js`: Deterministic daily quest generator (3 quests/day covering nutrition, hydration, and training/recovery) and weekly quests (workouts & protein consistency).
+  - `badges.js`: 16-badge achievement catalog evaluating milestones across training, nutrition, streaks, and account level.
+  - `gamification.test.js`: 12/12 unit tests verifying leveling curves, daily XP caps, RPG stats, quests, and badge evaluations.
+- **Home Dashboard Widgets (`frontend/src/views/Home.jsx`):**
+  - Added Gamification Hero Card displaying active Form icon, Form Name, Subtitle, Title, Level badge, XP progress bar with numeric breakdown, streak flame with banked freeze count, and 3 daily quests with visual progress.
+  - Tap card directly launches the Character Sheet modal.
+- **Character Sheet Modal (`frontend/src/components/CharacterSheetModal.jsx`):**
+  - Full-screen character view with Form evolution card, XP meter, 5 RPG attribute gauges with metric explanations, 16-badge achievement grid with unlock states, and form progression timeline.
+
 ### Milestone 3: Barcode Scanning, Natural Language Parse & Photo Estimation Stub (Complete)
 - **Open Food Facts Integration (`api/food/off.js`):**
   - Integrated Open Food Facts database with 24-hour in-memory cache to look up packaged food barcodes worldwide (`GET /api/food/barcode/{code}`).
