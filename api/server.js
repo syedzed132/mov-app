@@ -41,6 +41,15 @@ import { searchFoods, getFoodByKey } from './food/usda.js';
 import { lookupBarcode } from './food/off.js';
 import { parseMealText } from './food/nlp.js';
 import { estimatePhotoMeal } from './food/photo.js';
+import {
+  initSqlite,
+  syncAllUsersFromDisk,
+  upsertLeaderboard,
+  deleteUserLeaderboard,
+  getLeaderboard,
+  calculateUserStats,
+  getDatabaseStats
+} from './db-sqlite.js';
 
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
@@ -154,6 +163,8 @@ db.creds = db.creds || [];
 db.subs = db.subs || [];
 db.invites = db.invites || [];
 db.deviceLinks = db.deviceLinks || [];   // unused one-time device links, hashed (device-link.js)
+initSqlite(DATA);
+syncAllUsersFromDisk(DATA, db.users);
 const isAdmin = user => !!user && (user.admin === true || ADMIN_UIDS.includes(user.id));
 // One owner per instance, any number of admins. Admins run the place day to day (users, invites,
 // the Coach); the owner is the one admin the others cannot act on: only the owner appoints or
@@ -1388,6 +1399,7 @@ async function removeEmail(req, res, user, body) {
 // credential and their photos and videos. The admin's delete and the account's own both end here.
 function removeAccount(u) {
   db.users = db.users.filter(x => x.id !== u.id);
+  deleteUserLeaderboard(u.id);
   db.creds = (db.creds || []).filter(c => c.userId !== u.id);
   db.subs = (db.subs || []).filter(x => x.userId !== u.id);
   dropDeviceLinks(db, u.id);
@@ -2173,6 +2185,22 @@ const routes = {
     });
   },
 
+  'GET /api/leaderboard': async (req, res) => {
+    const user = readSession(req);
+    const url = new URL(req.url, 'http://x');
+    const type = url.searchParams.get('type') || 'all_time';
+    const limit = Math.min(100, Math.max(1, +url.searchParams.get('limit') || 50));
+    const data = getLeaderboard({ type, limit, currentUserId: user?.id || null });
+    json(res, 200, data);
+  },
+
+  'GET /api/admin/database/stats': async (req, res) => {
+    const admin = requireAdmin(req, res);
+    if (!admin) return;
+    const stats = getDatabaseStats();
+    json(res, 200, stats);
+  },
+
   'POST /api/auth/google': async (req, res) => {
     const body = await readBody(req);
     const idToken = body?.credential || body?.idToken || body?.id_token;
@@ -2702,6 +2730,12 @@ const routes = {
     // the old revision until some later write happened to land on a different tick. This is the
     // only writer of a state file in the tree, so evicting here is the whole fix.
     stateCache.delete(user.id);
+    try {
+      const stats = calculateUserStats(body.state);
+      upsertLeaderboard(user.id, user.name, stats);
+    } catch (e) {
+      console.warn('leaderboard sync failed:', e.message);
+    }
     // Starts (or stops) the grace clock of every stored file this write stopped (or started)
     // referencing. Bookkeeping only: the state is already saved, so nothing here may turn a
     // successful write into an error.
