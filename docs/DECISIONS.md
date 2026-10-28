@@ -135,3 +135,11 @@ entries; supersede them with a new entry instead.
   25–30%, carbs remainder), water, fibre, and match an initial workout plan from the exercise library.
 - Everything is editable and saved with historical provenance.
 
+## D-022: Weekly summary synthesis and complete data rights
+- **Date:** 2026-10-28 · **Status:** Accepted
+- The weekly summary is computed deterministically in `frontend/src/lib/weekly-summary.js` without any external language model, following PRD §7. Averages reflect logged days only (never diluting unlogged days as 0).
+- Scale fluctuations include a mandatory explanation of water, sodium, and glycogen balance.
+- All nutrition documents (`nutrition-<uid>-*.json`) are deleted upon account deletion.
+- Exports include a dedicated Nutrition Diary CSV and bundle nutrition state into JSON backups.
+
+

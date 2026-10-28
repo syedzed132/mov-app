@@ -2,6 +2,26 @@
 
 ## Unreleased (NXT FORM MVP)
 
+### Milestone 5: Progress, Weekly Summary & Data Rights (Complete)
+- **Nutrition History Charts (`frontend/src/views/Stats.jsx`):**
+  - Added dedicated `NutritionHistoryCard` to Stats with 7d / 30d / 90d / All range selector.
+  - Interactive calorie trend curve with user's daily calorie goal reference line.
+  - Average daily calories, logged days ratio (avoiding 0-dilution of unlogged days), and macro intake averages (Protein, Carbs, Fat).
+  - 2/2 unit tests in `Stats.nutrition.test.jsx`.
+- **Deterministic Weekly Summary (`frontend/src/lib/weekly-summary.js`, `frontend/src/components/WeeklySummaryModal.jsx`):**
+  - Pure non-AI weekly synthesis engine calculating 7-day boundaries, logged nutrition adherence, workout volume lifted (kg) and working sets, weigh-in deltas with explicit water/glycogen fluctuation disclaimers.
+  - Rule-based deterministic Coach Observations for nutrition consistency, caloric target alignment, protein sufficiency, and workout frequency.
+  - Interactive `WeeklySummaryModal` with past-week browsing (chevron navigation) accessible from Home and Stats.
+  - 5/5 unit tests in `weekly-summary.test.js` and 2/2 component tests in `WeeklySummaryModal.test.jsx`.
+- **Full Data Rights & Privacy (`api/server.js`, `frontend/src/lib/export-csv.js`, `frontend/src/components/CsvExportSheet.jsx`, `frontend/src/views/Settings.jsx`):**
+  - Nutrition CSV export: downloads full food diary with date, meal, food name, brand, amount, unit, weight, calories, protein, carbs, fat, and fiber. 23/23 tests in `export-csv.test.js`.
+  - JSON Backup & Restore: updated `doExport` and `doImport` to bundle `nxtform_nutrition_v1` alongside workout state in `nxtform-backup-*.json`.
+  - Account Deletion (`removeAccount` in `api/server.js`): completely wipes all `nutrition-<uid>-*.json` documents from disk alongside profile state and media uploads.
+  - Security & Isolation: 3/3 automated tests in `api/test/data-rights.test.js` verifying 401 unauthenticated refusal, strict cross-user data isolation, and disk wipe upon account deletion.
+- **Cardio Distance Check & Attributions:**
+  - Confirmed cardio distance logging (`distance_km = speed * min / 60`), speed units (km/h vs mph), and incline.
+  - Updated Settings attribution section with notices for openGym (AGPL-3.0), USDA FoodData Central (Public Domain), Open Food Facts (ODbL), and free-exercise-db (Unlicense).
+
 ### Milestone 4: Gamification & RPG Character Progression (Complete)
 - **Gamification Engine (`frontend/src/lib/gamification/`):**
   - `xp.js`: Pure functional XP formula calculating levels (`round(100 * n^1.5)`), daily caps, meal bonuses (all 3 main meals +15 XP, in-target calorie band +20 XP, protein hit +15 XP, water hit +10 XP), workout completions (40 XP / 20 XP), PRs (15 XP each), weigh-ins (5 XP), and tamper-proof state recalculation (`calculateTotalUserXp`).

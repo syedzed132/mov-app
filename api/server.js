@@ -1397,6 +1397,19 @@ function removeAccount(u) {
   try { coachConfig.clearProfileAuth(u.id); } catch { /* nothing stored */ }
   // Their photos and videos — the one place a profile's folder under uploads/ is removed.
   try { MEDIA.removeUser(u.id); } catch (e) { console.error('media: could not remove uploads of', u.id, e.message); }
+  // All nutrition month documents for this user
+  try {
+    const safeUid = u.id.replace(/[^a-zA-Z0-9_-]/g, '');
+    const prefix = `nutrition-${safeUid}-`;
+    const files = fs.readdirSync(DATA);
+    for (const f of files) {
+      if (f.startsWith(prefix) && f.endsWith('.json')) {
+        try { fs.unlinkSync(path.join(DATA, f)); } catch {}
+      }
+    }
+  } catch (e) {
+    console.error('removeAccount: could not remove nutrition data of', u.id, e.message);
+  }
   saveDb();
 }
 
