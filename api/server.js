@@ -2156,6 +2156,23 @@ async function verifyGoogleToken(idToken) {
 }
 
 const routes = {
+  'GET /': async (req, res) => {
+    json(res, 200, {
+      status: 'ok',
+      service: 'NXT FORM API',
+      version: '1.4.3',
+      web: 'http://localhost:5173'
+    });
+  },
+
+  'GET /api': async (req, res) => {
+    json(res, 200, {
+      status: 'ok',
+      service: 'NXT FORM API',
+      version: '1.4.3'
+    });
+  },
+
   'POST /api/auth/google': async (req, res) => {
     const body = await readBody(req);
     const idToken = body?.credential || body?.idToken || body?.id_token;
