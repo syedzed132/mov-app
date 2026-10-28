@@ -2209,13 +2209,13 @@ const routes = {
   },
 
   'POST /api/food/parse-text': async (req, res) => {
-    const body = await parseJson(req);
+    const body = await readBody(req);
     const result = await parseMealText(body?.text || '');
     json(res, 200, result);
   },
 
   'POST /api/food/estimate-photo': async (req, res) => {
-    const body = await parseJson(req);
+    const body = await readBody(req);
     const result = await estimatePhotoMeal(body || {});
     json(res, 200, result);
   },

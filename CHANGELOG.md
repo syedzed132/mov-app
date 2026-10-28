@@ -2,6 +2,31 @@
 
 ## Unreleased (NXT FORM MVP)
 
+### Milestone 6: Deploy & Private Beta (Complete)
+- **Automated Backup & Disaster Recovery (`scripts/backup-data.mjs`, `scripts/restore-data.mjs`):**
+  - Standalone node CLI scripts for backing up user JSON databases, profiles, and nutrition documents under `DATA_DIR` to compressed tarballs (`.tar.gz`).
+  - Cryptographic integrity protection: computes and verifies SHA-256 manifests on both backup and restore.
+  - Automated 14-day rolling retention policy for local archives; supports offsite sync to S3 / Cloudflare R2 / Hetzner Storage Box.
+  - Automated roundtrip test suite in `api/test/backup-restore.test.js` (1/1 passed).
+- **Production Environment & Deployment Guide (`.env.production.example`, `docs/DEPLOYMENT.md`):**
+  - Production environment template covering port binding, host IP, WebAuthn RP_ID, session secrets, and optional USDA API credentials.
+  - Complete, reproducible guide for single-VPS deployment with Caddy reverse proxy, automatic Let's Encrypt TLS, systemd daemon management, and daily cron backup schedules.
+  - Verified infrastructure budget: monthly cost estimated at CAD $5.60 – $8.35/month on Hetzner or DigitalOcean, providing >75% margin under the CAD $50/month MVP budget ceiling.
+- **Privacy Policy & Canadian Compliance (`docs/PRIVACY_POLICY.md`, `frontend/src/views/Settings.jsx`):**
+  - Comprehensive privacy documentation fulfilling Canadian PIPEDA, Quebec Law 25, and EU GDPR standards.
+  - Clear policies regarding data minimization, zero AI training on user biometric logs, explicit consent, right to portability (CSV/JSON), and permanent right-to-be-forgotten erasure.
+  - In-app "Privacy & Feedback" section in Settings linking directly to the Privacy Policy and in-app feedback channel.
+- **End-to-End MVP Journey Integration Suite (`api/test/e2e-mvp-journey.test.js`):**
+  - Complete automated integration test exercising the full lifecycle of a user:
+    1. Account registration and profile creation.
+    2. Deterministic onboarding goal configuration and calorie/macro calculation.
+    3. Pantry and food search via USDA FoodData Central integration.
+    4. Natural language multi-item meal parsing ("2 eggs and 1 cup of oats").
+    5. Food diary logging across breakfast, lunch, dinner, snacks, and water intake.
+    6. Workout session execution, logging sets/reps, and personal record tracking.
+    7. Account deletion and verified wipe of all profile state and monthly nutrition documents.
+  - 100% passing E2E smoke test in 1.3 seconds.
+
 ### Milestone 5: Progress, Weekly Summary & Data Rights (Complete)
 - **Nutrition History Charts (`frontend/src/views/Stats.jsx`):**
   - Added dedicated `NutritionHistoryCard` to Stats with 7d / 30d / 90d / All range selector.

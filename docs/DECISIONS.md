@@ -142,4 +142,12 @@ entries; supersede them with a new entry instead.
 - All nutrition documents (`nutrition-<uid>-*.json`) are deleted upon account deletion.
 - Exports include a dedicated Nutrition Diary CSV and bundle nutrition state into JSON backups.
 
+## D-023: Production deployment stack, offsite backup strategy, and budget verification
+- **Date:** 2026-10-28 · **Status:** Accepted
+- **Deployment Stack:** Single small Linux VPS (Hetzner CPX11 or DigitalOcean 2 vCPU / 2GB RAM) running Node.js systemd service behind Caddy 2 for automated zero-maintenance TLS and Brotli/Gzip static file caching.
+- **Offsite Backups:** Daily automated compressed tarball snapshot (`scripts/backup-data.mjs`) of all user files under `DATA_DIR` with SHA-256 cryptographic manifests, 14-day retention rotation, and verified one-step restoration (`scripts/restore-data.mjs`).
+- **Privacy & Compliance:** Comprehensive privacy policy (`docs/PRIVACY_POLICY.md`) fulfilling Canadian PIPEDA, Quebec Law 25, and EU GDPR requirements including data minimization, in-app export, clear purpose specification, and verified full-wipe account deletion.
+- **Budget Compliance:** Estimated monthly operating expenditure of CAD $5.60 – $8.35/month (server + optional S3/B2 offsite storage), well under the user-defined CAD $50/month maximum budget ceiling.
+
+
 
