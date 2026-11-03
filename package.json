@@ -1,9 +1,4 @@
 {
-  "name": "mov-app",
-  "private": true,
-  "scripts": {
-    "build": "cd frontend && npm install && npm run build"
-  },
   "devDependencies": {
     "js-yaml": "^4.1.0"
   }
