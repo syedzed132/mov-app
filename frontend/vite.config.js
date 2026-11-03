@@ -109,6 +109,10 @@ export default defineConfig({
       {
         find: /.*\/api\/coach\/core/,
         replacement: fileURLToPath(new URL('./src/coach-core', import.meta.url))
+      },
+      {
+        find: /.*\/shared\/(.*)/,
+        replacement: fileURLToPath(new URL('./src/shared/$1', import.meta.url))
       }
     ]
   },
