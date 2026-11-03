@@ -39,7 +39,8 @@ import { atomicWrite as durableWrite } from './durable.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
 import { searchFoods, getFoodByKey } from './food/usda.js';
 import { lookupBarcode } from './food/off.js';
-import { parseMealText } from './food/nlp.js';
+import { parseMealText, parseAudioMeal } from './food/nlp.js';
+import { createGeminiMealParser, createDailyBudget, loadFoodAiConfig, FoodAiError } from './food/gemini.js';
 import { estimatePhotoMeal } from './food/photo.js';
 import {
   initSqlite,
@@ -52,10 +53,13 @@ import {
 } from './db-sqlite.js';
 
 const PORT = +(process.env.PORT || 3000);
+const HOST = process.env.HOST || undefined;
 const DATA = process.env.DATA_DIR || '/data';
+const FOOD_AI = createGeminiMealParser({ ...loadFoodAiConfig(), takeBudget: createDailyBudget({ file: path.join(DATA, 'food-ai-usage.json') }) });
+const FOOD_PARSE_BURST = createWindow({ max: 20, windowMs: 60000, maxKeys: 1000 });
 const RP_ID = process.env.RP_ID || 'localhost';
 const ORIGIN = process.env.ORIGIN || 'http://localhost:8080';
-const RP_NAME = process.env.RP_NAME || 'NXT FORM';
+const RP_NAME = process.env.RP_NAME || 'MOV';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 // Admin dashboard (issue): admins are matched by uid (or the admin flag FIRST_USER_ADMIN sets);
 // INVITE_ONLY gates new signups behind a code the admin generates. Off by default, so a fresh
@@ -212,7 +216,7 @@ function notePull(user, now = Date.now()) {
   try { saveDb(); } catch (e) { console.error('db save failed', e.message); }
 }
 // The later of the last push and the last pull.
-const lastSyncOf = (u, S) => Math.max(S?._ts || 0, u?.lastPull || 0) || null;
+const lastSyncOf = (u, S) => Math.max(S?._ts || 0, u?.lastPull || 0, u?.lastNutritionSync || 0) || null;
 function readState(uid) {
   try { return JSON.parse(fs.readFileSync(stateFile(uid), 'utf8')); } catch { return null; }
 }
@@ -224,6 +228,27 @@ function readNutrition(uid, month) {
 function saveNutrition(uid, month, doc) {
   const f = nutritionFile(uid, month);
   atomicWrite(f, JSON.stringify(doc), 0o600);
+}
+function nutritionMonths(uid) {
+  const prefix = `nutrition-${uid.replace(/[^a-zA-Z0-9_-]/g, '')}-`;
+  return fs.readdirSync(DATA).filter(file => file.startsWith(prefix) && /^\d{4}-\d{2}\.json$/.test(file.slice(prefix.length)))
+    .map(file => file.slice(prefix.length, -5)).sort().reverse().slice(0, 240);
+}
+function nutritionProgress(uid) {
+  const days = {};
+  for (const month of nutritionMonths(uid)) {
+    for (const [date, day] of Object.entries(readNutrition(uid, month).days || {})) {
+      const entries = Array.isArray(day?.entries) ? day.entries : [];
+      days[date] = { date, meals: entries.length, waterMl: Number(day?.waterMl) || 0,
+        kcal: Math.round(entries.reduce((sum, entry) => sum + (Number(entry?.nutrients?.kcal ?? entry?.nutrients?.calories) || 0), 0)),
+        proteinG: Math.round(entries.reduce((sum, entry) => sum + (Number(entry?.nutrients?.proteinG ?? entry?.nutrients?.protein) || 0), 0) * 10) / 10 };
+    }
+  }
+  return Object.values(days).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+}
+function userProgressStats(uid, state) {
+  const documents = Object.fromEntries(nutritionMonths(uid).map(month => [month, readNutrition(uid, month)]));
+  return calculateUserStats(state, documents);
 }
 // GET and PUT /api/data tell a profile with no state yet from one whose file cannot be read: the
 // second answers 503 instead of an empty profile, which a device would adopt, or a write would
@@ -2171,7 +2196,7 @@ const routes = {
   'GET /': async (req, res) => {
     json(res, 200, {
       status: 'ok',
-      service: 'NXT FORM API',
+      service: 'MOV API',
       version: '1.4.3',
       web: 'http://localhost:5173'
     });
@@ -2180,7 +2205,7 @@ const routes = {
   'GET /api': async (req, res) => {
     json(res, 200, {
       status: 'ok',
-      service: 'NXT FORM API',
+      service: 'MOV API',
       version: '1.4.3'
     });
   },
@@ -2234,6 +2259,10 @@ const routes = {
     json(res, 200, { user: publicUser(user), isNew }, { 'Set-Cookie': sessionCookie(user) });
   },
 
+  'GET /api/food/config': async (req, res) => {
+    json(res, 200, FOOD_AI.config);
+  },
+
   'GET /api/food/search': async (req, res) => {
     const url = new URL(req.url, 'http://x');
     const q = url.searchParams.get('q') || '';
@@ -2254,15 +2283,41 @@ const routes = {
   },
 
   'POST /api/food/parse-text': async (req, res) => {
+    if (!ALLOW_GUEST && !readSession(req)) return json(res, 401, { error: 'Sign in to analyze a meal.' });
     const body = await readBody(req);
-    const result = await parseMealText(body?.text || '');
+    if (typeof body?.text !== 'string' || !body.text.trim() || body.text.length > 800) {
+      return json(res, 400, { error: 'Describe a meal in 800 characters or fewer.' });
+    }
+    const wait = FOOD_PARSE_BURST.take(limitAddress(req));
+    if (wait) return json(res, 429, { error: 'Please wait a moment before analyzing another meal.' }, { 'Retry-After': String(wait) });
+    const result = await parseMealText(body.text, { useAi: body.useAi === true, aiParser: FOOD_AI });
     json(res, 200, result);
+  },
+
+  'POST /api/food/parse-audio': async (req, res) => {
+    if (!ALLOW_GUEST && !readSession(req)) return json(res, 401, { error: 'Sign in to analyze a meal.' });
+    const body = await readBody(req);
+    if (body?.useAi !== true) return json(res, 400, { error: 'Enable Gemini voice before sending audio.' });
+    const wait = FOOD_PARSE_BURST.take(limitAddress(req));
+    if (wait) return json(res, 429, { error: 'Please wait a moment before analyzing another meal.' }, { 'Retry-After': String(wait) });
+    try {
+      json(res, 200, await parseAudioMeal({ data: body.data, mimeType: body.mimeType }, { aiParser: FOOD_AI }));
+    } catch (error) {
+      const safe = error instanceof FoodAiError ? error : new FoodAiError('unavailable');
+      json(res, safe.code === 'invalid-result' ? 422 : ['quota', 'daily-limit', 'busy'].includes(safe.code) ? 429 : 503, { error: safe.message, code: safe.code });
+    }
   },
 
   'POST /api/food/estimate-photo': async (req, res) => {
     const body = await readBody(req);
     const result = await estimatePhotoMeal(body || {});
     json(res, 200, result);
+  },
+
+  'GET /api/nutrition': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    json(res, 200, { months: nutritionMonths(user.id) });
   },
 
   'GET /api/nutrition/{month}': async (req, res) => {
@@ -2276,8 +2331,16 @@ const routes = {
     const user = readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
     const body = await readBody(req);
-    saveNutrition(user.id, req.nutritionMonth, body);
-    json(res, 200, { ok: true, rev: (body?.rev || 0) + 1 });
+    if (!body || typeof body.days !== 'object' || Array.isArray(body.days) || !body.days) return json(res, 400, { error: 'days must be an object' });
+    if (Object.keys(body.days).some(date => !/^\d{4}-\d{2}-\d{2}$/.test(date) || !date.startsWith(req.nutritionMonth + '-'))) return json(res, 400, { error: 'day does not belong to this month' });
+    const current = readNutrition(user.id, req.nutritionMonth);
+    if (body.baseRev != null && (!Number.isSafeInteger(body.baseRev) || body.baseRev !== (current.rev || 0))) return json(res, 409, { error: 'nutrition changed', current });
+    const doc = { month: req.nutritionMonth, days: body.days, rev: Math.max(Date.now(), (current.rev || 0) + 1), ...(body.library ? { library: body.library } : {}) };
+    saveNutrition(user.id, req.nutritionMonth, doc);
+    user.lastNutritionSync = doc.rev;
+    saveDb();
+    try { upsertLeaderboard(user.id, user.name, userProgressStats(user.id, readState(user.id) || {})); } catch { /* progress documents remain the source of truth */ }
+    json(res, 200, { ok: true, rev: doc.rev });
   },
   // 503 rather than a flag in a 200: the container healthcheck is `wget --spider`, which reads
   // the status and nothing else, and an instance that cannot write its data directory is exactly
@@ -2308,6 +2371,7 @@ const routes = {
     // that has no Coach. The key's absence is that answer.
     json(res, 200, {
       invite_only: INVITE_ONLY, allow_guest: ALLOW_GUEST,
+      ...(process.env.BETA_TEMPORARY_URL === '1' ? { temporary_url: true } : {}),
       // Only when on, so an instance without passwords answers exactly as it did before (#118).
       ...(PASSWORD_LOGIN ? { password_login: true } : {}),
       // Public: the sign-in screen is the first thing that reads it.
@@ -2731,7 +2795,7 @@ const routes = {
     // only writer of a state file in the tree, so evicting here is the whole fix.
     stateCache.delete(user.id);
     try {
-      const stats = calculateUserStats(body.state);
+      const stats = userProgressStats(user.id, body.state);
       upsertLeaderboard(user.id, user.name, stats);
     } catch (e) {
       console.warn('leaderboard sync failed:', e.message);
@@ -2918,6 +2982,7 @@ const routes = {
       lastSync: lastSyncOf(u, S),
       routines: records(S.routines).map(r => ({ id: r.id, name: r.name, emoji: r.emoji, count: records(r.ex).length })),
       bodyweight: records(S.bodyweight),
+      nutrition: nutritionProgress(u.id),
       // records() already copied, so this reverse is ours: newest first for display. A workout's
       // photos and videos are the owner's own: the admin view gets no refs to them.
       workouts: records(S.workouts).reverse().map(({ media, ...w }) => w)
@@ -3187,7 +3252,7 @@ const server = http.createServer(async (req, res) => {
   const bm = /^\/api\/food\/barcode\/([^/]+)$/.exec(url.pathname);
   if (bm) { key = req.method + ' /api/food/barcode/{code}'; req.barcodeCode = decodeURIComponent(bm[1]); }
   const fm = /^\/api\/food\/([^/]+)$/.exec(url.pathname);
-  if (fm && url.pathname !== '/api/food/search' && url.pathname !== '/api/food/parse-text' && url.pathname !== '/api/food/estimate-photo' && !bm) {
+  if (fm && url.pathname !== '/api/food/config' && url.pathname !== '/api/food/search' && url.pathname !== '/api/food/parse-text' && url.pathname !== '/api/food/parse-audio' && url.pathname !== '/api/food/estimate-photo' && !bm) {
     key = req.method + ' /api/food/{id}';
     req.foodId = decodeURIComponent(fm[1]);
   }
@@ -3248,7 +3313,7 @@ server.headersTimeout = 60000;
 // port that was actually bound: with PORT=0 the OS picks one, and a caller that did not choose it
 // (the tests spawn the server that way, and so does anyone running two instances on one box) has
 // no other way to learn it.
-server.listen(PORT, () => console.log(`gym-api on :${server.address().port} (rpID=${RP_ID}, origin=${ORIGIN})`));
+server.listen(PORT, HOST, () => console.log(`gym-api on :${server.address().port} (rpID=${RP_ID}, origin=${ORIGIN})`));
 
 // The server's own command for a locked-out owner or admin (#584, recover.js): asked over a local
 // socket only this process's user can open (admin-socket.js explains why not by editing db.json).

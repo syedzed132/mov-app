@@ -17,9 +17,9 @@ const read = f => fs.readFileSync(path.join(API, f), 'utf8');
 const rootImports = src => [...src.matchAll(/(?:from\s+|import\s*\(\s*)['"]\.\/([^'"/]+\.js)['"]/g)].map(m => m[1]);
 
 test('every root-level module server.js needs is on the Dockerfile COPY line', () => {
-  const line = read('Dockerfile').split('\n').find(l => /^COPY\s+server\.js\b/.test(l));
+  const line = read('Dockerfile').split('\n').find(l => /^COPY\s+api\/server\.js\b/.test(l));
   assert.ok(line, 'the COPY line that carries server.js');
-  const copied = new Set(line.trim().split(/\s+/).slice(1, -1));
+  const copied = new Set(line.trim().split(/\s+/).slice(1, -1).map(file => file.replace(/^api\//, '')));
 
   const needed = new Set(['server.js']);
   const queue = ['server.js'];
@@ -32,4 +32,13 @@ test('every root-level module server.js needs is on the Dockerfile COPY line', (
   const missing = [...needed].filter(f => !copied.has(f));
   assert.deepEqual(missing, [], `add ${missing.join(', ')} to the COPY line in api/Dockerfile`);
   for (const f of copied) assert.ok(fs.existsSync(path.join(API, f)), `${f} is copied but does not exist`);
+});
+
+test('the API and web builds carry shared nutrition modules at their runtime paths', () => {
+  const apiDockerfile = read('Dockerfile');
+  assert.match(apiDockerfile, /WORKDIR \/app\/api/);
+  assert.match(apiDockerfile, /COPY api\/food \.\/food/);
+  assert.match(apiDockerfile, /COPY shared \/app\/shared/);
+  const webDockerfile = fs.readFileSync(path.join(API, '../web/Dockerfile'), 'utf8');
+  assert.match(webDockerfile, /COPY shared\/ \/app\/shared\//);
 });

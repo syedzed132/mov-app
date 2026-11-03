@@ -1,5 +1,5 @@
 // usda.js — USDA FoodData Central integration and food search provider for NXT FORM
-import { COMMON_PANTRY } from './pantry.js'
+import { COMMON_PANTRY, pantrySearch } from './pantry.js'
 
 const USDA_KEY = process.env.USDA_API_KEY || 'DEMO_KEY'
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
@@ -23,14 +23,8 @@ export async function searchFoods(query, limit = 15) {
     return searchCache.get(cacheKey)
   }
 
-  const results = []
-
-  // 1. Check local pantry first (0ms latency match)
-  for (const item of COMMON_PANTRY) {
-    if (item.name.toLowerCase().includes(cleanQ) || item.externalId.includes(cleanQ)) {
-      results.push(item)
-    }
-  }
+  const results = pantrySearch(cleanQ)
+  if (results.length) return results.slice(0, limit)
 
   // 2. Query USDA FoodData Central API
   try {
@@ -60,7 +54,7 @@ export async function searchFoods(query, limit = 15) {
 
   const finalResults = results.slice(0, limit)
   if (searchCache.size > 200) searchCache.clear()
-  searchCache.set(cacheKey, finalResults)
+  if (finalResults.length) searchCache.set(cacheKey, finalResults)
 
   return finalResults
 }

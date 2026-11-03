@@ -9,6 +9,14 @@ GNU AGPL v3.0 (see LICENSE).
 > with third-party licensing restrictions. All original code, MIT-licensed datasets, and
 > AGPL-licensed modules are preserved with full attribution.
 
+## Original MOV exercise illustrations
+
+The vector exercise illustrations in `frontend/src/lib/exercise-illustrations.js`,
+`frontend/src/components/ExerciseIllustration.jsx`, and `frontend/src/exercise-illustrations.css`
+were created for this fork. They use original geometric artwork and movement poses, without
+Gym visual images, clips, or other third-party visual assets. They are distributed under this
+project's GNU AGPL v3.0 license.
+
 
 openGym — Copyright (C) 2026 Duarte Santos.
 openGym's own code is licensed under the **GNU AGPL v3.0** (see [LICENSE](LICENSE)).

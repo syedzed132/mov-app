@@ -5,7 +5,7 @@
 #           platform runtime entirely, so an owner who never wanted the Coach carries none of it.
 #   coach                                     — the same image plus the Claude Agent SDK.
 #
-# Build the opt-in one with:  docker build --target coach ./api
+# Build the opt-in one from the repo root: docker build -f api/Dockerfile --target coach .
 # or through compose with:    API_TARGET=coach docker compose up --build
 #
 # The stage order matters: Docker builds the *last* stage when none is named, so `default` is
@@ -29,7 +29,7 @@ LABEL maintainer="Duarte Santos https://github.com/DuarteSantos8" \
     org.opencontainers.image.revision=$VCS_REF \
     org.opencontainers.image.created=$BUILD_DATE
 
-WORKDIR /app
+WORKDIR /app/api
 
 # The base image is rebuilt on node's schedule, not alpine's: between two node releases the
 # alpine packages it ships (openssl above all) fall behind their fixes. Taking the upgrades at
@@ -45,7 +45,7 @@ RUN apk upgrade --no-cache
 # an account is connected. It costs one line and no bytes worth measuring.
 RUN adduser -D -H -s /sbin/nologin coach
 
-COPY package.json package-lock.json* ./
+COPY api/package.json api/package-lock.json* ./
 # `npm ci` rather than `npm install`: the lockfile is the point of committing one, and the SDK's
 # per-platform runtime is resolved from it (musl on this base) rather than from whatever the
 # build host happened to be.
@@ -53,8 +53,10 @@ RUN npm ci --omit=dev --omit=optional && npm cache clean --force
 
 # Every module server.js imports from the api root has to be named here: the image carries nothing
 # else, and one that is missing only shows at boot, as ERR_MODULE_NOT_FOUND.
-COPY server.js push-messages.js nudge.js nudge-copy.js verify-error.js password.js rate-limit.js passkeys-store.js device-link.js media.js queue.js sync-stamps.js durable.js admin-socket.js recover.js ./
-COPY coach ./coach
+COPY api/server.js api/push-messages.js api/nudge.js api/nudge-copy.js api/verify-error.js api/password.js api/rate-limit.js api/passkeys-store.js api/device-link.js api/media.js api/queue.js api/sync-stamps.js api/durable.js api/admin-socket.js api/recover.js api/db-sqlite.js ./
+COPY api/coach ./coach
+COPY api/food ./food
+COPY shared /app/shared
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000

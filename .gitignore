@@ -8,6 +8,10 @@ data/
 
 # Local config
 .env
+api/.food.local.json
+.local-tools/
+.local-server/
+backups/
 
 # Build output / deps
 frontend/dist/
@@ -48,3 +52,40 @@ assets/tee/
 assets/bmc-cover*
 # scripts/pdf/render-samples.mjs output (npm run pdf:check)
 frontend/pdf-samples/
+
+# Local scratch and debug artifacts
+scripts/capture*
+scripts/check*
+scripts/debug*
+scripts/dump*
+scripts/test*
+scripts/inspect*
+scripts/*.png
+scripts/*.svg
+scripts/*.html
+scripts/*.css
+scripts/mov3*
+test_workout_snap.png
+shared/
+
+screenshots_mov3/
+scripts/all*
+scripts/analyze*
+scripts/apply*
+scripts/beta*
+scripts/find*
+scripts/generate*
+scripts/install*
+scripts/patch*
+scripts/print*
+scripts/render*
+scripts/scan*
+scripts/search*
+scripts/summary*
+scripts/unpack*
+scripts/update*
+scripts/welcome*
+
+
+scripts/extract*
+

@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { boundPort } from './helpers.mjs';
+import { boundPort, stopFixtureServer } from './helpers.mjs';
 
 const API = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SECRET = crypto.randomBytes(32).toString('hex');
@@ -42,7 +42,7 @@ function reqJson(baseUrl, pathUrl, method = 'GET', headers = {}, body = null) {
   });
 }
 
-async function startServer(t) {
+async function startServer(t, extraEnv = {}) {
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gym-data-rights-'));
   fs.writeFileSync(path.join(dataDir, 'secret'), SECRET, { mode: 0o600 });
   fs.writeFileSync(path.join(dataDir, 'db.json'), JSON.stringify({
@@ -59,17 +59,14 @@ async function startServer(t) {
   const child = spawn(process.execPath, ['server.js'], {
     cwd: API,
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, PORT: '0', DATA_DIR: dataDir, ORIGIN: 'http://localhost:8080', RP_ID: 'localhost' }
+    env: { ...process.env, PORT: '0', DATA_DIR: dataDir, ORIGIN: 'http://localhost:8080', RP_ID: 'localhost', ...extraEnv }
   });
 
   const h = { api: '', log: '', dataDir };
   child.stdout.on('data', d => h.log += d);
   child.stderr.on('data', d => h.log += d);
 
-  t.after(() => {
-    child.kill('SIGKILL');
-    fs.rmSync(dataDir, { recursive: true, force: true });
-  });
+  t.after(() => stopFixtureServer(child, dataDir));
 
   const port = await boundPort(child, () => h.log);
   h.api = `http://127.0.0.1:${port}`;
@@ -139,3 +136,37 @@ test('Data Rights: Account deletion deletes all user nutrition documents', async
   assert.equal(fs.existsSync(f1), false, 'Month 2026-09 document must be deleted');
   assert.equal(fs.existsSync(f2), false, 'Month 2026-10 document must be deleted');
 });
+
+test('Nutrition index and revision checks keep two devices from overwriting unseen progress', async t => {
+  const srv = await startServer(t)
+  const a = { Cookie: `gymsid=${mintSession(UID_A)}` }, b = { Cookie: `gymsid=${mintSession(UID_B)}` }
+  const initial = await reqJson(srv.api, '/api/nutrition/2026-10', 'PUT', a, { baseRev: 0, days: { '2026-10-31': { entries: [], waterMl: 250 } } })
+  assert.equal(initial.status, 200)
+  assert.ok(initial.body.rev > 0)
+  const indexA = await reqJson(srv.api, '/api/nutrition', 'GET', a)
+  const indexB = await reqJson(srv.api, '/api/nutrition', 'GET', b)
+  assert.deepEqual(indexA.body.months, ['2026-10'])
+  assert.deepEqual(indexB.body.months, [])
+  const stale = await reqJson(srv.api, '/api/nutrition/2026-10', 'PUT', a, { baseRev: 0, days: {} })
+  assert.equal(stale.status, 409)
+  const read = await reqJson(srv.api, '/api/nutrition/2026-10', 'GET', a)
+  assert.equal(read.body.days['2026-10-31'].waterMl, 250)
+})
+
+test('the admin can review food and water progress, and a regular user cannot open the admin record', async t => {
+  const srv = await startServer(t)
+  const a = { Cookie: `gymsid=${mintSession(UID_A)}` }, admin = { Cookie: `gymsid=${mintSession(ADMIN_UID)}` }
+  await reqJson(srv.api, '/api/nutrition/2026-10', 'PUT', a, { days: { '2026-10-31': { entries: [{ nutrients: { kcal: 320, proteinG: 20 } }], waterMl: 1250 } } })
+  const detail = await reqJson(srv.api, '/api/admin/user?id=' + UID_A, 'GET', admin)
+  assert.equal(detail.status, 200)
+  assert.equal(detail.body.nutrition[0].kcal, 320)
+  assert.equal(detail.body.nutrition[0].waterMl, 1250)
+  const denied = await reqJson(srv.api, '/api/admin/user?id=' + UID_A, 'GET', a)
+  assert.equal(denied.status, 403)
+})
+
+test('an invite-only beta does not allow anonymous use of the Gemini endpoints', async t => {
+  const srv = await startServer(t, { ALLOW_GUEST: '0' })
+  assert.equal((await reqJson(srv.api, '/api/food/parse-text', 'POST', {}, { text: 'toast', useAi: true })).status, 401)
+  assert.equal((await reqJson(srv.api, '/api/food/parse-audio', 'POST', {}, { useAi: true })).status, 401)
+})

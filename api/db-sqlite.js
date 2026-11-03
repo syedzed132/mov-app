@@ -38,7 +38,7 @@ export function getLevelAndForm(totalXp = 0) {
   else if (level >= 5) title = 'Trainee';
 
   let formId = 'form_1', formName = 'Novice', formIcon = 'sparkles';
-  if (level >= 90) { formId = 'form_8'; formName = 'NXT FORM'; formIcon = 'star'; }
+  if (level >= 90) { formId = 'form_8'; formName = 'MOV'; formIcon = 'star'; }
   else if (level >= 70) { formId = 'form_7'; formName = 'Mythic Champion'; formIcon = 'sword'; }
   else if (level >= 50) { formId = 'form_6'; formName = 'Ascended Beast'; formIcon = 'crown'; }
   else if (level >= 35) { formId = 'form_5'; formName = 'Apex Striker'; formIcon = 'lightning'; }
@@ -168,7 +168,17 @@ export function calculateUserStats(state = {}, nutritionDocs = {}) {
 export function initSqlite(dataDir) {
   if (sqliteDb) return sqliteDb;
 
-  const dbPath = path.join(dataDir, 'nxtform.db');
+  const movPath = path.join(dataDir, 'mov.db');
+  const nxtPath = path.join(dataDir, 'nxtform.db');
+  let dbPath = movPath;
+  if (!fs.existsSync(movPath) && fs.existsSync(nxtPath)) {
+    try {
+      fs.copyFileSync(nxtPath, movPath);
+    } catch (_) {
+      dbPath = nxtPath;
+    }
+  }
+
   sqliteDb = new DatabaseSync(dbPath);
 
   // WAL mode for high concurrency

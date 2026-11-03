@@ -3,7 +3,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
+import { DatabaseSync } from 'node:sqlite';
 
 export function runBackup({
   dataDir = process.env.DATA_DIR || path.resolve('data'),
@@ -22,9 +23,23 @@ export function runBackup({
   const archiveName = `nxtform-data-${timestamp}.tar.gz`;
   const archivePath = path.join(backupDir, archiveName);
 
-  // Compress data directory into tar.gz
-  const cmd = `tar -czf "${archivePath}" -C "${dataDir}" .`;
-  execSync(cmd, { stdio: 'pipe' });
+  // Take valid SQLite snapshots while the app is running. Copying a live db/wal
+  // pair at different moments can create an archive that cannot be restored.
+  const backupRoot = fs.realpathSync(backupDir);
+  const stage = fs.mkdtempSync(path.join(backupRoot, '.snapshot-'));
+  try {
+    fs.cpSync(dataDir, stage, { recursive: true, filter: file => !/\.(?:db|db-wal|db-shm)$/.test(file) });
+    for (const name of fs.readdirSync(dataDir).filter(name => name.endsWith('.db'))) {
+      const db = new DatabaseSync(path.join(dataDir, name), { readOnly: true });
+      try { db.exec('PRAGMA busy_timeout=5000'); db.prepare('VACUUM INTO ?').run(path.join(stage, name)); }
+      finally { db.close(); }
+    }
+    execFileSync('tar', ['-czf', archivePath, '-C', stage, '.'], { stdio: 'pipe' });
+  } finally {
+    const resolved = fs.realpathSync(stage);
+    if (!resolved.startsWith(backupRoot + path.sep) || !path.basename(resolved).startsWith('.snapshot-')) throw new Error('Unsafe backup staging path');
+    fs.rmSync(resolved, { recursive: true, force: true });
+  }
 
   // Compute SHA-256 checksum
   const fileBytes = fs.readFileSync(archivePath);

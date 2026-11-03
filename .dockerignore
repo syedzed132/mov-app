@@ -3,5 +3,9 @@ frontend/dist
 media
 data
 .env
+api/.food.local.json
+.local-tools
+.local-server
+backups
 .git
 *.log

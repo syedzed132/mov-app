@@ -1,233 +1,139 @@
-// nlp.js — Fast natural language meal parsing engine for NXT FORM (Tier 1 & Tier 2)
-// Handles multi-item unstructured meal descriptions ("2 eggs, 2 slices toast with 1 tbsp butter, and a banana")
-// Completely functional without paid API keys, with optional LLM enhancement when configured.
+import { createHash } from 'node:crypto'
+import { COMMON_PANTRY } from './pantry.js'
+import { scaleNutrients, STANDARD_UNITS } from '../../shared/food-portions.mjs'
+import { FoodAiError, validateMealEstimate } from './gemini.js'
 
-import { searchFoods } from './usda.js'
-import { pantrySearch } from './pantry.js'
+const WORDS = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, half: .5, quarter: .25 }
+const FRACTIONS = { '½': .5, '⅓': 1 / 3, '⅔': 2 / 3, '¼': .25, '¾': .75, '⅛': .125, '⅜': .375, '⅝': .625, '⅞': .875 }
+const ALIASES = {
+  egg: ['egg', 'whole egg'], 'egg-white': ['egg white'],
+  'chicken-breast': ['chicken breast', 'raw chicken breast'],
+  'chicken-breast-cooked': ['cooked chicken breast', 'grilled chicken breast', 'roasted chicken breast', 'grilled chicken'],
+  'ground-beef-90-10': ['ground beef', 'lean ground beef'], salmon: ['salmon', 'raw salmon'],
+  'white-rice-cooked': ['rice', 'white rice', 'cooked rice', 'cooked white rice'],
+  oats: ['oat', 'rolled oat', 'dry oat'], banana: ['banana'], apple: ['apple'],
+  'milk-whole': ['milk', 'whole milk'], 'whey-protein': ['whey', 'whey protein', 'protein powder', 'whey protein powder'],
+  'peanut-butter': ['peanut butter'], 'greek-yogurt-0': ['greek yogurt', 'nonfat greek yogurt', 'plain nonfat greek yogurt'],
+  'olive-oil': ['olive oil', 'extra virgin olive oil']
+}
+const normalize = text => text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\b([a-z]+)s\b/g, '$1').replace(/\s+/g, ' ').trim()
+const nutrientAliases = n => ({ ...n, calories: n.kcal || 0, protein: n.proteinG || 0, carbs: n.carbsG || 0, fat: n.fatG || 0, fiber: n.fiberG || 0 })
 
-const FRACTIONS = {
-  '½': 0.5, '⅓': 0.333, '⅔': 0.667, '¼': 0.25, '¾': 0.75,
-  '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875
+function localFood(query) {
+  const q = normalize(query)
+  return COMMON_PANTRY.find(food => normalize(food.name) === q || (ALIASES[food.externalId] || []).some(alias => normalize(alias) === q))
 }
 
-const UNIT_ALIASES = {
-  g: 'g', gram: 'g', grams: 'g', kg: 'kg',
-  ml: 'ml', milliliter: 'ml', milliliters: 'ml', l: 'l', liter: 'l', liters: 'l',
-  oz: 'oz', ounce: 'oz', ounces: 'oz', lb: 'lb', lbs: 'lb', pound: 'lb', pounds: 'lb',
-  cup: 'cup', cups: 'cup', tbsp: 'tbsp', tablespoon: 'tbsp', tablespoons: 'tbsp',
-  tsp: 'tsp', teaspoon: 'tsp', teaspoons: 'tsp',
-  scoop: 'scoop', scoops: 'scoop', slice: 'slice', slices: 'slice',
-  can: 'can', cans: 'can', bar: 'bar', bars: 'bar',
-  piece: 'piece', pieces: 'piece', serving: 'serving', servings: 'serving'
+function phrases(text) {
+  return text.replace(/\r/g, '').replace(/\b(?:and|with)\b|[+,;]/gi, '\n').split('\n')
+    .map(phrase => phrase.trim().replace(/^(?:for\s+)?(?:breakfast|lunch|dinner|a snack)[:,]?\s+/i, '')
+      .replace(/^(?:i\s+(?:just\s+)?(?:had|ate|have eaten|have|want to log|am having)|i['’]ve had|log|add)\s+/i, '')
+      .replace(/[.!?]+$/, '').trim()).filter(Boolean)
 }
 
-/**
- * Split text into distinct food phrases.
- */
-function splitMealPhrases(text) {
-  if (!text || typeof text !== 'string') return []
-
-  // Replace common connectors with line break delimiters
-  const normalized = text
-    .replace(/\r\n/g, '\n')
-    .replace(/\band\s+(?=\d|[a-z])/gi, '\n')
-    .replace(/\bwith\s+(?=\d|[a-z])/gi, '\n')
-    .replace(/\+/g, '\n')
-    .replace(/;/g, '\n')
-    .replace(/,/g, '\n')
-
-  return normalized
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 1)
-}
-
-/**
- * Parse an individual line into qty, unit, and food query.
- */
 function parsePhrase(phrase) {
-  let working = phrase.trim()
-
-  // Convert unicode fractions
-  for (const [frac, dec] of Object.entries(FRACTIONS)) {
-    if (working.includes(frac)) {
-      working = working.replace(new RegExp(`(\\d+)?\\s*${frac}`, 'g'), (_, whole) => {
-        const base = whole ? Number(whole) : 0
-        return `${base + dec}`
-      })
-    }
+  let value = phrase.replace(/^(a|an)\s+(half|quarter)\b/i, '$2').replace(/^(half|quarter)\s+(?:a|an)\s+/i, '$1 ')
+  value = value.replace(/(\d+)?\s*([½⅓⅔¼¾⅛⅜⅝⅞])/g, (_, whole, fraction) => String(Number(whole || 0) + FRACTIONS[fraction]))
+    .replace(/(\d+)\s+(\d+)\/(\d+)/g, (_, whole, n, d) => String(Number(whole) + Number(n) / Number(d)))
+    .replace(/(\d+)\/(\d+)/g, (_, n, d) => String(Number(n) / Number(d)))
+    .replace(/^(a|an|one|two|three|four|five|six|seven|eight|nine|ten|half|quarter)\b/i, word => String(WORDS[word.toLowerCase()]))
+  const amount = value.match(/^(\d+(?:\.\d+)?)\s*/)
+  const qty = amount ? Number(amount[1]) : 1
+  if (amount) value = value.slice(amount[0].length)
+  const unitMatch = value.match(/^(kilograms?|kg|grams?|g|millilit(?:er|re)s?|ml|lit(?:er|re)s?|l|ounces?|oz|pounds?|lbs?|cups?|tablespoons?|tbsp|teaspoons?|tsp|scoops?|slices?|pieces?|servings?|large|medium|small)\b\s*(?:of\s+)?/i)
+  let unit = 'serving'
+  if (unitMatch) {
+    const raw = unitMatch[1].toLowerCase()
+    unit = /^kilogram|^kg$/.test(raw) ? 'kg' : /^gram|^g$/.test(raw) ? 'g'
+      : /^millilit|^ml$/.test(raw) ? 'ml' : /^lit|^l$/.test(raw) ? 'l'
+      : /^ounce|^oz$/.test(raw) ? 'oz' : /^pound|^lbs?$/.test(raw) ? 'lb'
+      : /^tablespoon|^tbsp$/.test(raw) ? 'tbsp' : /^teaspoon|^tsp$/.test(raw) ? 'tsp'
+      : raw.replace(/s$/, '')
+    value = value.slice(unitMatch[0].length)
   }
-
-  // Handle slash fractions (e.g. "1 1/2" -> 1.5)
-  working = working.replace(/(\d+)\s+(\d+)\/(\d+)/g, (_, whole, num, den) => `${Number(whole) + Number(num) / Number(den)}`)
-  working = working.replace(/(\d+)\/(\d+)/g, (_, num, den) => `${Number(num) / Number(den)}`)
-
-  const match = working.match(/^([\d.]+)\s*([a-zA-Z]+)?\s*(.*)$/)
-  if (match) {
-    const rawNum = parseFloat(match[1])
-    const rawUnit = (match[2] || '').toLowerCase()
-    const remainder = (match[3] || '').trim()
-
-    if (rawUnit && UNIT_ALIASES[rawUnit]) {
-      return {
-        qty: Math.round(rawNum * 100) / 100,
-        unit: UNIT_ALIASES[rawUnit],
-        query: remainder || match[2]
-      }
-    }
-
-    const combined = `${match[2] || ''} ${remainder}`.trim()
-    if (combined) {
-      return {
-        qty: Math.round(rawNum * 100) / 100,
-        unit: 'serving',
-        query: combined
-      }
-    }
-  }
-
-  return {
-    qty: 1,
-    unit: 'serving',
-    query: working
-  }
+  value = value.replace(/^of\s+/i, '')
+  return { qty, unit, query: value.trim(), assumedAmount: !amount }
 }
 
-/**
- * Scale food nutrients for parsed quantity and unit.
- */
-function scaleFood(food, qty, unit) {
-  let multiplier = 1
-  let weightGrams = null
-
-  if (unit === 'g') {
-    weightGrams = qty
-    multiplier = qty / 100
-  } else if (unit === 'oz') {
-    weightGrams = Math.round(qty * 28.3495)
-    multiplier = weightGrams / 100
-  } else if (unit === 'serving') {
-    const defServing = food.portions?.[0]?.grams || food.defaultServingGrams || 100
-    weightGrams = defServing * qty
-    multiplier = weightGrams / 100
-  } else if (Array.isArray(food.portions)) {
-    const matched = food.portions.find(p => p.label?.toLowerCase().includes(unit.toLowerCase()))
-    if (matched && matched.grams) {
-      weightGrams = matched.grams * qty
-      multiplier = weightGrams / 100
-    }
-  }
-
-  const base = food.per100g || food.nutrients || {}
-  const scale = v => Math.round((Number(v) || 0) * multiplier * 10) / 10
-  const scaleWhole = v => Math.round((Number(v) || 0) * multiplier)
-
-  return {
-    weightGrams,
-    nutrients: {
-      calories: scaleWhole(base.calories ?? base.kcal),
-      kcal: scaleWhole(base.calories ?? base.kcal),
-      protein: scale(base.protein ?? base.proteinG),
-      proteinG: scale(base.protein ?? base.proteinG),
-      carbs: scale(base.carbs ?? base.carbsG),
-      carbsG: scale(base.carbs ?? base.carbsG),
-      fat: scale(base.fat ?? base.fatG),
-      fatG: scale(base.fat ?? base.fatG),
-      fiber: scale(base.fiber ?? base.fiberG),
-      fiberG: scale(base.fiber ?? base.fiberG)
-    }
-  }
+function resolveUnit(food, unit) {
+  if (STANDARD_UNITS[unit]?.toGrams || unit === 'serving') return unit
+  const portion = food.portions?.find(p => normalize(p.label) === normalize(unit) || normalize(p.label).startsWith(normalize(unit) + ' '))
+  if (portion) return portion.label
+  if (unit === 'piece' && ['large', 'medium', 'small', 'slice', 'egg'].includes(food.defaultServingUnit)) return food.defaultServingUnit
+  return null
 }
 
-/**
- * Parse an entire freeform meal string into structured loggable food items.
- * @param {string} text - User's meal description (e.g. "2 eggs, 2 slices toast, 1 banana")
- * @returns {Promise<{ items: Array, totals: Object, raw: string, unresolved: Array }>}
- */
-export async function parseMealText(text) {
-  if (!text || typeof text !== 'string') {
-    return { items: [], totals: { calories: 0, protein: 0, carbs: 0, fat: 0 }, raw: '', unresolved: [] }
+function toItem(food, qty, unit, assumption = '') {
+  const scaled = scaleNutrients(food, qty, unit)
+  return { name: food.name, brand: food.brand || null, foodKey: food.key, qty, unit,
+    weightGrams: scaled.weightGrams, nutrients: nutrientAliases(scaled.nutrients), foodRef: food, assumption,
+    estimated: food.dataQuality === 'ai-estimated' }
+}
+
+function estimatedItem(item) {
+  const id = createHash('sha256').update(JSON.stringify([item.name, item.unit, item.gramsPerUnit, item.per100g])).digest('hex').slice(0, 20)
+  // Keep the model's exact portion definition for all edits and diary calculations.
+  const standardWeight = STANDARD_UNITS[item.unit]?.toGrams
+  const standard = standardWeight && Math.abs(standardWeight - item.gramsPerUnit) <= Math.min(.05, standardWeight * .001)
+  const label = standard ? item.unit : standardWeight ? `${item.unit} portion` : item.unit === 'serving' ? 'portion' : item.unit
+  const food = { key: `ai:${id}`, source: 'gemini', externalId: id, name: item.name, basis: 'per100g',
+    per100g: item.per100g, defaultServingQuantity: 1, defaultServingUnit: label,
+    defaultServingGrams: item.gramsPerUnit, portions: standard ? [] : [{ label, grams: item.gramsPerUnit }],
+    dataQuality: 'ai-estimated', assumption: item.assumption }
+  return toItem(food, item.quantity, label, item.assumption)
+}
+
+export async function parseAudioMeal(audio, { aiParser } = {}) {
+  if (!aiParser) throw new FoodAiError('not-configured')
+  const answer = await aiParser.parseAudio(audio)
+  const validated = validateMealEstimate(answer)
+  const items = validated.items.map(estimatedItem)
+  return { raw: validated.transcript, items, totals: sumItems(items), unresolved: validated.unresolved,
+    notices: [], ai: { used: true, model: answer.model, elapsedMs: answer.elapsedMs, cached: Boolean(answer.cached) } }
+}
+
+function sumItems(items) {
+  const totals = { kcal: 0, proteinG: 0, carbsG: 0, fatG: 0, fiberG: 0 }
+  for (const item of items) for (const key of Object.keys(totals)) totals[key] += item.nutrients[key] || 0
+  for (const key of Object.keys(totals)) totals[key] = Math.round(totals[key] * 10) / 10
+  return nutrientAliases(totals)
+}
+
+export async function parseMealText(text, { useAi = false, aiParser } = {}) {
+  if (typeof text !== 'string' || text.length > 800) throw new TypeError('Describe a meal in 800 characters or fewer.')
+  const started = Date.now()
+  const items = [], unresolved = [], notices = []
+  const parts = phrases(text)
+  let ai = { used: false }
+  if (parts.length > 12) {
+    return { raw: text, items, unresolved: parts, totals: nutrientAliases({}), ai,
+      notices: [{ code: 'too-many-items', message: 'Please split this into meals of up to 12 items.' }] }
   }
-
-  const phrases = splitMealPhrases(text)
-  const items = []
-  const unresolved = []
-
-  const totals = {
-    calories: 0,
-    kcal: 0,
-    protein: 0,
-    proteinG: 0,
-    carbs: 0,
-    carbsG: 0,
-    fat: 0,
-    fatG: 0,
-    fiber: 0,
-    fiberG: 0
-  }
-
-  for (const phrase of phrases) {
+  for (const phrase of parts) {
     const parsed = parsePhrase(phrase)
-    if (!parsed.query) continue
-
-    // 1. Check local pantry first (0ms)
-    let candidates = pantrySearch(parsed.query)
-
-    // 2. Fall back to USDA search
-    if (candidates.length === 0) {
-      try {
-        const usdaRes = await searchFoods(parsed.query, 3)
-        if (usdaRes && usdaRes.length > 0) candidates = usdaRes
-      } catch {
-        // Continue
-      }
+    const food = localFood(parsed.query)
+    const unit = food && resolveUnit(food, parsed.unit)
+    if (!food || !unit || !Number.isFinite(parsed.qty) || parsed.qty <= 0 || parsed.qty > 10000) {
+      unresolved.push(phrase); continue
     }
-
-    if (candidates.length > 0) {
-      const topFood = candidates[0]
-      const scaled = scaleFood(topFood, parsed.qty, parsed.unit)
-
-      const item = {
-        name: topFood.name,
-        brand: topFood.brand || null,
-        foodKey: topFood.key,
-        qty: parsed.qty,
-        unit: parsed.unit,
-        weightGrams: scaled.weightGrams,
-        nutrients: scaled.nutrients,
-        foodRef: topFood
-      }
-
-      items.push(item)
-
-      totals.calories += scaled.nutrients.calories
-      totals.kcal += scaled.nutrients.kcal
-      totals.protein += scaled.nutrients.protein
-      totals.proteinG += scaled.nutrients.proteinG
-      totals.carbs += scaled.nutrients.carbs
-      totals.carbsG += scaled.nutrients.carbsG
-      totals.fat += scaled.nutrients.fat
-      totals.fatG += scaled.nutrients.fatG
-      totals.fiber += scaled.nutrients.fiber
-      totals.fiberG += scaled.nutrients.fiberG
-    } else {
-      unresolved.push(phrase)
+    const assumption = parsed.assumedAmount ? 'Amount not specified; assumed one serving.' : ''
+    items.push(toItem(food, parsed.qty, unit, assumption))
+  }
+  if (unresolved.length && useAi && aiParser) {
+    try {
+      const answer = await aiParser.parse(unresolved.join('; '))
+      const validated = validateMealEstimate(answer)
+      const estimates = validated.items.map(estimatedItem)
+      if (estimates.length + items.length > 12) throw new FoodAiError('invalid-result')
+      items.push(...estimates)
+      const stillUnknown = validated.unresolved
+      // A model returning no items and no explanation must not make missing food disappear.
+      if (estimates.length || stillUnknown.length) unresolved.splice(0, unresolved.length, ...stillUnknown)
+      ai = { used: true, model: answer.model, elapsedMs: answer.elapsedMs, cached: Boolean(answer.cached) }
+    } catch (error) {
+      const safe = error instanceof FoodAiError ? error : new FoodAiError('unavailable')
+      notices.push({ code: safe.code, message: safe.message })
     }
   }
-
-  totals.protein = Math.round(totals.protein * 10) / 10
-  totals.proteinG = totals.protein
-  totals.carbs = Math.round(totals.carbs * 10) / 10
-  totals.carbsG = totals.carbs
-  totals.fat = Math.round(totals.fat * 10) / 10
-  totals.fatG = totals.fat
-  totals.fiber = Math.round(totals.fiber * 10) / 10
-  totals.fiberG = totals.fiber
-
-  return {
-    raw: text,
-    items,
-    totals,
-    unresolved
-  }
+  return { raw: text, items, totals: sumItems(items), unresolved, notices, ai, elapsedMs: Date.now() - started }
 }

@@ -9,6 +9,22 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { once } from 'node:events';
+
+// SQLite files stay locked on Windows until the child has actually exited.
+export async function stopFixtureServer(child, dataDir) {
+  if (child.exitCode === null && child.signalCode === null) {
+    const exited = once(child, 'exit');
+    child.kill('SIGKILL');
+    await exited;
+  }
+  const target = path.resolve(dataDir);
+  const temporaryRoot = path.resolve(os.tmpdir());
+  if (!target.startsWith(temporaryRoot + path.sep) || fs.lstatSync(target).isSymbolicLink()) {
+    throw new Error('Refusing to remove a fixture outside the temporary directory');
+  }
+  await fs.promises.rm(target, { recursive: true, force: true, maxRetries: 8, retryDelay: 50 });
+}
 
 /* The port a spawned server.js actually bound.
  *
