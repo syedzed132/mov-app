@@ -3,6 +3,7 @@ import { t } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
 import { Button, Segmented } from './ui.jsx'
 import { useStore } from '../store/useStore.js'
+import { api } from '../lib/api.js'
 
 export function LeaderboardModal({ close }) {
   const user = useStore(s => s.user)
@@ -14,15 +15,14 @@ export function LeaderboardModal({ close }) {
   const [data, setData] = useState({ entries: [], userRank: null })
 
   useEffect(() => {
-    const controller = new AbortController()
+    let active = true
     setLoading(true)
     setError(false)
-    fetch(`/api/leaderboard?type=${type}&limit=50`, { signal: controller.signal })
-      .then(res => { if (!res.ok) throw new Error('Rankings unavailable'); return res.json() })
-      .then(result => { if (!controller.signal.aborted) setData(result) })
-      .catch(() => { if (!controller.signal.aborted) setError(true) })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
-    return () => controller.abort()
+    api(`/api/leaderboard?type=${type}&limit=50`)
+      .then(result => { if (active) setData(result) })
+      .catch(() => { if (active) setError(true) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
   }, [type, retry])
 
   const entries = data.entries || []

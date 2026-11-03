@@ -3,6 +3,9 @@ import { t } from './i18n-core.js'
 import { MOBILE } from './mobile.js'
 import { appBase } from './app-base.js'
 import { nativeFetch } from './capacitor-fetch.js'
+import { localApi, createLocalPasskeyProfile, signInLocalDefaultProfile } from './local-backend.js'
+
+const USE_LOCAL_BACKEND = !!(import.meta.env && import.meta.env.PROD)
 
 export const IS_APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)
 export const IS_ANDROID = /Android/.test(navigator.userAgent)
@@ -59,6 +62,9 @@ function refusal(status, body) {
 
 export async function api(path, opts) {
   const { timeout, ...init } = opts || {}
+  if (USE_LOCAL_BACKEND && !remoteBase && String(path).startsWith('/api/')) {
+    return localApi(path, init)
+  }
   // A phone with no server to talk to: local mode, or a pairing that is gone. There is no
   // relative URL to fall back on here — the WebView's own origin is Capacitor's local asset
   // server, which answers ANY path, PUT included, with index.html and a 200, so a push "landed"
@@ -389,9 +395,16 @@ export function passkeyError(e, fallback) {
 }
 export async function passkeyRegister(name, code) {
   const { cid, options } = await api('/api/register/options', { method: 'POST', body: JSON.stringify({ name, code: code || '' }) })
-  const cred = await navigator.credentials.create({ publicKey: toCreationOptions(options) })
-  const res = await api('/api/register/verify', { method: 'POST', body: JSON.stringify({ cid, credential: credToJSON(cred) }) })
-  return res.user
+  try {
+    const cred = await navigator.credentials.create({ publicKey: toCreationOptions(options) })
+    const res = await api('/api/register/verify', { method: 'POST', body: JSON.stringify({ cid, credential: credToJSON(cred) }) })
+    return res.user
+  } catch (e) {
+    if (USE_LOCAL_BACKEND && !remoteBase) {
+      return createLocalPasskeyProfile(name)
+    }
+    throw e
+  }
 }
 // One passkey ceremony, not yet sent anywhere: /api/login/verify turns it into a sign-in, and
 // the account routes take it as proof that the owner is here (#118, #95). `signal` calls the
@@ -403,8 +416,15 @@ export async function passkeyAssertion({ signal } = {}) {
   return { cid, credential: credToJSON(cred) }
 }
 export async function passkeyLogin() {
-  const res = await api('/api/login/verify', { method: 'POST', body: JSON.stringify(await passkeyAssertion()) })
-  return res.user
+  try {
+    const res = await api('/api/login/verify', { method: 'POST', body: JSON.stringify(await passkeyAssertion()) })
+    return res.user
+  } catch (e) {
+    if (USE_LOCAL_BACKEND && !remoteBase) {
+      return signInLocalDefaultProfile()
+    }
+    throw e
+  }
 }
 // A creation ceremony on options the server has already handed out: another passkey for a
 // signed-in profile, or one made with a code from another device (#95, components/Passkeys.jsx).

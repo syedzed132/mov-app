@@ -111,10 +111,10 @@ export default function Login() {
         <p className="welcome-summary">{t('Workouts, food & water. Made simple.')}</p>
         <div className="welcome-entry-actions">
           <Button className="welcome-create-profile" variant="primary" trailingIcon="arrowRight" onClick={register}>{t('Create profile')}</Button>
-          {config?.temporary_url && pwOn
+          {pwOn
             ? <Button variant="secondary" icon="key" onClick={() => openPasswordSignIn(webauthnOK() ? signIn : undefined)}>{t('Sign in')}</Button>
             : webauthnOK() ? <Button variant="secondary" icon="fingerprint" onClick={signIn}>{t('Sign in')}</Button>
-              : pwOn ? <Button variant="secondary" icon="key" onClick={() => openPasswordSignIn()}>{t('Sign in')}</Button> : null}
+              : null}
         </div>
         {canGuest && <div className="welcome-guest">
           <button type="button" onClick={() => setGuest(true)}>{t('Try without a profile')}<Icon name="arrowRight" /></button>
@@ -123,8 +123,8 @@ export default function Login() {
         <details className="welcome-access-options">
           <summary>{t('More sign-in options')}<Icon name="chevronDown" /></summary>
           <div className="welcome-access-links">
-            {pwOn && webauthnOK() && !config?.temporary_url && <button type="button" onClick={() => openPasswordSignIn(signIn)}><Icon name="key" />{t('Use password')}</button>}
-            {pwOn && webauthnOK() && config?.temporary_url && <button type="button" onClick={signIn}><Icon name="fingerprint" />{t('Use passkey')}</button>}
+            {pwOn && <button type="button" onClick={() => openPasswordSignIn(webauthnOK() ? signIn : undefined)}><Icon name="key" />{t('Use password')}</button>}
+            {webauthnOK() && <button type="button" onClick={signIn}><Icon name="fingerprint" />{t('Use passkey')}</button>}
             {webauthnOK() && <button type="button" onClick={openDeviceLinkRedeem}><Icon name="link" />{t('Link device')}</button>}
             <button type="button" onClick={openLostAccess}><Icon name="shield" />{t('Lost access?')}</button>
           </div>
