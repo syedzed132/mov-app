@@ -1,9 +1,11 @@
 {
   "name": "mov-app",
   "private": true,
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
-    "build": "cd frontend && npm install --include=dev && npm run build",
-    "install": "cd frontend && npm install --include=dev"
+    "build": "npm --workspace=frontend run build"
   },
   "devDependencies": {
     "js-yaml": "^4.1.0"
