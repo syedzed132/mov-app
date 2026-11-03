@@ -11,7 +11,7 @@ import { Button, SearchField, NumberField, Segmented } from './ui.jsx'
 import Icon from './Icon.jsx'
 import { MealQuickEntry } from './MealQuickEntry.jsx'
 import { t } from '../lib/i18n.js'
-import { pantrySearch } from '../../../shared/food-pantry.mjs'
+import { pantrySearch } from '../shared/food-pantry.mjs'
 
 export function FoodSearchSheet({ meal = 'lunch', date, close }) {
   const [tab, setTab] = useState('describe')

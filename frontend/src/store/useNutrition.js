@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { scaleNutrients, normalizeFoodRecord } from '../lib/nutrition/portions.js'
 import { getLocalDateString } from '../lib/nutrition/totals.js'
 import { api } from '../lib/api.js'
-import { emptyNutrition, LIBRARY_FIELDS, nutritionLibrary, mergeLibrary, mergeNutritionDays, daysForMonth } from '../../../shared/nutrition-sync.mjs'
+import { emptyNutrition, LIBRARY_FIELDS, nutritionLibrary, mergeLibrary, mergeNutritionDays, daysForMonth } from '../shared/nutrition-sync.mjs'
 
 const STORAGE_KEY = 'nxtform_nutrition_v1'
 const keyFor = id => id ? `${STORAGE_KEY}:${id}` : STORAGE_KEY
