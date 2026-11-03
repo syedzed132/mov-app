@@ -66,7 +66,7 @@ scripts/*.html
 scripts/*.css
 scripts/mov3*
 test_workout_snap.png
-shared/
+!frontend/src/shared/
 
 screenshots_mov3/
 scripts/all*
