@@ -5,7 +5,7 @@
     "frontend"
   ],
   "scripts": {
-    "build": "npm --workspace=frontend run build"
+    "build": "node ./scripts/build-ci.mjs"
   },
   "devDependencies": {
     "js-yaml": "^4.1.0"

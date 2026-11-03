@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm --workspace=frontend run build",
+  "buildCommand": "node ./scripts/build-ci.mjs",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
