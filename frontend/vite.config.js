@@ -111,8 +111,16 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('./src/coach-core', import.meta.url))
       },
       {
-        find: /.*\/shared\/(.*)/,
-        replacement: fileURLToPath(new URL('./src/shared/$1', import.meta.url))
+        find: /.*\/shared\/nutrition-sync\.mjs/,
+        replacement: fileURLToPath(new URL('./src/shared/nutrition-sync.mjs', import.meta.url))
+      },
+      {
+        find: /.*\/shared\/food-portions\.mjs/,
+        replacement: fileURLToPath(new URL('./src/shared/food-portions.mjs', import.meta.url))
+      },
+      {
+        find: /.*\/shared\/food-pantry\.mjs/,
+        replacement: fileURLToPath(new URL('./src/shared/food-pantry.mjs', import.meta.url))
       }
     ]
   },
