@@ -1,0 +1,29 @@
+# Monopoly lens
+Score: 4/10 | Vote: FUND IF
+
+## What is strong
+- **Incentivized distribution loop directly tackles the CAC barrier:** The "Invite 5 friends -> 1 Month Free Pro" mechanism introduces an organic growth engine to bypass paid ad auction inflation. If properly activated, it lowers customer acquisition costs and transforms early enthusiastic users into an active distribution channel.
+- **Asymmetric customer acquisition via 1-click CSV import:** Providing frictionless migration from Strong, Hevy, and spreadsheets attacks incumbents' data moats directly at the point of ingestion, removing the primary switching friction that traps dedicated lifters inside legacy tools.
+- **Disciplined unit economics with freemium AI guardrails:** Capping free meal scans at 5 per week while gating unlimited voice/vision parsing and dynamic AI coaching behind MOV Pro ($4.99/mo or $29.99/yr) shields gross margins from open-ended third-party inference bills.
+- **Identity-based retention through multi-attribute progression:** RPG-style stat progression (Agility/Strength/Endurance XP and dynamic titles like 'Iron Vanguard' and 'Playmaker') transitions the product from passive transactional logging to personal identity, building non-monetary switching costs as users accumulate historical progression.
+
+## What would kill it (the top 3, most dangerous first)
+- **1. Premature horizontal sprawl destroying beachhead monopolization:**
+Expanding into multi-sport tracking (tennis, padel, soccer, swimming, cycling, running) before dominating a single sub-market violates the fundamental law of monopoly creation. Instead of capturing 80% of an underserved niche, MOV is now fighting on seven fronts against entrenched incumbents with insurmountable scale and brand moats (Strava for endurance, Playtomic for padel, Hevy/Strong for strength, Garmin/Apple for wearable biometrics). Trying to be everything to every athlete guarantees becoming an undifferentiated commodity with zero pricing power anywhere.
+- **2. The Cold-Start trap of diluted social network effects:**
+Network effects are zero or negative at inception. A social feed and leaderboard distributed across fragmented sports creates a ghost-town experience for user #1 through user #1,000. Unless five friends from the *same* physical gym, club, or pitch join simultaneously, the feed offers negative utility compared to Strava's massive existing social graph. Furthermore, incentivizing "invite 5 friends for 1 month free" risks driving mercenary spam rather than dense, engaged network clusters.
+- **3. Lack of 10x proprietary technology (vulnerable to instant incumbent replication):**
+MET-based calorie calculations, multi-sport activity selectors, and XP level formulas are neither proprietary nor 10x breakthroughs—they are cosmetic wrappers around public formulas and standard gamification mechanics. An incumbent like Hevy or Strava could clone these features in a single quarterly sprint. Without a defensible algorithmic edge, compounding personal data models, or structural lock-in, MOV cannot protect long-term profit margins from copycats.
+
+## The questions I would ask the founder
+- **The Monopoly & Beachhead Question:** Which specific, micro-targeted subculture (e.g., HYROX hybrid racers, collegiate soccer players, or boutique gym lifting communities) will you capture 80%+ local market share in before attempting to track sports for the general public?
+- **The Secret:** What contrarian truth about athletic identity or cross-training do you understand that Strava, Whoop, and Hevy are structurally blind to or incapable of executing?
+- **The Network Density Question:** When user #1 imports their data via CSV and opens an empty social feed, why do they stay? How do you engineer hyper-local density so that referrals create actual training partners rather than burner accounts created just to earn free Pro months?
+- **The 10x Engineering Question:** If Hevy adds CSV import and an Agility/Strength stat bar next month, what proprietary technology or data moat keeps your users from migrating back?
+- **The Durability Question:** In 10 years, when Apple Fitness and Strava integrate native multimodal computer-vision meal tracking and adaptive overload into their core OS platforms, what structural barrier preserves MOV's independence and pricing power?
+
+## If FUND IF: the conditions
+- **Condition 1: Freeze horizontal expansion and conquer one hybrid beachhead first.** The founder must halt adding additional generic sports and focus the entire product and social graph on a singular, high-density beachhead where strength and conditioning intersect (such as HYROX/functional fitness athletes who lift and run). Dominate that community before opening the platform to general multi-sport athletes.
+- **Condition 2: Anchor the referral loop to squad utility, not solo bounty.** The "Invite 5 friends" mechanic must require collaborative athletic commitment (such as creating a private squad leaderboard, joint training streaks, or team challenges) rather than simple link distribution, ensuring incoming users immediately form retained network clusters.
+- **Condition 3: Turn CSV import into an irreversible, compounding data moat.** The platform must immediately synthesize imported history into proprietary longitudinal intelligence (such as automated fatigue curves, historical PR milestones, and dynamic volume baselines) that cannot be exported back out to a generic spreadsheet, establishing real switching costs.
+- **Condition 4: Validate organic viral coefficient ($K \ge 0.5$) before scaling marketing.** Prior to spending capital on external acquisition, the founder must prove in a controlled cohort of 200 users that the referral loop and CSV onboarding deliver at least 0.5 organic invites per active user, validating that the distribution engine is product-led rather than subsidized.

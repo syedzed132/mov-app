@@ -23,7 +23,8 @@ export function calculateCharacterStats({
   nutritionDays = {},
   streak = 0,
   bodyweight = [],
-  targets = {}
+  targets = {},
+  activities = []
 } = {}) {
   const allWorkouts = Array.isArray(workouts) ? workouts : []
   const days = nutritionDays || {}
@@ -60,6 +61,11 @@ export function calculateCharacterStats({
     if (w.cardioDur) cardioMinutes += Math.round(w.cardioDur / 60)
     else if (w.dur) cardioMinutes += Math.round(w.dur / 120) // partial contribution from general duration
   }
+  for (const a of (activities || [])) {
+    if (a.stat === 'endurance' || a.secondaryStat === 'endurance') {
+      cardioMinutes += Number(a.durationMin) || 30
+    }
+  }
   const enduranceRaw = 10 + (allWorkouts.length * 1.8) + (cardioMinutes * 0.12)
   const endurance = clampStat(enduranceRaw)
 
@@ -75,7 +81,13 @@ export function calculateCharacterStats({
       }
     }
   }
-  const agilityRaw = 10 + (bodyweightSets * 1.2) + (allWorkouts.length * 0.8)
+  let activityAgility = 0
+  for (const a of (activities || [])) {
+    if (a.stat === 'agility' || a.secondaryStat === 'agility') {
+      activityAgility += Math.max(1, Math.round((Number(a.durationMin) || 30) / 10))
+    }
+  }
+  const agilityRaw = 10 + (bodyweightSets * 1.2) + (allWorkouts.length * 0.8) + (activityAgility * 1.4)
   const agility = clampStat(agilityRaw)
 
   // 4. VITALITY (1–99): Nutrition consistency, protein target hits, water target hits
@@ -101,11 +113,18 @@ export function calculateCharacterStats({
     if ((d.waterMl || 0) >= waterTarget) waterHits++
   }
 
+  let recoverySessions = 0
+  for (const a of (activities || [])) {
+    if (a.stat === 'vitality' || a.secondaryStat === 'vitality' || a.category === 'recovery') {
+      recoverySessions++
+    }
+  }
   const vitalityRaw = 10 +
     (loggedDays.length * 1.5) +
     (proteinHits * 2.5) +
     (waterHits * 1.5) +
-    (caloriesInRange * 2.0)
+    (caloriesInRange * 2.0) +
+    (recoverySessions * 2.5)
   const vitality = clampStat(vitalityRaw)
 
   // 5. DISCIPLINE (1–99): Daily streak, logging count, weigh-ins
@@ -113,7 +132,8 @@ export function calculateCharacterStats({
     (streakDays * 3.5) +
     (allWorkouts.length * 1.0) +
     (bodyweight.length * 1.5) +
-    (loggedDays.length * 1.0)
+    (loggedDays.length * 1.0) +
+    ((activities || []).length * 1.2)
   const discipline = clampStat(disciplineRaw)
 
   const totalAverage = Math.round((strength + endurance + agility + vitality + discipline) / 5)

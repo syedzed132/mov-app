@@ -1,0 +1,13 @@
+{
+  "id": "P018",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "quality",
+  "reason": "I'm not spending money on an all-in-one app until I know it isn't bloated and laggy between gym sets, especially when the core workout logging and RPG stat titles are already free.",
+  "objection": "Apps trying to do lifting, 30+ sports, social feeds, and nutrition all at once almost always end up bloated and too slow for logging quick sets on the gym floor.",
+  "would_change_my_mind": "Testing the free version and finding out the set-logging UI is lightning fast with zero clutter, plus seeing deeper RPG skill trees and character builds in Pro.",
+  "price_too_cheap": 2,
+  "price_cheap": 3,
+  "price_expensive": 8,
+  "price_too_expensive": 15
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free tier already gives me all the workout and sport logging I need, and I would much rather invite five friends from soccer to unlock Pro for free than spend my own money.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "would_change_my_mind": "If the referral unlock program did not exist and I saw verified proof that the CSV import cleanly preserves all my past PRs from Strong and Hevy without breaking.",
+  "price_too_cheap": 2,
+  "price_cheap": 3.5,
+  "price_expensive": 8,
+  "price_too_expensive": 15
+}

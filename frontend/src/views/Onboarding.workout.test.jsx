@@ -15,7 +15,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true
 describe('Onboarding workout choice', () => {
   let host, root
   const click = async name => {
-    const button = [...host.querySelectorAll('button')].find(b => b.textContent.trim() === name)
+    const button = [...host.querySelectorAll('button')].find(b => b.textContent.trim() === name || b.getAttribute('aria-label') === name)
     expect(button, name).toBeTruthy()
     await act(async () => button.click())
   }
@@ -69,6 +69,19 @@ describe('Onboarding workout choice', () => {
     expect(state.store.S.week).toEqual({})
     expect(state.store.S.targets.waterMl).toBeGreaterThan(0)
     expect(state.toast).toHaveBeenCalledWith('Your daily targets are ready.')
+  })
+
+  it('saves the optional sex choice and the experience selected in the redesigned setup', async () => {
+    await renderSetup()
+    await click('Skip')
+    await click('Continue')
+    await click('Continue')
+    await click('Beginner')
+    await click('Review my plan')
+    await click('Let’s get moving')
+    expect(state.store.S.profile.sex).toBe('other')
+    expect(state.store.S.goal.experience).toBe('beginner')
+    expect(state.store.S.targetHistory.at(-1).inputs.experience).toBe('beginner')
   })
 
   it('keeps a returning user’s routines and schedule intact', async () => {

@@ -15,6 +15,10 @@ import { memo } from 'react'
 //   · geometry snapped to .5 so it lands on pixel edges at 24px
 
 const P = {
+  male: <><circle cx="9.5" cy="14.5" r="5.5" /><path d="m13.5 10.5 6-6M14 4.5h5.5V10" /></>,
+  female: <><circle cx="12" cy="8.5" r="5.5" /><path d="M12 14v7M8.5 18h7" /></>,
+  chair: <><path d="M7 11V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6M5 11h14v5H5zM7 16v5M17 16v5" /></>,
+  figureWalk: <><circle cx="13" cy="4.5" r="1.8" /><path d="m12 8-2.5 5 3 3 1 5M10 13l-3 7M12 8l3 4 3 1M10.5 10 7 12" /></>,
   /* MOV game icons: paired solid and outlined geometry, on the same 24px grid. */
   questTraining: <g transform="rotate(-35 12 12)"><rect x="5" y="5" width="4" height="14" rx="1.5" fill="currentColor" fillOpacity=".2" /><rect x="15" y="5" width="4" height="14" rx="1.5" fill="currentColor" fillOpacity=".2" /><path d="M9 12h6M2.5 9v6M21.5 9v6" /></g>,
   questWater: <><path d="M12 3C9 7 5.5 10.5 5.5 15a6.5 6.5 0 0 0 13 0C18.5 10.5 15 7 12 3Z" fill="currentColor" fillOpacity=".16" /><path d="M6 15q3-3 6 0t6 0" /><path d="M9 9.5 8 12" opacity=".6" /></>,
@@ -82,6 +86,8 @@ const P = {
   swim: <><circle cx="8.8" cy="8.2" r="1.8" /><path d="m10.9 10 4.6-2.2 3.3 3.4" /><path d="M3.5 15.6c1.6-1.3 3.1-1.3 4.7 0s3.1 1.3 4.7 0 3.1-1.3 4.7 0c.9.7 1.7.9 2.6.5" /></>,
   boxing: <><path d="M7.6 8.6A4.6 4.6 0 0 1 12.2 4h1.6a5.4 5.4 0 0 1 5.4 5.4v2.4a3 3 0 0 1-3 3H7.6Z" /><path d="M7.6 14.8v2.3a2.6 2.6 0 0 0 2.6 2.6h5.2a2.6 2.6 0 0 0 2.6-2.6v-2.3" /><path d="M7.6 9.8H6.3a1.8 1.8 0 0 0 0 3.6h1.3" /></>,
   stretch: <><circle cx="14.4" cy="5.4" r="1.9" /><path d="M14.4 8.2c-3 1.4-5 4-5.8 7.4" /><path d="M8.6 15.6 6.2 20M8.6 15.6l4.6 4.4" /><path d="M12.6 9.6 18 12" /></>,
+  tennis: <><ellipse cx="10" cy="9.5" rx="5.2" ry="6.2" transform="rotate(-35 10 9.5)" /><path d="m13.6 13.4 5.4 5.4M7.2 7.2l5.6 5.6M12.8 6.8l-5.6 5.6" /><circle cx="18.2" cy="6.8" r="2.1" /></>,
+  cricket: <><path d="m14.8 4.2 3 3-7.6 7.6-3-3Z" /><path d="m7.2 11.8-3 3" /><circle cx="18.2" cy="17.8" r="2.1" /></>,
 
   /* ---- actions ---- */
   plus: <path d="M12 5.2v13.6M5.2 12h13.6" />,

@@ -1,0 +1,13 @@
+{
+  "id": "P014",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "The social feed, leaderboards, and stat leveling I care about are completely free, and I'd much rather invite 5 friends from my rec leagues to unlock Pro for free than spend my own money.",
+  "objection": "Five free AI meal scans a week is probably enough for my routine, making $4.99 a month feel unnecessary when a referral gives me Pro for free anyway.",
+  "would_change_my_mind": "If the Adaptive AI Coach provided game-changing competitive training advice that noticeably boosted my performance over what Strava offers.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 12
+}

@@ -39,8 +39,9 @@ export function useGamification() {
       const hasWorkout = (S.workouts || []).some(w => w.d === iso)
       const hasFood = (nutritionDays[iso]?.entries?.length || 0) > 0
       const hasBw = (S.bodyweight || []).some(b => b.d === iso)
+      const hasAct = (S.activities || []).some(a => a.d === iso)
 
-      if (hasWorkout || hasFood || hasBw) {
+      if (hasWorkout || hasFood || hasBw || hasAct) {
         current++
       } else {
         // Today might not be logged yet, don't break on today if checking
@@ -50,7 +51,7 @@ export function useGamification() {
           const yest = new Date(now)
           yest.setDate(yest.getDate() - 1)
           const yestIso = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, '0')}-${String(yest.getDate()).padStart(2, '0')}`
-          const yestActive = (S.workouts || []).some(w => w.d === yestIso) || (nutritionDays[yestIso]?.entries?.length || 0) > 0
+          const yestActive = (S.workouts || []).some(w => w.d === yestIso) || (nutritionDays[yestIso]?.entries?.length || 0) > 0 || (S.activities || []).some(a => a.d === yestIso)
           if (yestActive) {
             current = 1
             continue
@@ -81,9 +82,10 @@ export function useGamification() {
       nutritionDays,
       streak: streakDays,
       bodyweight: S.bodyweight || [],
-      targets: S.targets || {}
+      targets: S.targets || {},
+      activities: S.activities || []
     })
-  }, [S.workouts, S.bodyweight, S.targets, nutritionDays, streakDays])
+  }, [S.workouts, S.bodyweight, S.targets, S.activities, nutritionDays, streakDays])
 
   // Daily Quests
   const isRestDay = (S.routines?.length || 0) > 0 && !(S.active) && todayWorkouts.length === 0

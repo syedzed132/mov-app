@@ -1,0 +1,51 @@
+Index,App_ID,Exercise_Name,Database_Name,Category,Target_Muscle,Body_Part,Equipment,Recommended_GIF_Filename,Visual_Movement_Cue_Prompt,Status
+1,0025,Barbell Bench Press,barbell bench press,Chest,pectorals,chest,barbell,0025.gif,"Lie on flat bench, lower bar with control to mid-chest, press up to full lockout.",Ready for Production
+2,0289,Dumbbell Bench Press,dumbbell bench press,Chest,pectorals,chest,dumbbell,0289.gif,"Lie on flat bench, press dumbbells up in a slight arc, lower until elbows reach 90 degrees.",Ready for Production
+3,0047,Barbell Incline Bench Press,barbell incline bench press,Chest,pectorals,chest,barbell,0047.gif,"Bench set to 30-45 degrees, lower bar to upper chest collarbone level, press up.",Ready for Production
+4,0314,Dumbbell Incline Bench Press,dumbbell incline bench press,Chest,pectorals,chest,dumbbell,0314.gif,"30-degree incline, press dumbbells up over upper chest, lower with control.",Ready for Production
+5,0662,Push-Up,push-up,Chest,pectorals,chest,body weight,0662.gif,"Plank position, lower chest until an inch from floor keeping core rigid, press back up.",Ready for Production
+6,0251,Chest Dip,chest dip,Chest,pectorals,chest,body weight,0251.gif,"Parallel bars, lean torso slightly forward, lower until elbows at 90 degrees, press up.",Ready for Production
+7,0188,Cable Middle Fly,cable middle fly,Chest,pectorals,chest,cable,0188.gif,"Pulleys at chest height, bring handles together in wide hugging arc, control the stretch.",Ready for Production
+8,0032,Barbell Deadlift,barbell deadlift,Back,glutes,full body,barbell,0032.gif,"Feet hip-width, grip bar outside knees, drive through floor keeping neutral spine to standing lockout.",Ready for Production
+9,0027,Barbell Bent Over Row,barbell bent over row,Back,upper back,back,barbell,0027.gif,"Hinge hips to 45 degrees, pull bar towards belly button, squeeze shoulder blades together.",Ready for Production
+10,0293,Dumbbell Bent Over Row,dumbbell bent over row,Back,upper back,back,dumbbell,0293.gif,"One knee and hand on flat bench, pull dumbbell to hip keeping elbow tucked, lower slowly.",Ready for Production
+11,0652,Pull-Up,pull-up,Back,lats,back,body weight,0652.gif,"Overhand wide grip on bar, pull chest to bar leading with elbows, lower to dead hang.",Ready for Production
+12,1326,Chin-Up,chin-up,Back,lats,back,body weight,1326.gif,"Underhand shoulder-width grip, pull until chin clears bar, lower under control.",Ready for Production
+13,2330,Cable Lat Pulldown,cable lat pulldown full range of motion,Back,lats,back,cable,2330.gif,"Seated with thighs locked, pull bar to upper chest with slight lean back, control return.",Ready for Production
+14,0861,Cable Seated Row,cable seated row,Back,upper back,back,cable,0861.gif,"Feet on footplates, pull handle to abdomen keeping chest proud, extend arms forward.",Ready for Production
+15,5656,Cable Face Pull (with Rope),cable standing face pull (with rope),Back,delts,shoulders,cable,5656.gif,"Rope at eye level, pull towards face while flaring elbows high and rotating hands back.",Ready for Production
+16,0091,Barbell Overhead Press,barbell seated overhead press,Shoulders,delts,shoulders,barbell,0091.gif,"Seated or standing, press bar vertically overhead locking out arms, lower to collarbone.",Ready for Production
+17,0426,Dumbbell Shoulder Press,dumbbell standing overhead press,Shoulders,delts,shoulders,dumbbell,0426.gif,"Dumbbells at ear height, press upward until weights meet overhead, lower smoothly.",Ready for Production
+18,0334,Dumbbell Lateral Raise,dumbbell lateral raise,Shoulders,delts,shoulders,dumbbell,0334.gif,"Stand tall, raise dumbbells out to sides until parallel to floor, lead with elbows.",Ready for Production
+19,0178,Cable Lateral Raise,cable lateral raise,Shoulders,delts,shoulders,cable,0178.gif,"Low pulley, raise handle across body up to shoulder height, control eccentric descent.",Ready for Production
+20,0310,Dumbbell Front Raise,dumbbell front raise,Shoulders,delts,shoulders,dumbbell,0310.gif,"Raise dumbbells in front of body to shoulder height with straight arms, lower slowly.",Ready for Production
+21,0406,Dumbbell Shrug,dumbbell shrug,Shoulders,traps,back,dumbbell,0406.gif,"Hold heavy dumbbells at sides, elevate shoulders straight up towards ears, pause at top.",Ready for Production
+22,0043,Barbell Back Squat,barbell full squat,Legs,glutes,upper legs,barbell,0043.gif,"Bar on upper traps, sit back and down until thighs reach parallel, drive up through mid-foot.",Ready for Production
+23,0042,Barbell Front Squat,barbell front squat,Legs,glutes,upper legs,barbell,0042.gif,"Bar racked across front delts, upright chest, squat deep between knees, stand tall.",Ready for Production
+24,1760,Dumbbell Goblet Squat,dumbbell goblet squat,Legs,quads,upper legs,dumbbell,1760.gif,"Hold dumbbell vertically against chest, squat deep keeping elbows inside knees.",Ready for Production
+25,3948,Bodyweight Air Squat,air squat,Legs,quads,upper legs,body weight,3948.gif,"Arms extended forward for balance, squat down to parallel, return to standing.",Ready for Production
+26,2224,Sled 45° Leg Press,sled 45 degrees leg press,Legs,quads,upper legs,sled machine,2224.gif,"Feet shoulder-width on carriage, unrack, lower platform until knees at 90 degrees, press up.",Ready for Production
+27,0585,Lever Leg Extension,lever leg extension,Legs,quads,upper legs,leverage machine,0585.gif,"Pad against lower shins, extend knees to full contraction, lower weights smoothly.",Ready for Production
+28,0336,Dumbbell Lunge,dumbbell lunge,Legs,glutes,upper legs,dumbbell,0336.gif,"Step forward into lunge until back knee hovers above floor, push back to starting stance.",Ready for Production
+29,2290,Dumbbell Bulgarian Split Squat,dumbbell bulgarian split squat,Legs,quads,upper legs,dumbbell,2290.gif,"Rear foot elevated on bench, descend on front leg until front thigh is parallel, drive up.",Ready for Production
+30,0085,Barbell Romanian Deadlift (RDL),barbell romanian deadlift,Legs,glutes,upper legs,barbell,0085.gif,"Slight knee bend, push hips back sliding bar down thighs until deep hamstring stretch, thrust forward.",Ready for Production
+31,1459,Dumbbell Romanian Deadlift,dumbbell romanian deadlift,Legs,glutes,upper legs,dumbbell,1459.gif,"Hold dumbbells in front, hinge at hips keeping back flat, feel hamstring stretch, return.",Ready for Production
+32,0586,Lever Lying Leg Curl,lever lying leg curl,Legs,hamstrings,upper legs,leverage machine,0586.gif,"Lie face down, curl pad towards glutes by flexing knees, lower with control.",Ready for Production
+33,0599,Lever Seated Leg Curl,lever seated leg curl,Legs,hamstrings,upper legs,leverage machine,0599.gif,"Thigh pad locked down, curl heels beneath seat contracting hamstrings, release slowly.",Ready for Production
+34,1060,Barbell Hip Thrust,barbell hip thrust,Legs,glutes,upper legs,barbell,1060.gif,"Upper back on bench, barbell over hips, drive hips ceiling-ward to full glute squeeze.",Ready for Production
+35,0605,Lever Standing Calf Raise,lever standing calf raise,Legs,calves,lower legs,leverage machine,0605.gif,"Shoulder pads on, balls of feet on edge of block, drive up on toes, lower to deep stretch.",Ready for Production
+36,0031,Barbell Biceps Curl,barbell curl,Arms,biceps,upper arms,barbell,0031.gif,"Shoulder-width underhand grip, curl bar towards shoulders keeping elbows pinned at sides.",Ready for Production
+37,0294,Dumbbell Biceps Curl,dumbbell biceps curl,Arms,biceps,upper arms,dumbbell,0294.gif,"Curl dumbbells while supinating wrists (palms up at top), lower under steady control.",Ready for Production
+38,0313,Dumbbell Hammer Curl,dumbbell hammer curl,Arms,biceps,upper arms,dumbbell,0313.gif,"Neutral palms-in grip, curl weights straight up targeting brachialis and forearms.",Ready for Production
+39,0070,Barbell Preacher Curl,barbell preacher curl,Arms,biceps,upper arms,barbell,0070.gif,"Arms resting on angled preacher pad, curl bar up eliminating any shoulder swing.",Ready for Production
+40,0241,Cable Triceps Pushdown (V-Bar),cable triceps pushdown (v-bar),Arms,triceps,upper arms,cable,0241.gif,"Elbows pinned to ribs, push V-bar down until arms lock out, control the return.",Ready for Production
+41,0200,Cable Pushdown (Rope Attachment),cable pushdown (with rope attachment),Arms,triceps,upper arms,cable,0200.gif,Push rope down and spread handles outward at bottom lockout for peak tricep contraction.,Ready for Production
+42,0061,Barbell Skull Crusher (Lying Extension),barbell lying triceps extension,Arms,triceps,upper arms,barbell,0061.gif,"Lie flat, lower bar to forehead by bending at elbows, extend arms back to vertical.",Ready for Production
+43,0814,Triceps Dip,triceps dip,Arms,triceps,upper arms,body weight,0814.gif,"Parallel dip bars, keep body upright, lower until elbows at 90 degrees, press to lockout.",Ready for Production
+44,0129,Bench Dip,bench dip (knees bent),Arms,triceps,upper arms,body weight,0129.gif,"Hands on bench behind back, lower hips toward floor bending elbows, press back up.",Ready for Production
+45,0463,Front Plank,front plank,Core,abs,waist,body weight,0463.gif,"Forearms and toes on floor, body in rigid straight line, glutes and abs braced.",Ready for Production
+46,0472,Hanging Leg Raise,hanging leg raise,Core,abs,waist,body weight,0472.gif,"Hang from pull-up bar, raise legs up to horizontal without swinging, lower slowly.",Ready for Production
+47,0175,Cable Kneeling Crunch,cable kneeling crunch,Core,abs,waist,cable,0175.gif,"Kneel holding rope at temples, curl torso downward bringing elbows toward knees.",Ready for Production
+48,6211,Bicycle Crunch,bicycle crunch,Core,abs,waist,body weight,6211.gif,"Lie on back, alternate bringing opposite elbow to opposite knee in fluid cycling motion.",Ready for Production
+49,0549,Kettlebell Swing,kettlebell swing,Full Body,glutes,upper legs,kettlebell,0549.gif,"Hinge at hips, explosively snap hips forward driving kettlebell to chest height.",Ready for Production
+50,1160,Burpee,burpee,Full Body,cardiovascular system,full body,body weight,1160.gif,"Drop to floor, kick feet back into push-up, jump feet forward, explode into vertical jump.",Ready for Production

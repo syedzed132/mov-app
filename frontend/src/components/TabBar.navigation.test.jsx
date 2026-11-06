@@ -37,9 +37,9 @@ const go = async to => { await act(async () => router.navigate(to)) }
 describe('root tab history', () => {
   it('does not accumulate a back stack when switching tabs repeatedly', async () => {
     for (let i = 0; i < 3; i++) {
-      for (const label of ['Progress', 'Today']) await tap(label)
+      for (const label of ['Stats', 'Home']) await tap(label)
     }
-    await tap('Progress')
+    await tap('Stats')
     expect(router.state.location.pathname).toBe('/stats')
     await go(-1)
     expect(router.state.location.pathname).toBe('/stats')
@@ -47,16 +47,16 @@ describe('root tab history', () => {
 
   it('ignores a tap on the current root, but clears a tab query when returning to its root', async () => {
     const key = router.state.location.key
-    await tap('Today')
+    await tap('Home')
     expect(router.state.location.key).toBe(key)
     await go('/stats?range=month')
-    await tap('Progress')
+    await tap('Stats')
     expect(router.state.location.pathname).toBe('/stats')
     expect(router.state.location.search).toBe('')
   })
 
   it('still pushes a detail page and returns to the tab it opened from', async () => {
-    await tap('Progress')
+    await tap('Stats')
     await go('/stats/ex/one')
     await go(-1)
     expect(router.state.location.pathname).toBe('/stats')
@@ -66,15 +66,15 @@ describe('root tab history', () => {
   })
 
   it('opens a different tab root from a nested page of the active tab', async () => {
-    await go('/stats/ex/one')
-    await tap('Progress')
-    expect(router.state.location.pathname).toBe('/stats')
+    await go('/plan/r/one')
+    await tap('Plan')
+    expect(router.state.location.pathname).toBe('/plan')
     expect(router.state.historyAction).toBe('REPLACE')
   })
 
   it('preserves the workout chooser return path', async () => {
     useStore.setState({ S: { ...useStore.getState().S, routines: [] } })
-    await tap('Train')
+    await tap('Start')
     expect(router.state.location.pathname).toBe('/workout')
     await go(-1)
     expect(router.state.location.pathname).toBe('/home')

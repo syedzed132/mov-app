@@ -5,9 +5,9 @@ import { Button, Segmented } from './ui.jsx'
 import Icon from './Icon.jsx'
 import './unit-choice.css'
 
-export function MeasurementUnitChoice({ value, onChange }) {
-  return <div className="measurement-unit-choice" role="group" aria-label={t('Measurement system')}>
-    <p>{t('Your units')}</p>
+export function MeasurementUnitChoice({ value, onChange, compact = false }) {
+  return <div className={'measurement-unit-choice' + (compact ? ' compact' : '')} role="group" aria-label={t('Measurement system')}>
+    {!compact && <p>{t('Your units')}</p>}
     <Segmented value={value} onChange={onChange} options={[
       { value: 'kg', label: <><b>{t('Metric')}</b><small>cm / kg</small></> },
       { value: 'lb', label: <><b>{t('Imperial')}</b><small>ft, in / lb</small></> }

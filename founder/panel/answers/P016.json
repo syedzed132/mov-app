@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "Earning only $14,000 a year, I have to watch every dollar, and the free tier already gives me the workout logging and RPG stat progression I want without paying.",
+  "objection": "I worry none of my friends are on MOV yet, making the social feed and leaderboards feel totally empty at the beginning.",
+  "would_change_my_mind": "If all my sports friends were actively playing on it and exclusive RPG guild or character progression perks were locked behind Pro.",
+  "price_too_cheap": 1.0,
+  "price_cheap": 2.0,
+  "price_expensive": 5.0,
+  "price_too_expensive": 8.0
+}

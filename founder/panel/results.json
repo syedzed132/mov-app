@@ -1,0 +1,163 @@
+{
+ "business": "MOV, a social all-sport fitness & nutrition app with CSV import, multi-sport tracking, Strava-style social network, RPG stat progression, and tiered AI coaching",
+ "seed": 20036,
+ "dealt": 20,
+ "answered": 20,
+ "skipped": [],
+ "buys": 0,
+ "passes": 20,
+ "buy_rate": 0.0,
+ "by_segment": [
+  [
+   "Multi-sport working professional",
+   8,
+   0.0
+  ],
+  [
+   "Competitive / social athlete & gamer",
+   5,
+   0.0
+  ],
+  [
+   "Student / early-career lifter & runner",
+   7,
+   0.0
+  ]
+ ],
+ "by_behaviour": [
+  [
+   "Strava & social fitness lover",
+   4,
+   0.0
+  ],
+  [
+   "Uses Strong/Hevy/MyFitnessPal",
+   4,
+   0.0
+  ],
+  [
+   "Multi-sport recreational athlete",
+   5,
+   0.0
+  ],
+  [
+   "Referral & freemium optimizer",
+   2,
+   0.0
+  ],
+  [
+   "Gamer / RPG progression fan",
+   3,
+   0.0
+  ],
+  [
+   "Data & analytics nerd",
+   2,
+   0.0
+  ]
+ ],
+ "by_income": [
+  [
+   "$39,000 to $95,000",
+   7,
+   0.0
+  ],
+  [
+   "$95,000 and up",
+   7,
+   0.0
+  ],
+  [
+   "under $39,000",
+   6,
+   0.0
+  ]
+ ],
+ "why_not": [
+  [
+   "trust",
+   7,
+   [
+    "I'm skeptical about how accurate the calorie burn calculations actually are for sports like padel and swimming, plus the free tier already gives me all the workout logging and RPG stats I want.",
+    "I have years of lifting history in Strong and Hevy, so I'm not paying anything until I see that the CSV import works flawlessly without messing up my data. Besides, the free tier has everything to test it out, and I can easily invite five soccer or padel friends to get Pro for free first."
+   ],
+   [
+    "P001",
+    "P003"
+   ]
+  ],
+  [
+   "price",
+   5,
+   [
+    "Money is tight on a $23k student income, and since the free tier already covers unlimited logging across all my sports, I would rather invite 5 soccer buddies to get Pro for free than pay.",
+    "On my $17k student budget, I have no reason to spend money when the core logging and RPG stats are free, especially when I can just invite five friends to get a month of Pro for free."
+   ],
+   [
+    "P004",
+    "P010"
+   ]
+  ],
+  [
+   "need",
+   4,
+   [
+    "The free tier already covers all my workout and multi-sport logging, and I can easily invite five friends from my padel or soccer groups to unlock Pro instead of paying out of pocket.",
+    "The free tier already gives me unlimited workout logging and the social feed, so on my student budget I have no real need to pay for an AI coach or meal scans."
+   ],
+   [
+    "P002",
+    "P005"
+   ]
+  ],
+  [
+   "habit",
+   2,
+   [
+    "I have years of lifting history locked into Strong and Hevy, and since MOV's core workout logging and social feed are completely free anyway, I wouldn't pay for Pro upfront.",
+    "I have years of workout data in Strong and Hevy, and since MOV's core tracking and CSV import are free, I won't pay for Pro until I verify the import is seamless and the logging UI is fast enough between sets."
+   ],
+   [
+    "P006",
+    "P012"
+   ]
+  ],
+  [
+   "quality",
+   2,
+   [
+    "I'm not spending money on an all-in-one app until I know it isn't bloated and laggy between gym sets, especially when the core workout logging and RPG stat titles are already free.",
+    "I'm not paying upfront when the core RPG progression and workout logging are completely free, especially since all-in-one apps usually feel bloated and slow. As an analytics nerd, I need to test if the UI is clean and whether the calorie and MET calculations are actually accurate before buying Pro."
+   ],
+   [
+    "P018",
+    "P020"
+   ]
+  ]
+ ],
+ "why_yes": [],
+ "flip": [
+  "Transparent, validated calorie burn data for non-gym sports and seeing my friends actively using the app instead of Strava.",
+  "If my entire sports crew migrated over and the AI coach offered sport-specific conditioning and recovery insights that Strava lacks.",
+  "A completely seamless CSV import of all my past lifting logs with zero data loss, plus proof that the Adaptive AI Coach provides actionable insights beyond MyFitnessPal.",
+  "If the referral program was discontinued and 5 meal scans a week proved too restrictive for my routine.",
+  "If my entire crew switched from Strava and the Pro tier offered verified GPS and heart rate analytics that actually improved my training.",
+  "Seeing the CSV import flawlessly transfer my entire Strong history on day one, plus having several of my actual gym friends actively posting on the feed.",
+  "Clear proof or an instant preview showing that all my historical PRs and Strong/Hevy sets transfer over cleanly without data loss.",
+  "If essential multi-sport tracking or history import got locked behind Pro, or if the AI coach proved it could dynamically program around both soccer and lifting.",
+  "If the referral unlock program did not exist and I saw verified proof that the CSV import cleanly preserves all my past PRs from Strong and Hevy without breaking.",
+  "If Pro included an actual visual RPG character avatar system that levels up and I ran out of friends to invite for free months.",
+  "Proof of a flawless CSV import that accurately maps all historical sets and PRs, combined with transparent, scientifically grounded MET formulas and an ultra-fast logging UI.",
+  "A completely seamless CSV import of my past lifting history, an ultra-fast and uncluttered in-gym logging experience, and my friends actively using the feed.",
+  "Proof that my full Strong and Hevy PR history imports cleanly without errors, plus seeing my friends actually using the platform.",
+  "If the Adaptive AI Coach provided game-changing competitive training advice that noticeably boosted my performance over what Strava offers.",
+  "Seeing my regular padel and soccer crew actively using the app and sharing their workouts on the feed.",
+  "If all my sports friends were actively playing on it and exclusive RPG guild or character progression perks were locked behind Pro.",
+  "If the referral unlock didn't exist or expired and I found myself needing more than 5 AI meal scans every single week.",
+  "Testing the free version and finding out the set-logging UI is lightning fast with zero clutter, plus seeing deeper RPG skill trees and character builds in Pro.",
+  "A flawless, verified CSV import that maps all my historical Strong/Hevy PRs accurately, paired with a lightning-fast, distraction-free logging UI.",
+  "A snappy, minimalist UI with transparent MET formulas, precision macro analytics, and proof that the deep stat insights offer real scientific value."
+ ],
+ "purchases_first_month_per_buyer": null,
+ "price_answers": 20
+}

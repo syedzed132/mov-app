@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "Money is tight on a $23k student income, and since the free tier already covers unlimited logging across all my sports, I would rather invite 5 soccer buddies to get Pro for free than pay.",
+  "objection": "The core tracking is completely free, so paying $4.99 a month feels unnecessary when I can just earn Pro by sharing referral links.",
+  "would_change_my_mind": "If the referral program was discontinued and 5 meal scans a week proved too restrictive for my routine.",
+  "price_too_cheap": 1.0,
+  "price_cheap": 2.5,
+  "price_expensive": 6.0,
+  "price_too_expensive": 10.0
+}

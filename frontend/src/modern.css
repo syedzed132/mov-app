@@ -8,10 +8,14 @@
 }
 :root {
   --font-app: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --motion-snap: cubic-bezier(.2,.8,.2,1);
-  --motion-spring: cubic-bezier(.2,.9,.3,1.15);
+  /* stageshow dual-curve motion physics */
+  --motion-travel: cubic-bezier(0.45, 0, 0.1, 1);
+  --motion-arrive: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --motion-spring: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --motion-snap: var(--motion-arrive);
   --surface-edge: color-mix(in srgb, var(--label) 9%, transparent);
   --surface-lift: color-mix(in srgb, var(--surface) 94%, var(--label));
+  --surface-rim: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 body, button, input, select, textarea { font-family: var(--font-app); }
 h1, h2, h3, h4, .h1, .big { font-family: inherit; }
@@ -22,17 +26,20 @@ h1, h2, h3, h4, .h1, .big { font-family: inherit; }
 .hdr, .food-header { margin-top: 6px; margin-bottom: 26px; }
 .hdr h1, .food-header h1, .hd > .h1 { font-size: clamp(30px, 6vw, 40px); font-weight: 800; letter-spacing: -.055em; line-height: 1.12; }
 .hdr .sub, .food-header p { font-size: 12px; line-height: 1.6; margin-top: 7px; color: var(--label-2); }
-.card, .cd, .sect-b, .list { border-color: var(--surface-edge); box-shadow: none; }
+.card, .cd, .sect-b, .list { border-color: var(--surface-edge); box-shadow: var(--surface-rim); }
 .card, .cd { border-radius: 24px; }
-.btn, .btn.sm { min-height: 48px; font-size: 13px; font-weight: 750; letter-spacing: -.015em; transition: transform .2s var(--motion-spring), background .2s, border-color .2s, box-shadow .2s; }
-.btn.primary, .daily-workout > .btn { box-shadow: none; border: 0; background: var(--acc); color: var(--on-acc); }
-.btn.primary:active, .daily-workout > .btn:active { box-shadow: none; transform: scale(.97); }
+.btn, .btn.sm { min-height: 48px; font-size: 13px; font-weight: 750; letter-spacing: -.015em; transition: transform .18s var(--motion-spring), background .2s, border-color .2s, box-shadow .2s; }
+.btn.primary, .daily-workout > .btn { box-shadow: var(--surface-rim); border: 0; background: var(--acc); color: var(--on-acc); }
+.btn.primary:active, .daily-workout > .btn:active { box-shadow: none; transform: scale(.97); transition-duration: .08s; }
 .btn.secondary { background: color-mix(in srgb, var(--label) 4%, var(--surface)); border-color: var(--surface-edge); }
 .ib, .iconbtn { border: 1px solid var(--surface-edge); background: color-mix(in srgb, var(--surface) 90%, transparent); }
 button, summary, [role='button'] { touch-action: manipulation; }
-:is(.ib,.iconbtn,.rw,.lrow,.chip,.ch,.wday,.routine-choice,.training-plan-links > button,.player-badge) { transition: transform .22s var(--motion-spring), background .2s, border-color .2s, color .2s; }
-:is(.ib,.iconbtn,.chip,.ch,.wday,.player-badge):active { transform: scale(.94); }
-:is(.rw,.lrow,.routine-choice,.training-plan-links > button):active { transform: scale(.985); }
+:is(.ib,.iconbtn,.rw,.lrow,.chip,.ch,.wday,.routine-choice,.training-plan-links > button,.player-badge) { transition: transform .2s var(--motion-spring), background .2s, border-color .2s, color .2s; }
+:is(.ib,.iconbtn,.chip,.ch,.wday,.player-badge):active { transform: scale(.92); transition-duration: .08s; }
+:is(.rw,.lrow,.routine-choice,.training-plan-links > button):active { transform: scale(.98); transition-duration: .08s; }
+.chk, .ck { transition: transform .2s var(--motion-spring), background .2s, box-shadow .2s, color .2s; }
+.chk.on, .ck.on { animation: studio-chk-pop .34s var(--motion-spring); box-shadow: 0 0 14px var(--acc-soft), inset 0 0 0 1px rgba(255,255,255,.22); }
+@keyframes studio-chk-pop { 0% { transform: scale(.8); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
 button:disabled { cursor: default; }
 .field, .input, input.num, textarea { transition: background .2s, border-color .2s, box-shadow .2s; }
 .field:focus, .input:focus, input.num:focus { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
@@ -239,15 +246,16 @@ button:disabled { cursor: default; }
 .routine-card-list > :nth-child(n+4) { animation-delay: .13s; }
 details > summary .icn { transition: transform .3s var(--motion-snap), color .2s; }
 details[open] > :not(summary) { animation: studio-disclosure .25s var(--motion-snap); }
-.sheet { animation-timing-function: var(--motion-snap); }
+.sheet { animation-timing-function: var(--motion-travel); box-shadow: 0 -16px 55px rgba(0,0,0,.35), var(--surface-rim); will-change: transform; }
+.daily-total, .calorie-heading strong, .tiles .tile .v { font-variant-numeric: tabular-nums; }
 .daily-total { animation: studio-value .35s var(--motion-spring); }
-@keyframes studio-screen { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes studio-surface { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: none; } }
-@keyframes studio-disclosure { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
-@keyframes studio-photo { from { opacity: .5; transform: scale(1.06); } to { opacity: 1; transform: none; } }
+@keyframes studio-screen { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes studio-surface { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes studio-disclosure { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes studio-photo { from { opacity: .4; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 @keyframes studio-progress { from { transform: scaleX(0); } to { transform: none; } }
-@keyframes studio-tab { from { transform: scale(.7); } to { transform: none; } }
-@keyframes studio-value { from { opacity: .6; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes studio-tab { 0% { transform: scale(.76); } 60% { transform: scale(1.1); } 100% { transform: none; } }
+@keyframes studio-value { from { opacity: .5; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 @keyframes studio-water { from { transform: translateX(-3px); } to { transform: translateX(3px) translateY(2px); } }
 @keyframes studio-pulse { 50% { opacity: .45; } }
 @media (hover:hover) and (pointer:fine) {

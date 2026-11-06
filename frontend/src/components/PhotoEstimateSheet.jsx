@@ -1,3 +1,4 @@
+import MacroLiquidTubes from './MacroLiquidTubes.jsx'
 import { useState, useRef } from 'react'
 import { api } from '../lib/api.js'
 import { useUI } from '../store/useUI.js'
@@ -120,6 +121,11 @@ export function PhotoEstimateSheet({ meal = 'lunch', date, close }) {
     { value: 'dinner', label: t('Dinner') },
     { value: 'snacks', label: t('Snacks') }
   ]
+
+  const totalMacroG = (totals.protein + totals.carbs + totals.fat) || 1;
+  const protEstPct = Math.round((totals.protein / totalMacroG) * 100);
+  const carbEstPct = Math.round((totals.carbs / totalMacroG) * 100);
+  const fatEstPct = Math.round((totals.fat / totalMacroG) * 100);
 
   return (
     <div className="photo-estimate-sheet" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -280,19 +286,22 @@ export function PhotoEstimateSheet({ meal = 'lunch', date, close }) {
             ))}
           </div>
 
-          {/* Aggregated Nutrition Box */}
-          <div style={{ background: 'var(--surface-2)', padding: 12, borderRadius: 'var(--r-sm)', border: '1px solid var(--acc)' }}>
-            <div className="row between" style={{ marginBottom: 4 }}>
-              <span className="muted">{t('Confirmed Totals')}</span>
-              <span className="big" style={{ fontSize: 18, fontWeight: 700 }}>
-                {totals.calories} <span className="small muted">kcal</span>
+          {/* Aggregated Nutrition Box with Liquid Tubes */}
+          <div style={{ background: 'var(--surface-2)', padding: '16px 12px 12px', borderRadius: 'var(--r-sm)', border: '1px solid var(--surface-edge)' }}>
+            <div className="row between" style={{ marginBottom: 10, paddingInline: 4 }}>
+              <span className="muted" style={{ fontWeight: 600, fontSize: 13, letterSpacing: '0.05em' }}>{t('CONFIRMED TOTALS')}</span>
+              <span className="big" style={{ fontSize: 20, fontWeight: 800 }}>
+                {totals.calories} <span className="small muted" style={{ fontSize: 13, fontWeight: 500 }}>kcal</span>
               </span>
             </div>
-            <div className="row between small">
-              <span><b style={{ color: 'var(--blue)' }}>Protein:</b> {Math.round(totals.protein * 10) / 10}g</span>
-              <span><b style={{ color: 'var(--orange)' }}>Carbs:</b> {Math.round(totals.carbs * 10) / 10}g</span>
-              <span><b style={{ color: 'var(--yellow)' }}>Fat:</b> {Math.round(totals.fat * 10) / 10}g</span>
-            </div>
+            <MacroLiquidTubes
+              proteinPct={protEstPct}
+              carbsPct={carbEstPct}
+              fatPct={fatEstPct}
+              proteinG={Math.round(totals.protein * 10) / 10}
+              carbsG={Math.round(totals.carbs * 10) / 10}
+              fatG={Math.round(totals.fat * 10) / 10}
+            />
           </div>
 
           <Button variant="primary" icon="check" onClick={handleConfirmAndLog}>

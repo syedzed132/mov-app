@@ -1,4 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import WeightPicker from './components/WeightPicker.jsx'
 import { useStore } from './store/useStore.js'
 import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
@@ -283,29 +284,12 @@ const bwTooHeavy = (n, unit) => {
   return true
 }
 function WeightInput({ value, setValue, unit }) {
-  const W_HI = wHi(unit)
-  const clamp = x => Math.max(W_LO, Math.min(W_HI, Math.round((x || 0) * 10) / 10))
-  const sv = Math.max(W_LO, Math.min(W_HI, value))
-  const onSlide = v => setValue(clamp(v))
-  const onType = v => setValue(v)
-
+  const clamp = x => Math.max(W_LO, Math.min(wHi(unit), Math.round((x || 0) * 10) / 10))
   return <>
-    <div className="bwstep">
-      <button className="bw-pm" onClick={() => onSlide(value - 0.1)} aria-label={t('Decrease by {0}', fmtNum(0.1))}><Icon name="minus" /></button>
-      <label className="bw-read">
-        <NumberField fit value={value} onChange={onType} aria-label={t('Weight ({0})', unit)} enterKeyHint="done"
-          onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }} />
-        <span className="u"> {unit}</span>
-      </label>
-      <button className="bw-pm" onClick={() => onSlide(value + 0.1)} aria-label={t('Increase by {0}', fmtNum(0.1))}><Icon name="plus" /></button>
+    <WeightPicker legacy value={value} onChange={setValue} unit={unit} min={W_LO} max={wHi(unit)} />
+    <div className="chips" style={{ justifyContent: 'center', margin: '12px 0' }}>
+      {[-1, -.5, .5, 1].map(change => <button key={change} className="chip" onClick={() => setValue(clamp((value || 0) + change))}>{change < 0 ? '−' : '+'}{Math.abs(change)}</button>)}
     </div>
-    <div className="chips" style={{ justifyContent: 'center', margin: '8px 0' }}>
-      <button className="chip" onClick={() => onSlide(value - 1)}>−1</button>
-      <button className="chip" onClick={() => onSlide(value - 0.5)}>−0.5</button>
-      <button className="chip" onClick={() => onSlide(value + 0.5)}>+0.5</button>
-      <button className="chip" onClick={() => onSlide(value + 1)}>+1</button>
-    </div>
-    <Slider value={sv} min={W_LO} max={W_HI} step={0.5} onChange={onSlide} />
   </>
 }
 

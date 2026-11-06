@@ -1,0 +1,110 @@
+.macro-tubes-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  margin: 16px 0 20px;
+}
+
+.macro-tube-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.macro-tube-vessel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 96px;
+  height: 160px;
+  background: rgba(22, 24, 27, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+}
+
+.macro-tube-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  flex: none;
+  z-index: 2;
+}
+
+.macro-tube-icon-wrap .icn {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.macro-tube-chamber {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 26px 26px;
+  overflow: hidden;
+}
+
+.macro-tube-liquid {
+  position: relative;
+  width: 100%;
+  min-height: 4px;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.85s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.macro-tube-liquid-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+}
+
+.macro-tube-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.macro-tube-pct {
+  font-family: var(--font-app);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #faf7f3;
+  font-variant-numeric: tabular-nums;
+}
+
+.macro-tube-name {
+  font-family: var(--font-app);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  color: var(--label-2, #9ca3af);
+  text-transform: uppercase;
+}
+
+.macro-tube-grams {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-3, #6b7280);
+}

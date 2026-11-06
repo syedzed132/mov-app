@@ -1,3 +1,4 @@
+import SpiderRadarChart from './SpiderRadarChart.jsx'
 import { useState } from 'react'
 import { useGamification } from '../lib/gamification/useGamification.js'
 import { useUI } from '../store/useUI.js'
@@ -109,6 +110,9 @@ export function CharacterSheetModal({ close }) {
       {/* Tab 1: Attributes */}
       {tab === 'attributes' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="row center" style={{ justifyContent: 'center', margin: '4px 0 12px' }}>
+            <SpiderRadarChart stats={characterStats} size={260} />
+          </div>
           <div className="row between" style={{ padding: '0 4px' }}>
             <span className="lbl2">{t('Core RPG Attributes')}</span>
             <span className="small muted">{t('Overall: {0}/99', characterStats.totalAverage)}</span>

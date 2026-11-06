@@ -1,3 +1,4 @@
+import MacroLiquidTubes from '../components/MacroLiquidTubes.jsx'
 import { useState, useMemo } from 'react'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -166,6 +167,22 @@ export default function Food() {
         </div>
       </header>
       {nutritionAccount && nutritionSync?.error && <p className="small muted" role="status">{t(nutritionSync.error)} <button className="meal-text-button" onClick={() => useNutrition.getState().syncNow({ refresh: true })}>{t('Retry sync')}</button></p>}
+      {/* 5-Day Strip */}
+      <div className="food-date-strip" role="tablist" aria-label={t('Select date')}>
+        {daysWindow.map(d => (
+          <button
+            key={d.iso}
+            type="button"
+            role="tab"
+            aria-selected={d.isSelected}
+            className={'food-date-chip' + (d.isSelected ? ' selected' : '')}
+            onClick={() => setSelectedDate(d.iso)}
+          >
+            <span className="food-date-weekday">{d.dayName.toUpperCase()}</span>
+            <span className="food-date-num">{d.dayNum}</span>
+          </button>
+        ))}
+      </div>
       <label className="simple-date">{t('Date')}<input type="date" className="field" aria-label={t('Diary date')} value={selectedDate} onChange={e => { if (e.target.value) setSelectedDate(e.target.value) }} /></label>
       <section className="card diary-nutrition" aria-label={t('Daily nutrition')}>
         <div className="calorie-heading">
@@ -175,6 +192,7 @@ export default function Food() {
           </div>
           <ProgressRing label={t('Daily calories')} value={totals.calories} target={calorieTarget}><Icon name="questFuel" /></ProgressRing>
         </div>
+        <MacroLiquidTubes proteinPct={protPct} carbsPct={carbPct} fatPct={fatPct} proteinG={Math.round(totals.protein)} carbsG={Math.round(totals.carbs)} fatG={Math.round(totals.fat)} />
         <details className="simple-macros"><summary>{t("Nutrition details")}<Icon name="chevronDown" /></summary><div className="macro-grid">
           {[
             { label: t('Protein'), value: totals.protein, target: proteinTarget, pct: protPct, color: 'var(--orange)' },

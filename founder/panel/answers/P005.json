@@ -1,0 +1,13 @@
+{
+  "id": "P005",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free tier already gives me unlimited workout logging and the social feed, so on my student budget I have no real need to pay for an AI coach or meal scans.",
+  "objection": "I doubt a simple height and weight formula can accurately calculate calorie burn for dynamic sports like padel and swimming, plus all my friends are already on Strava.",
+  "would_change_my_mind": "If my entire crew switched from Strava and the Pro tier offered verified GPS and heart rate analytics that actually improved my training.",
+  "price_too_cheap": 1.0,
+  "price_cheap": 2.5,
+  "price_expensive": 5.0,
+  "price_too_expensive": 8.0
+}

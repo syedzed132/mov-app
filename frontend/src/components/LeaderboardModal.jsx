@@ -1,3 +1,4 @@
+import RankingsPodium from './RankingsPodium.jsx'
 import { useState, useEffect } from 'react'
 import { t } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
@@ -45,14 +46,16 @@ export function LeaderboardModal({ close }) {
     {loading ? <div className="empty" role="status">{t('Loading rankings…')}</div>
       : error ? <div className="empty" role="status"><Icon name="cloudSlash" /><p>{t('Rankings couldn’t load. Try again in a moment.')}</p><Button size="sm" variant="tinted" onClick={() => setRetry(n => n + 1)}>{t('Try again')}</Button></div>
       : entries.length === 0 ? <div className="empty"><div className="ico"><Icon name="trophy" /></div><p>{t('A fresh start for everyone.')}</p><p className="small">{t('Log a workout or meal to start earning XP.')}</p></div>
-      : <ol className="rankings-list" aria-label={t('Leaderboard')}>
+      : <>
+        {entries.length >= 2 && <RankingsPodium topThree={entries.slice(0, 3)} />}
+        <ol className="rankings-list" aria-label={t('Leaderboard')}>
         {entries.map((entry, index) => <li key={entry.id || index} className={entry.id === user?.id ? 'is-you' : ''}>
           <span className={'rank-number' + (index < 3 ? ' podium' : '')}>{entry.rank || index + 1}</span>
           <span className="rank-avatar"><Icon name={entry.formIcon || 'person'} /></span>
           <div className="rank-person"><strong>{entry.username}{entry.id === user?.id && <small>{t('You')}</small>}</strong><span>{t('Level {0}', entry.level || 1)} · {entry.title || t('Rookie')}</span></div>
           <b className="rank-score">{score(entry)}</b>
         </li>)}
-      </ol>}
+      </ol></>}
     {!loading && !error && userRank && <div className="your-rank"><span>{t('Your rank')} <b>#{userRank.rank}</b></span><strong>{score(userRank)}</strong></div>}
     {isGuest && <p className="small muted" style={{ textAlign: 'center', marginTop: 18 }}>{t('Your guest progress stays on this device. Create a profile to join the rankings.')}</p>}
   </div>

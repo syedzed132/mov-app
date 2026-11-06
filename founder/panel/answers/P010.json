@@ -1,0 +1,13 @@
+{
+  "id": "P010",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "On my $17k student budget, I have no reason to spend money when the core logging and RPG stats are free, especially when I can just invite five friends to get a month of Pro for free.",
+  "objection": "How accurate is the calorie burn calculation for sports like padel, tennis, and swimming based on just my weight and height?",
+  "would_change_my_mind": "If Pro included an actual visual RPG character avatar system that levels up and I ran out of friends to invite for free months.",
+  "price_too_cheap": 1.0,
+  "price_cheap": 2.5,
+  "price_expensive": 5.0,
+  "price_too_expensive": 8.0
+}

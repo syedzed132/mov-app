@@ -1,0 +1,49 @@
+.spider-chart-wrap {
+  position: relative;
+  margin: 12px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spider-chart-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.spider-grid-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1.2;
+}
+
+.spider-grid-spoke {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+.spider-data-polygon {
+  fill: url(#spiderGlow);
+  stroke: #ff6a13;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(255, 106, 19, 0.45));
+  transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.spider-vertex-dot {
+  fill: #ff9a5c;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px #ff6a13);
+  transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.spider-axis-label {
+  fill: var(--label-2, #b8b3ad);
+  font-family: var(--font-app);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}

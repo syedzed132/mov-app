@@ -1,0 +1,33 @@
+{
+  "business": "MOV, a social all-sport fitness & nutrition app with CSV import, multi-sport tracking, Strava-style social network, RPG stat progression, and tiered AI coaching",
+  "target": "Active adults, 18 to 40, who lift weights and play recreational sports (padel, tennis, soccer, swimming, running), track nutrition, and want a social community and RPG progression for their fitness",
+  "where": "Online, iOS App Store, Google Play Store, Worldwide",
+  "age": [18, 40],
+  "segments": [
+    {"name": "Multi-sport working professional", "share": 0.40, "income": [45000, 120000]},
+    {"name": "Student / early-career lifter & runner", "share": 0.35, "income": [12000, 45000]},
+    {"name": "Competitive / social athlete & gamer", "share": 0.25, "income": [35000, 140000]}
+  ],
+  "behaviours": [
+    {"name": "Multi-sport recreational athlete", "share": 0.25, "how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps."},
+    {"name": "Strava & social fitness lover", "share": 0.20, "how": "Active on Strava, loves kudos, leaderboards, and sharing athletic accomplishments with friends."},
+    {"name": "Uses Strong/Hevy/MyFitnessPal", "share": 0.20, "how": "Has years of lifting data in Strong or Hevy, hesitant to switch unless 1-click CSV import works flawlessly."},
+    {"name": "Gamer / RPG progression fan", "share": 0.15, "how": "Motivated by leveling up stats (Agility, Strength, Endurance), unlocking titles, and seeing visual character progress."},
+    {"name": "Referral & freemium optimizer", "share": 0.10, "how": "Loves free tiers, eager to invite 5 friends to unlock free Pro months."},
+    {"name": "Data & analytics nerd", "share": 0.10, "how": "Obsessed with calorie burn accuracy, MET calculations, bodyweight metrics, and macro tracking."}
+  ],
+  "objections": [
+    "Are my friends already on MOV or will the social feed feel empty at the beginning?",
+    "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+    "How accurate is the calorie burn calculation for sports like padel, tennis, and swimming based on my weight/height?",
+    "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+    "Does the app feel bloated trying to do lifting, sports, social, and food all in one, or is the UI clean and fast?"
+  ],
+  "habits": [
+    "you play padel, soccer, or tennis on weekends and lift weights during the week",
+    "you check friends' workouts on social feeds and love friendly competition",
+    "you log sets on your phone between gym exercises and hate slow, cluttered interfaces",
+    "you enjoy seeing your stats level up like an RPG character (e.g. boosting Agility from soccer)",
+    "you love sharing referral links if the reward is a free month of Pro"
+  ]
+}

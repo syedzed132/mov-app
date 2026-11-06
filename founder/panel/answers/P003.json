@@ -1,0 +1,13 @@
+{
+  "id": "P003",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I have years of lifting history in Strong and Hevy, so I'm not paying anything until I see that the CSV import works flawlessly without messing up my data. Besides, the free tier has everything to test it out, and I can easily invite five soccer or padel friends to get Pro for free first.",
+  "objection": "Hesitant that the 1-click CSV import won't accurately map all my past Strong/Hevy routines and PRs, and wondering if 5 free meal scans a week is already enough.",
+  "would_change_my_mind": "A completely seamless CSV import of all my past lifting logs with zero data loss, plus proof that the Adaptive AI Coach provides actionable insights beyond MyFitnessPal.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 8,
+  "price_too_expensive": 15
+}

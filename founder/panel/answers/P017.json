@@ -1,0 +1,13 @@
+{
+  "id": "P017",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "I'm a freemium optimizer who will immediately invite 5 workout buddies to get Pro for free rather than spend cash, especially since the free tier already gives me unlimited logging.",
+  "objection": "There's no reason to pay $4.99 right away when the free tier handles my core logging and I can unlock Pro months just by sharing referral links.",
+  "would_change_my_mind": "If the referral unlock didn't exist or expired and I found myself needing more than 5 AI meal scans every single week.",
+  "price_too_cheap": 1.5,
+  "price_cheap": 3.0,
+  "price_expensive": 7.0,
+  "price_too_expensive": 12.0
+}

@@ -216,5 +216,10 @@ export function calculateTotalUserXp(S = {}, nutritionDays = {}) {
   // 3. Weigh-ins
   totalXp += (S.bodyweight?.length || 0) * 5
 
+  // 4. Activities & Sports (Padel, Swimming, Sauna, etc.)
+  for (const a of (S.activities || [])) {
+    totalXp += a.xpEarned || 40
+  }
+
   return Math.max(0, totalXp)
 }

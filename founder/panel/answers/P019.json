@@ -1,0 +1,13 @@
+{
+  "id": "P019",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'm not spending a dime until I know the CSV import doesn't corrupt years of PRs and lifting history from Strong or Hevy, especially when the free tier already lets me test the core logging.",
+  "objection": "Whether the 1-click CSV import will actually preserve all my past PRs and history without breaking, and whether the logging interface stays fast and uncluttered between sets.",
+  "would_change_my_mind": "A flawless, verified CSV import that maps all my historical Strong/Hevy PRs accurately, paired with a lightning-fast, distraction-free logging UI.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 8,
+  "price_too_expensive": 15
+}

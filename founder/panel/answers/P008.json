@@ -1,0 +1,13 @@
+{
+  "id": "P008",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "need",
+  "reason": "The free tier already covers unlimited logging for my gym workouts and weekend sports plus CSV import, so on my $35k income I have no reason to pay for an AI coach or extra meal breakdowns.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "would_change_my_mind": "If essential multi-sport tracking or history import got locked behind Pro, or if the AI coach proved it could dynamically program around both soccer and lifting.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 6,
+  "price_too_expensive": 10
+}

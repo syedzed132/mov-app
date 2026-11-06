@@ -1,0 +1,13 @@
+{
+  "id": "P007",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I have years of lifting history in Strong and Hevy, and I won't pay a dime until I know the 1-click CSV import genuinely preserves all my PRs without corrupting my data. Plus, I'd rather just invite five friends to get a free month of Pro than spend $4.99 on my student budget.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "would_change_my_mind": "Clear proof or an instant preview showing that all my historical PRs and Strong/Hevy sets transfer over cleanly without data loss.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 10
+}

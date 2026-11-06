@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'm skeptical about how accurate the calorie burn calculations actually are for sports like padel and swimming, plus the free tier already gives me all the workout logging and RPG stats I want.",
+  "objection": "How accurate the calorie burn calculation is for sports like padel, tennis, and swimming based on my weight and height.",
+  "would_change_my_mind": "Transparent, validated calorie burn data for non-gym sports and seeing my friends actively using the app instead of Strava.",
+  "price_too_cheap": 1,
+  "price_cheap": 3,
+  "price_expensive": 7,
+  "price_too_expensive": 12
+}

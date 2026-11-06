@@ -1,0 +1,222 @@
+[
+ {
+  "id": "P001",
+  "name": "Jonah",
+  "age": 20,
+  "segment": "Multi-sport working professional",
+  "income": 53000,
+  "behaviour": "Strava & social fitness lover",
+  "behaviour_how": "Active on Strava, loves kudos, leaderboards, and sharing athletic accomplishments with friends.",
+  "objection": "How accurate is the calorie burn calculation for sports like padel, tennis, and swimming based on my weight/height?",
+  "habit": "you enjoy seeing your stats level up like an RPG character (e.g. boosting Agility from soccer)"
+ },
+ {
+  "id": "P002",
+  "name": "Maeve",
+  "age": 40,
+  "segment": "Multi-sport working professional",
+  "income": 104000,
+  "behaviour": "Strava & social fitness lover",
+  "behaviour_how": "Active on Strava, loves kudos, leaderboards, and sharing athletic accomplishments with friends.",
+  "objection": "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+  "habit": "you play padel, soccer, or tennis on weekends and lift weights during the week"
+ },
+ {
+  "id": "P003",
+  "name": "Min",
+  "age": 24,
+  "segment": "Competitive / social athlete & gamer",
+  "income": 134000,
+  "behaviour": "Uses Strong/Hevy/MyFitnessPal",
+  "behaviour_how": "Has years of lifting data in Strong or Hevy, hesitant to switch unless 1-click CSV import works flawlessly.",
+  "objection": "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+  "habit": "you play padel, soccer, or tennis on weekends and lift weights during the week"
+ },
+ {
+  "id": "P004",
+  "name": "Omar",
+  "age": 34,
+  "segment": "Student / early-career lifter & runner",
+  "income": 23000,
+  "behaviour": "Multi-sport recreational athlete",
+  "behaviour_how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps.",
+  "objection": "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+  "habit": "you love sharing referral links if the reward is a free month of Pro"
+ },
+ {
+  "id": "P005",
+  "name": "Noah",
+  "age": 19,
+  "segment": "Student / early-career lifter & runner",
+  "income": 13000,
+  "behaviour": "Strava & social fitness lover",
+  "behaviour_how": "Active on Strava, loves kudos, leaderboards, and sharing athletic accomplishments with friends.",
+  "objection": "How accurate is the calorie burn calculation for sports like padel, tennis, and swimming based on my weight/height?",
+  "habit": "you log sets on your phone between gym exercises and hate slow, cluttered interfaces"
+ },
+ {
+  "id": "P006",
+  "name": "Cole",
+  "age": 23,
+  "segment": "Student / early-career lifter & runner",
+  "income": 39000,
+  "behaviour": "Uses Strong/Hevy/MyFitnessPal",
+  "behaviour_how": "Has years of lifting data in Strong or Hevy, hesitant to switch unless 1-click CSV import works flawlessly.",
+  "objection": "Are my friends already on MOV or will the social feed feel empty at the beginning?",
+  "habit": "you enjoy seeing your stats level up like an RPG character (e.g. boosting Agility from soccer)"
+ },
+ {
+  "id": "P007",
+  "name": "Chloe",
+  "age": 39,
+  "segment": "Student / early-career lifter & runner",
+  "income": 31000,
+  "behaviour": "Uses Strong/Hevy/MyFitnessPal",
+  "behaviour_how": "Has years of lifting data in Strong or Hevy, hesitant to switch unless 1-click CSV import works flawlessly.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you love sharing referral links if the reward is a free month of Pro"
+ },
+ {
+  "id": "P008",
+  "name": "Nico",
+  "age": 26,
+  "segment": "Student / early-career lifter & runner",
+  "income": 35000,
+  "behaviour": "Multi-sport recreational athlete",
+  "behaviour_how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you play padel, soccer, or tennis on weekends and lift weights during the week"
+ },
+ {
+  "id": "P009",
+  "name": "Sol",
+  "age": 30,
+  "segment": "Multi-sport working professional",
+  "income": 86000,
+  "behaviour": "Referral & freemium optimizer",
+  "behaviour_how": "Loves free tiers, eager to invite 5 friends to unlock free Pro months.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you enjoy seeing your stats level up like an RPG character (e.g. boosting Agility from soccer)"
+ },
+ {
+  "id": "P010",
+  "name": "Pablo",
+  "age": 37,
+  "segment": "Student / early-career lifter & runner",
+  "income": 17000,
+  "behaviour": "Gamer / RPG progression fan",
+  "behaviour_how": "Motivated by leveling up stats (Agility, Strength, Endurance), unlocking titles, and seeing visual character progress.",
+  "objection": "How accurate is the calorie burn calculation for sports like padel, tennis, and swimming based on my weight/height?",
+  "habit": "you love sharing referral links if the reward is a free month of Pro"
+ },
+ {
+  "id": "P011",
+  "name": "Fatima",
+  "age": 29,
+  "segment": "Multi-sport working professional",
+  "income": 70000,
+  "behaviour": "Data & analytics nerd",
+  "behaviour_how": "Obsessed with calorie burn accuracy, MET calculations, bodyweight metrics, and macro tracking.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you log sets on your phone between gym exercises and hate slow, cluttered interfaces"
+ },
+ {
+  "id": "P012",
+  "name": "Quinn",
+  "age": 25,
+  "segment": "Multi-sport working professional",
+  "income": 120000,
+  "behaviour": "Uses Strong/Hevy/MyFitnessPal",
+  "behaviour_how": "Has years of lifting data in Strong or Hevy, hesitant to switch unless 1-click CSV import works flawlessly.",
+  "objection": "Are my friends already on MOV or will the social feed feel empty at the beginning?",
+  "habit": "you log sets on your phone between gym exercises and hate slow, cluttered interfaces"
+ },
+ {
+  "id": "P013",
+  "name": "Mei",
+  "age": 32,
+  "segment": "Multi-sport working professional",
+  "income": 100000,
+  "behaviour": "Multi-sport recreational athlete",
+  "behaviour_how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you check friends' workouts on social feeds and love friendly competition"
+ },
+ {
+  "id": "P014",
+  "name": "Caleb",
+  "age": 35,
+  "segment": "Competitive / social athlete & gamer",
+  "income": 44000,
+  "behaviour": "Strava & social fitness lover",
+  "behaviour_how": "Active on Strava, loves kudos, leaderboards, and sharing athletic accomplishments with friends.",
+  "objection": "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+  "habit": "you check friends' workouts on social feeds and love friendly competition"
+ },
+ {
+  "id": "P015",
+  "name": "Ruby",
+  "age": 31,
+  "segment": "Competitive / social athlete & gamer",
+  "income": 75000,
+  "behaviour": "Multi-sport recreational athlete",
+  "behaviour_how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps.",
+  "objection": "Are my friends already on MOV or will the social feed feel empty at the beginning?",
+  "habit": "you play padel, soccer, or tennis on weekends and lift weights during the week"
+ },
+ {
+  "id": "P016",
+  "name": "Rhys",
+  "age": 40,
+  "segment": "Student / early-career lifter & runner",
+  "income": 14000,
+  "behaviour": "Gamer / RPG progression fan",
+  "behaviour_how": "Motivated by leveling up stats (Agility, Strength, Endurance), unlocking titles, and seeing visual character progress.",
+  "objection": "Are my friends already on MOV or will the social feed feel empty at the beginning?",
+  "habit": "you play padel, soccer, or tennis on weekends and lift weights during the week"
+ },
+ {
+  "id": "P017",
+  "name": "Emil",
+  "age": 26,
+  "segment": "Multi-sport working professional",
+  "income": 106000,
+  "behaviour": "Referral & freemium optimizer",
+  "behaviour_how": "Loves free tiers, eager to invite 5 friends to unlock free Pro months.",
+  "objection": "Is 5 AI meal scans a week enough on the free tier, and is Pro ($4.99/mo or $29.99/yr) worth it if I can invite 5 friends for free Pro?",
+  "habit": "you love sharing referral links if the reward is a free month of Pro"
+ },
+ {
+  "id": "P018",
+  "name": "Malik",
+  "age": 25,
+  "segment": "Competitive / social athlete & gamer",
+  "income": 95000,
+  "behaviour": "Gamer / RPG progression fan",
+  "behaviour_how": "Motivated by leveling up stats (Agility, Strength, Endurance), unlocking titles, and seeing visual character progress.",
+  "objection": "Does the app feel bloated trying to do lifting, sports, social, and food all in one, or is the UI clean and fast?",
+  "habit": "you log sets on your phone between gym exercises and hate slow, cluttered interfaces"
+ },
+ {
+  "id": "P019",
+  "name": "Harper",
+  "age": 38,
+  "segment": "Multi-sport working professional",
+  "income": 97000,
+  "behaviour": "Multi-sport recreational athlete",
+  "behaviour_how": "Lifts 2-3x a week, plays padel, soccer, or tennis on weekends, swims or runs, tired of tracking across 3 apps.",
+  "objection": "Will 1-click CSV import actually preserve all my past PRs and history from Strong or Hevy without breaking?",
+  "habit": "you log sets on your phone between gym exercises and hate slow, cluttered interfaces"
+ },
+ {
+  "id": "P020",
+  "name": "Leila",
+  "age": 18,
+  "segment": "Competitive / social athlete & gamer",
+  "income": 71000,
+  "behaviour": "Data & analytics nerd",
+  "behaviour_how": "Obsessed with calorie burn accuracy, MET calculations, bodyweight metrics, and macro tracking.",
+  "objection": "Does the app feel bloated trying to do lifting, sports, social, and food all in one, or is the UI clean and fast?",
+  "habit": "you enjoy seeing your stats level up like an RPG character (e.g. boosting Agility from soccer)"
+ }
+]

@@ -104,7 +104,8 @@ export default function Login() {
         <img className="welcome-photo" src="/images/training-editorial.webp" alt="" fetchPriority="high" />
         <header className="welcome-identity"><Brand /></header>
         <div className="welcome-hero-copy">
-          <h1>{t('One move.')}<br /><span>{t('Stronger you.')}</span></h1>
+          <h1 className="welcome-press-start"><span>{t('PRESS START.')}</span></h1>
+          <p className="welcome-hero-sub">{t('Level up your training, track nutrition, conquer daily quests.')}</p>
         </div>
       </section>
       <section className="welcome-entry" aria-label={t('Get started')}>
@@ -123,8 +124,8 @@ export default function Login() {
         <details className="welcome-access-options">
           <summary>{t('More sign-in options')}<Icon name="chevronDown" /></summary>
           <div className="welcome-access-links">
-            {pwOn && <button type="button" onClick={() => openPasswordSignIn(webauthnOK() ? signIn : undefined)}><Icon name="key" />{t('Use password')}</button>}
-            {webauthnOK() && <button type="button" onClick={signIn}><Icon name="fingerprint" />{t('Use passkey')}</button>}
+            {pwOn && !config?.temporary_url && webauthnOK() && <button type="button" onClick={() => openPasswordSignIn(webauthnOK() ? signIn : undefined)}><Icon name="key" />{t('Use password')}</button>}
+            {webauthnOK() && config?.temporary_url && <button type="button" onClick={signIn}><Icon name="fingerprint" />{t('Use passkey')}</button>}
             {webauthnOK() && <button type="button" onClick={openDeviceLinkRedeem}><Icon name="link" />{t('Link device')}</button>}
             <button type="button" onClick={openLostAccess}><Icon name="shield" />{t('Lost access?')}</button>
           </div>

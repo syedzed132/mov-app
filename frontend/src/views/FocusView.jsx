@@ -1,3 +1,4 @@
+import SwipeToComplete from '../components/SwipeToComplete.jsx'
 import { useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { exOr, isAssisted } from '../lib/exercises.js'
@@ -353,7 +354,18 @@ export default function FocusView({
           aria-label={t(EFFORT[effort].hd)} disabled={readOnly} onClick={openEffort}>{effortValue == null ? t(EFFORT[effort].hd) : fmtNum(effortValue)}</button>}
       </div>
       {guided && <p className="guided-log-hint" role={needsReps || needsWeight ? 'status' : undefined}>{needsReps ? t('Enter the repetitions you completed.') : needsWeight ? t('Enter the weight you used before logging this set.') : t('One repetition = one complete movement. Log what you actually did.')}</p>}
-      <Button variant="primary" icon="check" aria-label={guided ? set.done ? t('Undo set') : t('Log set') : t('Complete set')} disabled={guided && (locked || busy || (!set.done && (needsReps || needsWeight)))} onClick={complete}>{guided ? set.done ? t('Undo set') : t('Log set') : set.done ? t('Completed') : t('Complete')}</Button>
+      {set.done ? (
+        <Button variant="primary" icon="check" aria-label={guided ? t('Undo set') : t('Complete set')} disabled={guided && (locked || busy)} onClick={complete}>
+          {guided ? t('Undo set') : t('Completed · Tap to Undo')}
+        </Button>
+      ) : (
+        <SwipeToComplete
+          onComplete={complete}
+          ariaLabel={guided ? t('Log set') : t('Complete set')}
+          label={guided ? t('Swipe to log set') : t('Swipe to complete set')}
+          disabled={guided && (locked || busy || (!set.done && (needsReps || needsWeight)))}
+        />
+      )}
       <div className="focus-secondary">
         {guided ? <button className="focus-skip" aria-label={t('Change exercise')} disabled={busy} onClick={onSwap}><Icon name="swap" />{t('Change exercise')}</button> : <button className="focus-skip" aria-label={t('Skip set')} disabled={setIdx >= entry.sets.length - 1} onClick={() => selectSet(setIdx + 1)}>
           <Icon name="play" />{t('Skip')}

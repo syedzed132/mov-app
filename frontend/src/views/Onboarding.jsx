@@ -4,9 +4,12 @@ import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { t } from '../lib/i18n.js'
 import Icon from '../components/Icon.jsx'
-import { Button, Segmented, Section, Row, Switch, NumberField } from '../components/ui.jsx'
+import { Button, Segmented, Switch, NumberField } from '../components/ui.jsx'
 import { generatePersonalPlan, createTargetHistoryEntry } from '../lib/targets.js'
 import { Brand } from '../components/Brand.jsx'
+import WeightPicker from '../components/WeightPicker.jsx'
+import BackgroundTexture from '../components/BackgroundTexture.jsx'
+import './onboarding.css'
 import { applyOnboardingWorkout, hasExistingTrainingPlan } from '../lib/onboarding-workout.js'
 import '../training-flow.css'
 import { MeasurementUnitChoice, rememberWeightUnit } from '../components/UnitChoice.jsx'
@@ -23,7 +26,8 @@ export default function Onboarding() {
   const firstSetup = !S?.profile?.onboardedAt && !S?.onboardedAt
 
   const [step, setStep] = useState(1) // 1: Stats, 2: Goal, 3: Activity, 4: Plan Review
-  useEffect(() => { window.scrollTo(0, 0) }, [step])
+  const headingRef = useRef(null)
+  useEffect(() => { window.scrollTo(0, 0); headingRef.current?.focus({ preventScroll: true }) }, [step])
 
   // Form inputs
   const [sex, setSex] = useState(S?.profile?.sex || previousInputs.sex || 'male') // 'male' | 'female' | 'other'
@@ -161,321 +165,146 @@ export default function Onboarding() {
     } finally { setSaving(false) }
   }
 
-  return (
-    <div className="narrow s-onboarding" style={{ paddingTop: 24, paddingBottom: 60 }}>
-      <header className="onboarding-header">
-        <div className="setup-brand-row"><Brand /><span>{t('Step {0} of 4', step)}</span></div>
-        <h1>{[t('Let’s make it personal.'), t('Choose your direction.'), t('Find your rhythm.'), t('Your starting point.')][step - 1]}</h1>
-        <p>{[t('A few details help us estimate what works for you.'), t('Set a goal that fits your life.'), t('Build a plan around your everyday routine.'), t('These are estimates. You can adjust your targets anytime.')][step - 1]}</p>
-      </header>
-      <div className="onboarding-progress" role="progressbar" aria-label={t('Plan setup')} aria-valuemin={1} aria-valuemax={4} aria-valuenow={step}>
+  const nextStep = () => {
+    if (step === 1) { setMetricsChecked(true); if (metricsError) return }
+    if (step === 2) { setGoalChecked(true); if (goalError) return }
+    setStep(value => Math.min(4, value + 1))
+  }
+  const error = step === 1 && metricsChecked ? metricsError : step === 2 && goalChecked ? goalError : ''
+  const metricInvalid = valid => metricsChecked && !valid ? 'true' : undefined
+  const metricDescription = valid => metricsChecked && !valid ? 'setup-metrics-error' : undefined
+
+  return <div className="narrow s-onboarding mov-setup">
+    <div className="setup-map" aria-hidden="true"><BackgroundTexture /></div>
+    <header className="setup-header">
+      <div className="setup-topline"><Brand /><span className="setup-step-count">{t('Step {0} of 4', step)}</span></div>
+      <div className="setup-progress" role="progressbar" aria-label={t('Plan setup')} aria-valuemin={1} aria-valuemax={4} aria-valuenow={step}>
         {[1, 2, 3, 4].map(s => <span key={s} className={s <= step ? 'done' : ''} />)}
       </div>
-      {step === 1 && <MeasurementUnitChoice value={weightUnit} onChange={unit => void rememberWeightUnit(unit)} />}
-      <Button className={'onboarding-skip' + (firstSetup ? ' onboarding-start-now' : '')} variant={firstSetup ? 'primary' : 'ghost'} trailingIcon="arrowRight" onClick={leaveSetup} disabled={saving}>{firstSetup ? t('Skip setup and start logging') : t('Back to Settings')}</Button>
+      <div className="setup-intro" key={step}>
+        <p className="setup-eyebrow">{[t('Your starting point'), t('Your direction'), t('Your routine'), t('Made for you')][step - 1]}</p>
+        <h1 ref={headingRef} tabIndex={-1}>{[t('Built around you.'), t('What moves you?'), t('Find your rhythm.'), t('You’re ready to move.')][step - 1]}</h1>
+        <p className="setup-description">{[t('A few details for your daily targets.'), t('Choose the goal that feels right for you.'), t('A plan that fits your everyday life.'), t('A starting point you can adjust anytime.')][step - 1]}</p>
+      </div>
+    </header>
 
-      {/* STEP 1: Body Metrics */}
-      {step === 1 && (
-        <div className="fade-in">
-          <Section title={t('Your Body Metrics')} footer={t('These details help estimate your daily energy needs.')}>
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Sex used for calorie estimates (optional)')}</div>
-              <Segmented
-                options={[
-                  { value: 'male', label: t('Male') },
-                  { value: 'female', label: t('Female') },
-                  { value: 'other', label: t('Skip') }
-                ]}
-                value={sex}
-                onChange={setSex}
-              />
-            </div>
+    <div className="setup-content" key={step}>
+      {step === 1 && <>
+        <MeasurementUnitChoice compact value={weightUnit} onChange={unit => void rememberWeightUnit(unit)} />
+        <div className="setup-field-heading"><span>{t('Sex for calorie estimates')}</span><small>{t('Optional')}</small></div>
+        <div className="setup-sex-choices" role="group" aria-label={t('Sex used for calorie estimates (optional)')}>
+          {[
+            { value: 'male', label: t('Male'), icon: 'male' },
+            { value: 'female', label: t('Female'), icon: 'female' },
+            { value: 'other', label: t('Skip'), icon: 'person' }
+          ].map(option => <button type="button" key={option.value} className={'setup-sex-card' + (sex === option.value ? ' selected' : '')} aria-pressed={sex === option.value} onClick={() => setSex(option.value)}>
+            <span className="setup-sex-icon"><Icon name={option.icon} /></span><b>{option.label}</b><span className="setup-selection-dot" aria-hidden="true"><Icon name="check" /></span>
+          </button>)}
+        </div>
 
-            <Row title={t('Age')} accessory="none">
-              <NumberField
-                nullable
-                decimal={false}
-                className="input"
-                style={{ width: 90, textAlign: 'right' }}
-                value={age}
-                aria-label={t('Age')}
-                aria-required="true"
-                aria-invalid={metricsChecked && !validAge ? 'true' : undefined}
-                aria-describedby={metricsChecked && !validAge ? 'setup-metrics-error' : undefined}
-                onChange={setAge}
-              />
-            </Row>
+        <WeightPicker label={t('Current weight')} value={displayWeight} onChange={setDisplayWeight} unit={weightUnit} min={minWeight} max={maxWeight} ariaLabel={t('Current weight in {0}', weightUnit)} invalid={metricsChecked && !validWeight} describedBy={metricDescription(validWeight)} />
 
-            <Row title={isLb ? t('Height (ft / in)') : t('Height (cm)')} accessory="none">
-              {isLb ? <div className="height-imperial-fields">
-                <label><span>{t('Feet')}</span><NumberField nullable decimal={false} value={heightFeet} aria-label={t('Height in feet')} aria-required="true" aria-invalid={metricsChecked && !validHeight ? 'true' : undefined} aria-describedby={metricsChecked && !validHeight ? 'setup-metrics-error' : undefined} onChange={value => { setHeightFeet(value); setHeightCm(heightInCm(value, heightInches)) }} /></label>
-                <label><span>{t('Inches')}</span><NumberField nullable value={heightInches} aria-label={t('Height in inches')} aria-required="true" aria-invalid={metricsChecked && !validHeight ? 'true' : undefined} aria-describedby={metricsChecked && !validHeight ? 'setup-metrics-error' : undefined} onChange={value => { setHeightInches(value); setHeightCm(heightInCm(heightFeet, value)) }} /></label>
-              </div> :
-              <NumberField
-                nullable
-                className="input"
-                style={{ width: 90, textAlign: 'right' }}
-                value={heightCm}
-                aria-label={t('Height in centimetres')}
-                aria-required="true"
-                aria-invalid={metricsChecked && !validHeight ? 'true' : undefined}
-                aria-describedby={metricsChecked && !validHeight ? 'setup-metrics-error' : undefined}
-                onChange={setHeightCm}
-              />}
-            </Row>
-
-            <Row title={t('Current Weight ({0})', weightUnit)} accessory="none">
-              <NumberField
-                nullable
-                className="input"
-                style={{ width: 90, textAlign: 'right' }}
-                value={displayWeight}
-                aria-label={t('Current weight in {0}', weightUnit)}
-                aria-required="true"
-                aria-invalid={metricsChecked && !validWeight ? 'true' : undefined}
-                aria-describedby={metricsChecked && !validWeight ? 'setup-metrics-error' : undefined}
-                onChange={setDisplayWeight}
-              />
-            </Row>
-          </Section>
-          {metricsChecked && metricsError && <div id="setup-metrics-error" role="alert" className="small" style={{ color: 'var(--red)', marginTop: 12 }}>{metricsError}</div>}
-
-          <div style={{ marginTop: 24 }}>
-            <Button variant="primary" onClick={() => { setMetricsChecked(true); if (!metricsError) setStep(2) }}>
-              {t('Continue')}
-            </Button>
+        <div className="setup-metrics-grid">
+          <label className={'setup-number-card' + (metricsChecked && !validAge ? ' is-invalid' : '')}>
+            <span>{t('Age')}</span><div><NumberField fit nullable decimal={false} value={age} aria-label={t('Age')} aria-required="true" aria-invalid={metricInvalid(validAge)} aria-describedby={metricDescription(validAge)} onChange={setAge} /><small>{t('years')}</small></div>
+          </label>
+          <div className={'setup-number-card' + (metricsChecked && !validHeight ? ' is-invalid' : '')}>
+            <span>{t('Height')}</span>
+            {isLb ? <div className="setup-height-imperial">
+              <label><NumberField fit nullable decimal={false} value={heightFeet} aria-label={t('Height in feet')} aria-required="true" aria-invalid={metricInvalid(validHeight)} aria-describedby={metricDescription(validHeight)} onChange={value => { setHeightFeet(value); setHeightCm(heightInCm(value, heightInches)) }} /><small>ft</small></label>
+              <label><NumberField fit nullable value={heightInches} aria-label={t('Height in inches')} aria-required="true" aria-invalid={metricInvalid(validHeight)} aria-describedby={metricDescription(validHeight)} onChange={value => { setHeightInches(value); setHeightCm(heightInCm(heightFeet, value)) }} /><small>in</small></label>
+            </div> : <label className="setup-height-metric"><NumberField fit nullable value={heightCm} aria-label={t('Height in centimetres')} aria-required="true" aria-invalid={metricInvalid(validHeight)} aria-describedby={metricDescription(validHeight)} onChange={setHeightCm} /><small>cm</small></label>}
           </div>
         </div>
-      )}
+      </>}
 
-      {/* STEP 2: Goal & Target Weight */}
-      {step === 2 && (
-        <div className="fade-in">
-          <Section title={t('Your Fitness Goal')} footer={t('Scales your daily calorie target with healthy safety limits.')}>
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Primary Goal')}</div>
-              <Segmented
-                options={[
-                  { value: 'fat_loss', label: t('Fat Loss') },
-                  { value: 'maintenance', label: t('Maintain') },
-                  { value: 'muscle_gain', label: t('Muscle Gain') }
-                ]}
-                value={goal}
-                onChange={setGoal}
-              />
-            </div>
-
-            {goal !== 'maintenance' && (
-              <>
-                <Row title={t('Target Weight ({0})', weightUnit)} accessory="none">
-                  <NumberField
-                    nullable
-                    className="input"
-                    style={{ width: 90, textAlign: 'right' }}
-                    value={displayTargetWeight}
-                    aria-label={t('Target weight in {0}', weightUnit)}
-                    aria-required="true"
-                    aria-invalid={goalChecked && !validTarget ? 'true' : undefined}
-                    aria-describedby={goalChecked && !validTarget ? 'setup-goal-error' : undefined}
-                    onChange={setDisplayTargetWeight}
-                  />
-                </Row>
-
-                <div style={{ padding: '12px 16px' }}>
-                  <div className="dim small" style={{ marginBottom: 8 }}>{t('Target Pace')}</div>
-                  <Segmented
-                    options={[
-                      { value: 'relaxed', label: t('Relaxed') },
-                      { value: 'moderate', label: t('Moderate') },
-                      { value: 'aggressive', label: t('Faster') }
-                    ]}
-                    value={pace}
-                    onChange={setPace}
-                  />
-                </div>
-              </>
-            )}
-          </Section>
-          {goalChecked && goalError && <div id="setup-goal-error" role="alert" className="small" style={{ color: 'var(--red)', marginTop: 12 }}>{goalError}</div>}
-
-          <div className="onboarding-actions">
-            <Button variant="secondary" onClick={() => setStep(1)} style={{ flex: 1 }}>
-              {t('Back')}
-            </Button>
-            <Button variant="primary" onClick={() => { setGoalChecked(true); if (!goalError) setStep(3) }} style={{ flex: 2 }}>
-              {t('Continue')}
-            </Button>
-          </div>
+      {step === 2 && <>
+        <div className="setup-option-list" role="group" aria-label={t('Your Fitness Goal')}>
+          {[
+            { value: 'fat_loss', label: t('Fat Loss'), detail: t('Build habits. Feel lighter.'), icon: 'flame' },
+            { value: 'muscle_gain', label: t('Muscle Gain'), detail: t('Get stronger, one session at a time.'), icon: 'dumbbell' },
+            { value: 'maintenance', label: t('Maintain'), detail: t('Keep your balance. Keep moving.'), icon: 'target' }
+          ].map(option => <SetupOption key={option.value} option={option} selected={goal === option.value} onClick={() => setGoal(option.value)} />)}
         </div>
-      )}
-
-      {/* STEP 3: Activity & Routine */}
-      {step === 3 && (
-        <div className="fade-in">
-          <Section title={t('Activity & Lifestyle')} footer={t('Choose a routine you can keep showing up for.')}>
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Daily Activity Outside the Gym')}</div>
-              <Segmented
-                options={[
-                  { value: 'sedentary', label: t('Desk / Low') },
-                  { value: 'moderate', label: t('Moderate') },
-                  { value: 'active', label: t('Very Active') }
-                ]}
-                value={activityLevel}
-                onChange={setActivityLevel}
-              />
-            </div>
-
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Training Days per Week')}</div>
-              <Segmented
-                options={[
-                  { value: 2, label: '2 days' },
-                  { value: 3, label: '3 days' },
-                  { value: 4, label: '4 days' },
-                  { value: 5, label: '5 days' }
-                ]}
-                value={trainingDays}
-                onChange={v => setTrainingDays(Number(v))}
-              />
-            </div>
-
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Available Equipment')}</div>
-              <Segmented
-                options={[
-                  { value: 'gym', label: t('Full Gym') },
-                  { value: 'dumbbells', label: t('Dumbbells') },
-                  { value: 'bodyweight', label: t('Bodyweight') }
-                ]}
-                value={equipment}
-                onChange={setEquipment}
-              />
-            </div>
-
-            <div style={{ padding: '12px 16px' }}>
-              <div className="dim small" style={{ marginBottom: 8 }}>{t('Eating preference')}</div>
-              <Segmented
-                options={[
-                  { value: 'balanced', label: t('Balanced') },
-                  { value: 'high_protein', label: t('High Protein') },
-                  { value: 'low_carb', label: t('Low Carb') }
-                ]}
-                value={dietPreference}
-                onChange={setDietPreference}
-              />
-            </div>
-          </Section>
-
-          <div className="onboarding-actions">
-            <Button variant="secondary" onClick={() => setStep(2)} style={{ flex: 1 }}>
-              {t('Back')}
-            </Button>
-            <Button variant="primary" onClick={() => setStep(4)} style={{ flex: 2 }}>
-              {t('Review my plan')}
-            </Button>
+        {goal !== 'maintenance' ? <>
+          <WeightPicker label={t('Target weight')} value={displayTargetWeight} onChange={setDisplayTargetWeight} unit={weightUnit} min={minWeight} max={maxWeight} ariaLabel={t('Target weight in {0}', weightUnit)} invalid={goalChecked && !validTarget} describedBy={goalChecked && !validTarget ? 'setup-goal-error' : undefined} />
+          <div className="setup-option-panel"><div className="setup-field-heading"><span>{t('Your pace')}</span></div>
+            <Segmented value={pace} onChange={setPace} options={[{ value: 'relaxed', label: t('Relaxed') }, { value: 'moderate', label: t('Moderate') }, { value: 'aggressive', label: t('Faster') }]} />
           </div>
+        </> : <div className="setup-note"><Icon name="heart" /><p>{t('We’ll use your current weight to estimate your daily targets.')}</p></div>}
+      </>}
+
+      {step === 3 && <>
+        <div className="setup-field-heading"><span>{t('Activity outside the gym')}</span></div>
+        <div className="setup-option-list" role="group" aria-label={t('Daily Activity Outside the Gym')}>
+          {[
+            { value: 'sedentary', label: t('Mostly sitting'), detail: t('Desk work, study or driving'), icon: 'chair' },
+            { value: 'moderate', label: t('On my feet'), detail: t('Walking and moving through the day'), icon: 'figureWalk' },
+            { value: 'active', label: t('Very active'), detail: t('Physical work or lots of daily movement'), icon: 'figureRun' }
+          ].map(option => <SetupOption key={option.value} option={option} selected={activityLevel === option.value} onClick={() => setActivityLevel(option.value)} />)}
         </div>
-      )}
-
-      {/* STEP 4: Review Your Custom Plan */}
-      {step === 4 && (
-        <div className="fade-in">
-          <Section title={t('Your workout plan')}>
-            {existingTraining ? <div className="small muted" style={{ padding: '14px 16px' }}>{t('Your existing routines and schedule will stay as they are.')}</div> : <>
-            <Row
-              icon="dumbbell"
-              title={plan.workout.name}
-              subtitle={plan.workout.description}
-              value={t('{0} days per week', plan.workout.daysPerWeek)}
-            />
-            <Row title={t('Add suggested workouts')} subtitle={useSuggestedWorkouts ? t('Exercises and sets will be ready to use. You can change them anytime.') : t('Start with a blank plan and choose your own exercises.')}>
-              <Switch checked={useSuggestedWorkouts} onChange={setUseSuggestedWorkouts} aria-label={t('Add suggested workouts')} />
-            </Row>
-            </>}
-          </Section>
-          <details className="simple-filters card" style={{ padding: '0 16px' }}>
-            <summary style={{ fontWeight: 600 }}>{t('Daily nutrition targets')}<span>{plan.calories.toLocaleString()} kcal</span><Icon name="chevronDown" /></summary>
-          {/* Calorie Card */}
-          <div className="card" style={{ textAlign: 'center', padding: '24px 16px', marginBottom: 16 }}>
-            <div className="dim small" style={{ textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>
-              {t('Daily Target Intake')}
-            </div>
-            <div style={{ fontSize: 44, fontWeight: 900, color: 'var(--acc)', lineHeight: 1 }}>
-              {plan.calories.toLocaleString()} <span style={{ fontSize: 18, fontWeight: 600 }}>kcal</span>
-            </div>
-            <div className="muted small" style={{ marginTop: 8 }}>
-              {t('BMR: {0} kcal · Maintenance (TDEE): {1} kcal', plan.bmr.toLocaleString(), plan.tdee.toLocaleString())}
-            </div>
-            {plan.estimatedWeeks > 0 && (
-              <div
-                style={{
-                  marginTop: 12,
-                  display: 'inline-block',
-                  padding: '4px 12px',
-                  borderRadius: 16,
-                  background: 'var(--bg-sub)',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: 'var(--teal)'
-                }}
-              >
-                {t('Projected Timeline: ~{0} weeks to reach {1} {2}', plan.estimatedWeeks, displayTargetWeight, weightUnit)}
-              </div>
-            )}
-          </div>
-
-          {/* Macro Breakdown */}
-          <Section title={t('Daily Macronutrients')}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, padding: '12px 14px' }}>
-              <div className="card" style={{ textAlign: 'center', padding: 12 }}>
-                <div style={{ color: '#FF6A13', fontWeight: 800, fontSize: 13 }}>{t('PROTEIN')}</div>
-                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 2 }}>{plan.macros.proteinG}g</div>
-                <div className="dim small">{plan.macros.proteinKcal} kcal</div>
-              </div>
-
-              <div className="card" style={{ textAlign: 'center', padding: 12 }}>
-                <div style={{ color: '#FFB347', fontWeight: 800, fontSize: 13 }}>{t('CARBS')}</div>
-                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 2 }}>{plan.macros.carbsG}g</div>
-                <div className="dim small">{plan.macros.carbsKcal} kcal</div>
-              </div>
-
-              <div className="card" style={{ textAlign: 'center', padding: 12 }}>
-                <div style={{ color: '#5EA8FF', fontWeight: 800, fontSize: 13 }}>{t('FAT')}</div>
-                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 2 }}>{plan.macros.fatG}g</div>
-                <div className="dim small">{plan.macros.fatKcal} kcal</div>
-              </div>
-            </div>
-          </Section>
-
-          {/* Health & Routine */}
-          <Section title={t('Hydration & fibre')}>
-            <Row
-              icon="drop"
-              title={t('Water Target')}
-              subtitle={t('Hydration scaled for your body weight and gym frequency')}
-              value={`${(plan.health.waterMl / 1000).toFixed(1)} L`}
-            />
-            <Row
-              icon="check"
-              title={t('Fibre Target')}
-              subtitle={t('Recommended daily prebiotic intake')}
-              value={`${plan.health.fibreG} g`}
-            />
-          </Section>
-
-          </details>
-
-          <div className="onboarding-actions">
-            <Button variant="secondary" onClick={() => setStep(3)} style={{ flex: 1 }}>
-              {t('Adjust')}
-            </Button>
-            <Button variant="primary" onClick={finishOnboarding} disabled={saving} style={{ flex: 2 }}>
-              {saving ? t('Saving…') : t('Let’s get moving')}
-            </Button>
-          </div>
+        <div className="setup-days-card"><div className="setup-days-heading"><span>{t('Training days per week')}</span><strong>{trainingDays}<small>×</small></strong></div>
+          <Segmented value={trainingDays} onChange={v => setTrainingDays(Number(v))} options={[2, 3, 4, 5].map(value => ({ value, label: t('{0} days', value) }))} />
         </div>
-      )}
+        <div className="setup-option-panel"><div className="setup-field-heading"><span>{t('Your experience')}</span></div>
+          <Segmented value={experience} onChange={setExperience} options={[{ value: 'beginner', label: t('Beginner') }, { value: 'intermediate', label: t('Intermediate') }, { value: 'advanced', label: t('Advanced') }]} />
+        </div>
+        <details className="setup-more-options"><summary>{t('Equipment & nutrition')}<span>{t('Personalize')}<Icon name="chevronDown" /></span></summary>
+          <div className="setup-option-panel"><div className="setup-field-heading"><span>{t('Available Equipment')}</span></div>
+            <Segmented value={equipment} onChange={setEquipment} options={[{ value: 'gym', label: t('Full Gym') }, { value: 'dumbbells', label: t('Dumbbells') }, { value: 'bodyweight', label: t('Bodyweight') }]} />
+          </div>
+          <div className="setup-option-panel"><div className="setup-field-heading"><span>{t('Eating preference')}</span></div>
+            <Segmented value={dietPreference} onChange={setDietPreference} options={[{ value: 'balanced', label: t('Balanced') }, { value: 'high_protein', label: t('High Protein') }, { value: 'low_carb', label: t('Low Carb') }]} />
+          </div>
+        </details>
+      </>}
+
+      {step === 4 && <>
+        <div className="setup-ready-card"><span className="setup-ready-icon"><Icon name="check" /></span><div><b>{t('Your plan, your pace.')}</b><p>{t('Start small. Build from here.')}</p></div></div>
+        <section className="setup-workout-card" aria-label={t('Your workout plan')}>
+          <div className="setup-field-heading"><span><Icon name="dumbbell" />{t('Your workout plan')}</span><small>{t('{0} days per week', plan.workout.daysPerWeek)}</small></div>
+          {existingTraining ? <p className="setup-existing-plan">{t('Your existing routines and schedule will stay as they are.')}</p> : <>
+            <h2>{plan.workout.name}</h2><p>{plan.workout.description}</p>
+            <div className="setup-workout-toggle"><div><b>{t('Add suggested workouts')}</b><p>{useSuggestedWorkouts ? t('Exercises and sets, ready to go.') : t('Choose your own exercises.')}</p></div><Switch checked={useSuggestedWorkouts} onChange={setUseSuggestedWorkouts} aria-label={t('Add suggested workouts')} /></div>
+          </>}
+        </section>
+        <section className="setup-target-card" aria-label={t('Daily nutrition targets')}>
+          <div className="setup-field-heading"><span>{t('Daily calorie target')}</span><small>{t('Estimate')}</small></div>
+          <div className="setup-calorie-number">{plan.calories.toLocaleString()}<span>kcal</span></div>
+          <div className="setup-macros">{[
+            { label: t('Protein'), value: plan.macros.proteinG, tone: 'protein' },
+            { label: t('Carbs'), value: plan.macros.carbsG, tone: 'carbs' },
+            { label: t('Fat'), value: plan.macros.fatG, tone: 'fat' }
+          ].map(macro => <div key={macro.tone} className={macro.tone}><span>{macro.label}</span><b>{macro.value}<small>g</small></b></div>)}</div>
+        </section>
+        <details className="setup-more-options"><summary>{t('How your targets add up')}<Icon name="chevronDown" /></summary>
+          <dl className="setup-target-details">
+            <div><dt>{t('BMR')}</dt><dd>{plan.bmr.toLocaleString()} kcal</dd></div>
+            <div><dt>{t('Maintenance (TDEE)')}</dt><dd>{plan.tdee.toLocaleString()} kcal</dd></div>
+            <div><dt>{t('Water Target')}</dt><dd>{(plan.health.waterMl / 1000).toFixed(1)} L</dd></div>
+            <div><dt>{t('Fibre Target')}</dt><dd>{plan.health.fibreG} g</dd></div>
+          </dl>
+          {plan.estimatedWeeks > 0 && <p className="setup-timeline">{t('Projected Timeline: ~{0} weeks to reach {1} {2}', plan.estimatedWeeks, displayTargetWeight, weightUnit)}</p>}
+          <p className="setup-timeline">{t('These are estimates. You can adjust your targets anytime.')}</p>
+        </details>
+      </>}
     </div>
-  )
+
+    <footer className="setup-footer">
+      {error && <div id={step === 1 ? 'setup-metrics-error' : 'setup-goal-error'} role="alert" className="setup-error"><Icon name="xmark" /><span>{error}</span></div>}
+      <div className="setup-footer-buttons">
+        {step > 1 && <Button variant="secondary" onClick={() => setStep(value => value - 1)} disabled={saving}>{step === 4 ? t('Adjust') : t('Back')}</Button>}
+        <Button variant="primary" trailingIcon={step === 4 ? 'check' : 'arrowRight'} onClick={step === 4 ? finishOnboarding : nextStep} disabled={saving}>{step === 4 ? saving ? t('Saving…') : t('Let’s get moving') : step === 3 ? t('Review my plan') : t('Continue')}</Button>
+      </div>
+      <Button className="setup-skip" variant="ghost" onClick={leaveSetup} disabled={saving}>{firstSetup ? t('Skip setup and start logging') : t('Back to Settings')}</Button>
+    </footer>
+  </div>
+}
+
+function SetupOption({ option, selected, onClick }) {
+  return <button type="button" className={'setup-option' + (selected ? ' selected' : '')} aria-label={option.label} aria-describedby={'setup-option-' + option.value} aria-pressed={selected} onClick={onClick}>
+    <span className="setup-option-icon"><Icon name={option.icon} /></span>
+    <span className="setup-option-copy"><b>{option.label}</b><small id={'setup-option-' + option.value}>{option.detail}</small></span>
+    <span className="setup-option-check" aria-hidden="true">{selected && <Icon name="check" />}</span>
+  </button>
 }

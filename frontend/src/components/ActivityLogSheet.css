@@ -1,0 +1,421 @@
+/* ActivityLogSheet.css — Native MOV studio styling for sports, activities, and recovery */
+
+.activity-log-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--label);
+}
+
+.activity-sheet-top {
+  margin-bottom: 2px;
+}
+
+.activity-sheet-top .daily-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: var(--acc-soft);
+  color: var(--acc);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-sheet-top .daily-icon .icn {
+  width: 16px;
+  height: 16px;
+}
+
+/* Browse View */
+.activity-browse-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Dual Quick Action Pills: Custom Activity + Log Exercise */
+.activity-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.activity-action-pill {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--surface-edge);
+  color: var(--label);
+  text-align: start;
+  cursor: pointer;
+  transition: transform 0.2s var(--motion-spring), border-color 0.2s, background 0.2s;
+}
+
+.activity-action-pill:hover {
+  border-color: var(--acc-line);
+  background: var(--surface-2);
+}
+
+.activity-action-pill:active {
+  transform: scale(0.97);
+}
+
+.activity-action-pill .lrow-i {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: var(--acc-soft);
+  color: var(--acc);
+  flex-shrink: 0;
+}
+
+.activity-action-pill .lrow-i .icn {
+  width: 15px;
+  height: 15px;
+}
+
+.activity-action-pill b {
+  display: block;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-action-pill small {
+  display: block;
+  font-size: 10px;
+  color: var(--label-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-action-pill .chev {
+  width: 14px;
+  height: 14px;
+  color: var(--label-3);
+  flex-shrink: 0;
+}
+
+/* Category Chips */
+.activity-chips-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.activity-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.activity-chips-scroll .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Activity List */
+.activity-list-scroll {
+  max-height: 360px;
+  overflow-y: auto;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+}
+
+.activity-list-item {
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.activity-list-item:hover {
+  background: var(--surface-2);
+}
+
+.activity-row-icon {
+  background: var(--acc-soft) !important;
+  color: var(--acc) !important;
+  border-radius: 11px;
+}
+
+.activity-stat-badge {
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  border-radius: 8px;
+  padding: 3px 7px;
+  background: var(--acc-soft);
+  color: var(--acc);
+}
+
+.stat-endurance {
+  background: color-mix(in srgb, var(--blue) 16%, transparent);
+  color: var(--blue);
+}
+
+.stat-strength {
+  background: color-mix(in srgb, var(--red) 16%, transparent);
+  color: var(--red);
+}
+
+.stat-vitality {
+  background: color-mix(in srgb, var(--green) 16%, transparent);
+  color: var(--green);
+}
+
+.stat-discipline {
+  background: color-mix(in srgb, var(--purple) 16%, transparent);
+  color: var(--purple);
+}
+
+/* Configurator View */
+.activity-config-view {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: studio-surface 0.35s var(--motion-snap);
+}
+
+.activity-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-edge);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-hero-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--acc-soft);
+  color: var(--acc);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-hero-icon .icn {
+  width: 21px;
+  height: 21px;
+}
+
+/* Studio Metrics Strip (matches .tiles / .daily-total typography) */
+.activity-studio-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface-edge);
+}
+
+.activity-studio-metric {
+  background: var(--surface-2);
+  border: 1px solid var(--surface-edge);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.activity-studio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--label-2);
+  margin-bottom: 4px;
+}
+
+.activity-studio-label .icn {
+  width: 13px;
+  height: 13px;
+  color: var(--acc);
+}
+
+.activity-studio-val {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  color: var(--label);
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-studio-val small {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0;
+  color: var(--label-2);
+}
+
+/* Sections */
+.activity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-duration-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--surface-edge);
+  border-radius: 14px;
+  padding: 0 12px;
+}
+
+.activity-duration-box .num {
+  width: 54px;
+  background: transparent;
+  border: none;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--label);
+  padding: 0;
+}
+
+.activity-duration-box span {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--label-2);
+}
+
+.activity-section-row {
+  display: flex;
+  gap: 10px;
+}
+
+.activity-field-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.activity-submit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.activity-secondary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Home Screen Daily Activities Card (matches .daily-water and .daily-calories in modern.css) */
+.daily-action.daily-activities {
+  grid-column: 1 / -1;
+  min-height: 0 !important;
+  background: var(--surface);
+  border: 1px solid var(--surface-edge);
+  border-radius: 21px;
+  padding: 18px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.daily-activities-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.daily-activities-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.daily-activities-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.daily-activities-chips .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 6px 11px;
+  border-radius: 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-edge);
+}
+
+.daily-activities-chips .chip .icn {
+  width: 13px;
+  height: 13px;
+  color: var(--acc);
+}
+
+.daily-activities-logged {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-edge);
+}
+
+.daily-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-edge);
+}
+
+.daily-activity-row .lrow-i {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--acc-soft);
+  color: var(--acc);
+  flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+  .activity-quick-actions,
+  .activity-secondary-actions {
+    grid-template-columns: 1fr;
+  }
+}
