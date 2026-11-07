@@ -1,4 +1,4 @@
-// recipes.js — recipe nutrition aggregator and serving calculator for NXT FORM
+// recipes.js — recipe nutrition aggregator and serving calculator for MOV
 import { scaleNutrients } from './portions.js'
 
 /**

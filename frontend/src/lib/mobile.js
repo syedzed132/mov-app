@@ -342,11 +342,11 @@ export async function printHtml(html, name, { paper = 'a4', footer } = {}) {
 // The root is never pruned: a manual export saved there carries the same name, and nothing
 // tells it apart from an old automatic copy, so those stay for the person to clear (Import
 // backup still reads either kind).
-export const AUTO_BACKUP_DIR = 'openGym'
+export const AUTO_BACKUP_DIR = 'MOV'
 export const AUTO_BACKUP_KEEP = 14
 // Only the exact names writeAutoBackup gives its files are ever pruned; anything else someone
 // keeps in the folder is theirs.
-const AUTO_BACKUP_NAME = /^opengym-backup-\d{4}-\d{2}-\d{2}(-[2-9])?\.json$/
+const AUTO_BACKUP_NAME = /^(mov|opengym)-backup-\d{4}-\d{2}-\d{2}(-[2-9])?\.json$/
 
 // Android's scoped storage lets an install write over, list and delete only the files it wrote
 // itself. After a reinstall, or with the test build beside the real one, today's name can belong

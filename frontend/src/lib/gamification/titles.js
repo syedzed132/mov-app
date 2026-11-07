@@ -1,4 +1,4 @@
-// titles.js — Title and rank progression for NXT FORM
+// titles.js — Title and rank progression for MOV
 // Based on docs/GAMIFICATION.md §7
 
 export const TITLES = [

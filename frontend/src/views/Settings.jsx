@@ -295,7 +295,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     const nut = useNutrition.getState()
     const exportData = {
       ...s,
-      nxtform_nutrition_v1: {
+      mov_nutrition_v1: {
         days: nut.days || {},
         customFoods: nut.customFoods || [],
         recipes: nut.recipes || [],
@@ -304,7 +304,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       }
     }
     const json = JSON.stringify(exportData, null, 2)
-    const name = 'opengym-backup-' + todayISO() + '.json'
+    const name = 'mov-backup-' + todayISO() + '.json'
     // WKWebView can't download blob URLs — the native build hands the file to the share sheet.
     if (MOBILE) {
       try { await shareExport(json, name); toast(t('Backup exported')) } catch (e) { /* share sheet dismissed */ }
@@ -324,7 +324,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     let out
     try { out = await exportBackupZip(st.S, { fetchOne: signedIn ? fetchToStore : null }) }
     catch { toast(t('Something went wrong')); return }
-    const name = 'opengym-backup-' + todayISO() + '.zip'
+    const name = 'mov-backup-' + todayISO() + '.zip'
     if (out.missing) toast(tn('{0} file could not be included', '{0} files could not be included', out.missing))
     if (MOBILE) {
       try { await shareExportBlob(out.blob, name); if (!out.missing) toast(t('Backup exported')) } catch (e) { /* share sheet dismissed */ }
@@ -354,8 +354,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         await storeBackupMedia(read.files, { limits: limitsFrom(useStore.getState().config) })
       }
       importBackup(read.state, { mergeWith })
-      if (read.state?.nxtform_nutrition_v1) {
-        useNutrition.getState().importNutritionData(read.state.nxtform_nutrition_v1)
+      const nutritionPayload = read.state?.mov_nutrition_v1 || read.state?.nxtform_nutrition_v1
+      if (nutritionPayload) {
+        useNutrition.getState().importNutritionData(nutritionPayload)
       }
       // The photos it brought are pending here and maybe gone from the server (a reset): sent now,
       // not after the ten-minute dedupe of the run before the reset.
@@ -696,7 +697,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* The buzz at the end of a rest or a hold and on a set tick, on its own switch like the
             sound (Discord, asierlama). iOS has no navigator.vibrate: the row stays, greyed out,
             and says so, instead of an iPhone user looking for a setting that is not there. */}
-        <Section footer={!canVibrate && iPhone ? t('iPhone doesn’t let openGym vibrate. A sound or a flash does the job.') : null}>
+        <Section footer={!canVibrate && iPhone ? t('iPhone doesn’t let MOV vibrate. A sound or a flash does the job.') : null}>
           <Row icon="vibrate" iconTint="var(--indigo)" title={t('Vibrate')} className={canVibrate ? '' : 'dis'}
             subtitle={canVibrate ? null : iPhone ? t('Not on iPhone') : t('Not supported in this browser.')}>
             <Switch checked={canVibrate && S.vibrate !== false} disabled={!canVibrate} onChange={v => update(s => { s.vibrate = v })} />
@@ -948,7 +949,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       <Section title={t('Bring data in')}>
         <Row icon="download" iconTint="var(--teal)" title={t('Import backup')} accessory="chevron" onClick={() => fileRef.current.click()} />
         <Row icon="download" iconTint="var(--teal)" title={t('Import from another app')}
-          subtitle={t('FitNotes, Strong, Hevy, GymMane, openGym CSV, or body weight from Apple Health')}
+          subtitle={t('FitNotes, Strong, Hevy, GymMane, MOV CSV, or body weight from Apple Health')}
           accessory="chevron" onClick={() => importRef.current.click()} />
         <Row icon="key" iconTint="var(--teal)" title={t('Import from Hevy')}
           subtitle={t('Pull your history with a Hevy Pro API key')}
@@ -976,25 +977,13 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           subtitle={MOBILE && selfUpdate ? t('{0} APK, animations at {1} px', VARIANT_NAMES[APK_VARIANT], BUILTIN_PX) : undefined} />
         {MOBILE
           ? selfUpdate && <Row icon="download" iconTint="var(--green)"
-              title={updateInfo?.hasUpdate ? t('Update to openGym v{0}', updateInfo.latestVersion) : t('Check for updates')}
+              title={updateInfo?.hasUpdate ? t('Update to MOV v{0}', updateInfo.latestVersion) : t('Check for updates')}
               subtitle={checking ? t('Checking…') : t('You have v{0}', __APP_VERSION__)}
               accessory="chevron"
               onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
-          : <Row icon="download" iconTint="var(--green)" title={t('Original openGym app')}
-              subtitle={t('Explore the upstream project. This is separate from MOV.')} accessory="chevron"
-              onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
-      </Section>
-      {/* Support: the project's own donation pages, and on the iPhone a straight line to writing a
-          review. Plain links, no pop-up asking for anything (App Store 5.6.1). */}
-      <Section title={t('Built on openGym')} footer={t('MOV uses openGym’s open source workout engine. These links support the original project.')}>
-        {MOBILE && ios && <Row icon="star" iconTint="var(--orange)" title={t('Rate openGym on the App Store')} accessory="chevron"
-          onClick={() => window.open('https://apps.apple.com/app/id6822275400?action=write-review', '_blank', 'noopener')} />}
-        <Row icon="heart" iconTint="var(--pink)" title={t('Buy me a coffee')} subtitle="Buy Me a Coffee" accessory="chevron"
-          onClick={() => window.open('https://buymeacoffee.com/duartesantos', '_blank', 'noopener')} />
-        <Row icon="heart" iconTint="var(--blue)" title="Ko-fi" accessory="chevron"
-          onClick={() => window.open('https://ko-fi.com/opengym', '_blank', 'noopener')} />
-        <Row icon="heart" iconTint="var(--purple)" title="GitHub Sponsors" accessory="chevron"
-          onClick={() => window.open('https://github.com/sponsors/DuarteSantos8', '_blank', 'noopener')} />
+          : <Row icon="download" iconTint="var(--green)" title={t('Download MOV App')}
+              subtitle={t('Get the mobile app for iOS or Android.')} accessory="chevron"
+              onClick={() => window.open(REPO, '_blank', 'noopener')} />}
       </Section>
       {/* "Add to Home screen": not inside the phone app, and not once it is installed. Safari's
           Share menu only on Apple (an iPad says Macintosh too); Windows and Linux get Chrome's
@@ -1008,29 +997,21 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           build there is no address bar and no about box, so without this there is no way to tell
           which build you are running, or whether an update actually installed. */}
       <Section title={t('Privacy & Feedback')}>
-        <Row icon="shield" iconTint="var(--teal)" title={t('Upstream privacy reference')} subtitle={t('Read openGym’s privacy documentation')} accessory="chevron"
-          onClick={() => window.open('https://github.com/DuarteSantos8/openGym/blob/master/docs/PRIVACY_POLICY.md', '_blank', 'noopener')} />
+        <Row icon="shield" iconTint="var(--teal)" title={t('Privacy')} subtitle={t('Your workout and nutrition data stays private')} accessory="chevron"
+          onClick={() => window.open(REPO, '_blank', 'noopener')} />
         <Row icon="envelope" iconTint="var(--blue)" title={t('Send feedback')} subtitle={t('Bug reports, suggestions and questions')} accessory="chevron"
           onClick={() => window.open('mailto:feedback@mov.app?subject=MOV%20Feedback', '_blank')} />
       </Section>
 
       <div className="dim small sp-version" style={{ lineHeight: 1.6 }}>
-        <strong>MOV</strong> v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">{t('Upstream openGym repository (AGPL v3)')}</a><br />
+        <strong>MOV</strong> v{__APP_VERSION__} · {t('free & open source')}<br />
+        <a href={REPO} target="_blank" rel="noopener">{t('Source code & documentation')}</a><br />
         <div style={{ marginTop: 8, fontSize: '0.88em' }}>
           <strong>{t('Attributions & Data Rights')}:</strong><br />
-          • {t('Workout engine forked from openGym (AGPL-3.0).')}<br />
           • {t('Nutrition database sourced from USDA FoodData Central (Public Domain).')}<br />
           • {t('Barcode database sourced from Open Food Facts (ODbL).')}<br />
           • {t('Exercise illustrations sourced from free-exercise-db (Unlicense / Public Domain).')}
         </div>
-      </div>
-      <div className="dim small sp-version" style={{ display: 'none' }}>
-        openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">{t('Source code')}</a><br />
-        {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated */}
-        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>, gymvisual.com.
-        Media licensed for use in openGym only; see <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>
       </div>
     </>,
 
@@ -1053,20 +1034,20 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         footer={MOBILE ? t('Signing in on your computer too needs your own server. Connect this phone to it, and Add another device then gives the computer a code.') : null}>
         {MOBILE ? <>
           <Row icon="lock" iconTint="var(--acc)" title={t('All data stays on this phone')} subtitle={t('No account, no cloud. Back it up anytime in Data & backup.')} />
-          <Row icon="cloud" iconTint="var(--indigo)" title={t('Connect to my server')} subtitle={t('Sync this device to your own self-hosted openGym instead.')} accessory="chevron"
+          <Row icon="cloud" iconTint="var(--indigo)" title={t('Connect to my server')} subtitle={t('Sync this device to your own self-hosted MOV server instead.')} accessory="chevron"
             onClick={connectServer} />
           <KeptChangesRows />
         </> : DEMO ? <>
           <Row icon="info" iconTint="var(--acc)" title={t('You’re in the demo')} subtitle={t('Example data, stored only in this browser. Go wild and change anything you like.')} />
           <Row icon="reset" iconTint="var(--blue)" title={t('Reset demo data')} accessory="chevron"
             onClick={() => confirmSheet({ title: t('Reset demo data?'), message: t('Puts the example plan, workouts and weigh-ins back the way they started.'), confirmText: t('Reset'), onConfirm: () => { resetDemo(); nav('/home'); toast(t('Demo data reset')) } })} />
-          <Row icon="rocket" iconTint="var(--indigo)" title={t('Self-host openGym')} subtitle={t('Passkey sign-in, sync across your devices, your own data.')} accessory="chevron"
+          <Row icon="rocket" iconTint="var(--indigo)" title={t('Self-host MOV')} subtitle={t('Passkey sign-in, sync across your devices, your own data.')} accessory="chevron"
             onClick={() => window.open(REPO, '_blank', 'noopener')} />
         </> : user ? <>
           {user.admin && <Row icon="crown" iconTint="var(--indigo)" title={t('Admin dashboard')} accessory="chevron" onClick={() => nav('/admin')} />}
           <PasskeysRow state={passkeys.st} changed={credsChanged} />
           <DeviceLinkRow state={passkeys.st} />
-          <Row icon="qr" iconTint="var(--blue)" title={t('Pair the mobile app')} subtitle={t('Connect the openGym app on your phone to this account.')} accessory="chevron"
+          <Row icon="qr" iconTint="var(--blue)" title={t('Pair the mobile app')} subtitle={t('Connect the MOV app on your phone to this account.')} accessory="chevron"
             onClick={() => useUI.getState().openSheet(close => <PairSheet close={close} />)} />
           {pwOn && <PasswordRow version={credsV} />}
           <Row icon="signOut" iconTint="var(--red)" title={t('Sign out')} danger onClick={signOutHere} />
@@ -1393,7 +1374,7 @@ function PushCard({ S, update, toast }) {
           nudgeNote(S)
         : null}
     >
-      <Row icon="bell" iconTint="var(--red)" title={t('Push notifications')} subtitle={t('Rest-timer alerts, even if openGym is closed.')}>
+      <Row icon="bell" iconTint="var(--red)" title={t('Push notifications')} subtitle={t('Rest-timer alerts, even if MOV is closed.')}>
         <Switch checked={on} disabled={busy} onChange={toggle} />
       </Row>
       {on && (
@@ -1661,14 +1642,14 @@ const HEALTH_COPY = {
     footer: t('Workouts and weigh-ins go to Health Connect when you finish or change them.'),
     on: t('Writing to Health Connect'), denied: t('Health Connect permission not granted'), failed: t('Could not write to Health Connect'),
     removeFailed: t('Could not remove it from Health Connect'), stop: t('Stop writing to Health Connect?'),
-    stopSub: t('What openGym already wrote can stay in Health Connect as your data, or be removed from it.'),
+    stopSub: t('What MOV already wrote can stay in Health Connect as your data, or be removed from it.'),
   }),
   ios: () => ({
     section: t('Apple Health'), write: t('Write to Apple Health'), open: t('Open Apple Health'),
     footer: t('Workouts and weigh-ins go to Apple Health when you finish or change them.'),
     on: t('Writing to Apple Health'), denied: t('Apple Health permission not granted'), failed: t('Could not write to Apple Health'),
     removeFailed: t('Could not remove it from Apple Health'), stop: t('Stop writing to Apple Health?'),
-    stopSub: t('What openGym already wrote can stay in Apple Health as your data, or be removed from it.'),
+    stopSub: t('What MOV already wrote can stay in Apple Health as your data, or be removed from it.'),
   }),
 }
 
@@ -1741,7 +1722,7 @@ function HealthConnectCard({ S, toast, android }) {
 
   return (
     <Section title={c.section}
-      footer={[h.on && c.footer, reading && (h.readWeight && h.wHistory ? t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last year. Older workouts stay as they are.') : t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last 30 days. Older workouts stay as they are.'))].filter(Boolean).join(' ') || null}>
+      footer={[h.on && c.footer, reading && (h.readWeight && h.wHistory ? t('MOV reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last year. Older workouts stay as they are.') : t('MOV reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last 30 days. Older workouts stay as they are.'))].filter(Boolean).join(' ') || null}>
       <Row icon="heart" iconTint="var(--red)" title={c.write}
         subtitle={t('Finished workouts and weigh-ins, from this phone only.')}>
         <Switch checked={!!h.on} disabled={busy} onChange={v => (v ? turnOn() : askOff())} />

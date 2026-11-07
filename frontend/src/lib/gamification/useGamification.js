@@ -1,4 +1,4 @@
-// useGamification.js — Reactive hook for NXT FORM gamification state
+// useGamification.js — Reactive hook for MOV gamification state
 import { useMemo } from 'react'
 import { useStore } from '../../store/useStore.js'
 import { useNutrition } from '../../store/useNutrition.js'

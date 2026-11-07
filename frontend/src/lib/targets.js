@@ -1,4 +1,4 @@
-// targets.js — deterministic personal nutrition and workout plan calculation engine for NXT FORM
+// targets.js — deterministic personal nutrition and workout plan calculation engine for MOV
 // Based on Mifflin–St Jeor, Katch–McArdle, TDEE, macro ratios, and openGym starter routines.
 // See docs/PLAN_ENGINE.md for complete mathematical rationale.
 

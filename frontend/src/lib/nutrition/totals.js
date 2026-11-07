@@ -1,4 +1,4 @@
-// totals.js — day and meal nutrient aggregation and date helpers for NXT FORM
+// totals.js — day and meal nutrient aggregation and date helpers for MOV
 
 export const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack']
 

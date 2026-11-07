@@ -1,4 +1,4 @@
-// badges.js — Badge evaluation and achievements catalog for NXT FORM
+// badges.js — Badge evaluation and achievements catalog for MOV
 // Implements docs/GAMIFICATION.md §9
 
 export const BADGES_CATALOG = [

@@ -4,15 +4,19 @@ import { getLocalDateString } from '../lib/nutrition/totals.js'
 import { api } from '../lib/api.js'
 import { emptyNutrition, LIBRARY_FIELDS, nutritionLibrary, mergeLibrary, mergeNutritionDays, daysForMonth } from '../shared/nutrition-sync.mjs'
 
-const STORAGE_KEY = 'nxtform_nutrition_v1'
-const keyFor = id => id ? `${STORAGE_KEY}:${id}` : STORAGE_KEY
+const STORAGE_KEY = 'mov_nutrition_v1'
+const LEGACY_STORAGE_KEY = 'nxtform_nutrition_v1'
+const keyFor = (id, base = STORAGE_KEY) => id ? `${base}:${id}` : base
 let generation = 0, timer, task, clock = 0
 const tick = () => (clock = Math.max(Date.now(), clock + 1))
 const id = prefix => `${prefix}_${tick()}_${Math.random().toString(36).slice(2, 8)}`
 const libraryState = library => ({ ...Object.fromEntries(LIBRARY_FIELDS.map(key => [key, library[key] || []])), _libraryUpdatedAt: library.updatedAt || 0 })
 
 function loadLocal(accountId = null) {
-  try { return { ...emptyNutrition(), ...JSON.parse(localStorage.getItem(keyFor(accountId)) || '{}'), accountId } }
+  try {
+    const raw = localStorage.getItem(keyFor(accountId)) || localStorage.getItem(keyFor(accountId, LEGACY_STORAGE_KEY)) || '{}'
+    return { ...emptyNutrition(), ...JSON.parse(raw), accountId }
+  }
   catch { return { ...emptyNutrition(), accountId } }
 }
 function saveLocal(state) {

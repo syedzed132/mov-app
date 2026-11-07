@@ -1,4 +1,4 @@
-// index.js — Primary entrypoint for NXT FORM gamification
+// index.js — Primary entrypoint for MOV gamification
 export * from './xp.js'
 export * from './titles.js'
 export * from './forms.js'

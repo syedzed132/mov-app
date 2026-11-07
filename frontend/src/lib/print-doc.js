@@ -204,7 +204,7 @@ function printInFrame(html) {
  * suggested PDF file; Android refuses a job without one.
  */
 export function printDocument(html, name) {
-  if (MOBILE) return printHtml(html, name || 'openGym', printOptions()).catch(() => { /* dismissed */ })
+  if (MOBILE) return printHtml(html, name || 'MOV', printOptions()).catch(() => { /* dismissed */ })
   printInFrame(html)
   return Promise.resolve()
 }

@@ -1,4 +1,4 @@
-// parser.js — local regex quantity and ingredient parser for NXT FORM (Tier 1 Parser)
+// parser.js — local regex quantity and ingredient parser for MOV (Tier 1 Parser)
 // Extracts quantity, fractional amounts, measurement units, and food search keywords locally.
 // Zero network requests, 0ms latency, handles standard daily entries without LLMs.
 

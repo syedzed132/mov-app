@@ -1,4 +1,4 @@
-// quests.js — Deterministic rule-based daily and weekly quest generator for NXT FORM
+// quests.js — Deterministic rule-based daily and weekly quest generator for MOV
 // Implements docs/GAMIFICATION.md §10
 
 /**

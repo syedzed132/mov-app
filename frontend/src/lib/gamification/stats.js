@@ -1,4 +1,4 @@
-// stats.js — RPG Character Attributes engine for NXT FORM (Strength, Endurance, Agility, Vitality, Discipline)
+// stats.js — RPG Character Attributes engine for MOV (Strength, Endurance, Agility, Vitality, Discipline)
 // Implements docs/GAMIFICATION.md §6 (attributes 1–99)
 
 /**

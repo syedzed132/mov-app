@@ -1,4 +1,4 @@
-// forms.js — Evolving Avatar Form system for NXT FORM
+// forms.js — Evolving Avatar Form system for MOV
 // Every ~10 levels, the user unlocks a new avatar form (Form I to VIII)
 
 export const FORMS = [

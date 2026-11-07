@@ -1,4 +1,4 @@
-// xp.js — Pure functional XP and leveling engine for NXT FORM
+// xp.js — Pure functional XP and leveling engine for MOV
 // Implements docs/GAMIFICATION.md §2 & §3
 
 import { getTitleForLevel } from './titles.js'

@@ -1,4 +1,4 @@
-// WeeklySummaryModal.jsx — Non-AI deterministic weekly progress synthesis for NXT FORM
+// WeeklySummaryModal.jsx — Non-AI deterministic weekly progress synthesis for MOV
 import { useState } from 'react'
 import { useStore } from '../store/useStore.js'
 import { useNutrition } from '../store/useNutrition.js'

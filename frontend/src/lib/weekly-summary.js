@@ -1,4 +1,4 @@
-// weekly-summary.js — Non-AI deterministic weekly synthesis for NXT FORM
+// weekly-summary.js — Non-AI deterministic weekly synthesis for MOV
 import { calculateNutrientSum } from './nutrition/totals.js'
 
 /**
