@@ -192,10 +192,10 @@ export function HomeOverview() {
       {...tappable(() => S.active || doneToday || routine ? onToday() : nav('/workout'))}
     >
       <div>
-        <div className="k" style={{ color: '#0A0A0A', fontWeight: 800, marginBottom: 2 }}>
-          {S.active ? t('Workout in progress') : doneToday ? t('Workout complete') : routine ? t('Today’s training') : t('MAKE YOUR NEXT MOVE')}
+        <div className="k" style={{ color: '#0A0A0A', fontWeight: 600, marginBottom: 2 }}>
+          {S.active ? t('Workout in progress') : doneToday ? t('Workout complete') : routine ? t('Today’s training') : t('Make your next move')}
         </div>
-        <div style={{ fontFamily: 'var(--font-app)', fontWeight: 800, fontSize: 22, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#0A0A0A' }}>
+        <div style={{ fontFamily: 'var(--font-app)', fontWeight: 600, fontSize: 22, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0A0A0A' }}>
           {S.active ? (editingSaved ? S.active.name : S.active.name) : doneToday ? (doneToday.name || t('Finished')) : (todayName || t('Choose your workout'))}
         </div>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#0A0A0A', opacity: 0.8, marginTop: 4 }}>
@@ -292,8 +292,8 @@ export function HomeOverview() {
                 {q.completed ? t('Completed') : idx === 0 ? t('Fuel up') : idx === 1 ? t('Stay hydrated') : todayName || t('Build your momentum')}
               </div>
             </div>
-            <div className="pill" style={{ background: q.completed ? '#5EA8FF' : '#FF6A13', color: '#0A0A0A', fontWeight: 800 }}>
-              {q.completed ? 'DONE' : `+${q.xp} XP`}
+            <div className="pill" style={{ background: q.completed ? '#5EA8FF' : '#FF6A13', color: '#0A0A0A', fontWeight: 600 }}>
+              {q.completed ? 'Done' : `+${q.xp} XP`}
             </div>
           </div>
         );
@@ -551,7 +551,7 @@ export default function Home() {
   const register = async () => { const { RegisterSheet } = await import('./Login.jsx'); openSheet(close => <RegisterSheet close={close} />) }
   return <div className="simple-home home-refined">
     <div className="home-app-bar"><Brand /><PlayerBadge /></div>
-    <header className="simple-home-header"><div><p>{user?.name ? t('Good to see you, {0}', user.name) : t('Your workout plan')}</p><h1 className="home-plan-title">{planTitle}<span>.</span></h1></div></header>
+    <header className="simple-home-header"><div><p>{fmtDate(today, { weekday: 'long', month: 'short', day: 'numeric' })}{user?.name ? ` · ${user.name}` : ''}</p><h1 className="home-plan-title">{planTitle}<span>.</span></h1></div></header>
     {next && !S.active && <button className="home-next-session" onClick={() => nav('/plan')} aria-label={t('Next workout: {0}, {1}', nextName, t(DAYN[next.weekday]))}><span>{t('Next up')}</span><b>{nextName}</b><small>{t(DAYN[next.weekday])}</small><Icon name="arrowRight" /></button>}
     <div className="daily-grid">
       <section className={'daily-action daily-workout' + (completed ? ' is-complete' : '')} style={workoutArtStyle(artwork)}>

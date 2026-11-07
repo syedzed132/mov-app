@@ -88,19 +88,19 @@
 .macro-tube-pct {
   font-family: var(--font-app);
   font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: #faf7f3;
   font-variant-numeric: tabular-nums;
 }
 
 .macro-tube-name {
   font-family: var(--font-app);
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--label-2, #9ca3af);
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .macro-tube-grams {

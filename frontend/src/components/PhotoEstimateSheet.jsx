@@ -289,8 +289,8 @@ export function PhotoEstimateSheet({ meal = 'lunch', date, close }) {
           {/* Aggregated Nutrition Box with Liquid Tubes */}
           <div style={{ background: 'var(--surface-2)', padding: '16px 12px 12px', borderRadius: 'var(--r-sm)', border: '1px solid var(--surface-edge)' }}>
             <div className="row between" style={{ marginBottom: 10, paddingInline: 4 }}>
-              <span className="muted" style={{ fontWeight: 600, fontSize: 13, letterSpacing: '0.05em' }}>{t('CONFIRMED TOTALS')}</span>
-              <span className="big" style={{ fontSize: 20, fontWeight: 800 }}>
+              <span className="muted" style={{ fontWeight: 600, fontSize: 13 }}>{t('Confirmed totals')}</span>
+              <span className="big" style={{ fontSize: 20, fontWeight: 600 }}>
                 {totals.calories} <span className="small muted" style={{ fontSize: 13, fontWeight: 500 }}>kcal</span>
               </span>
             </div>

@@ -26,24 +26,22 @@
 .spider-data-polygon {
   fill: url(#spiderGlow);
   stroke: #ff6a13;
-  stroke-width: 2.4;
+  stroke-width: 2;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 10px rgba(255, 106, 19, 0.45));
-  transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity 0.4s ease-out;
 }
 
 .spider-vertex-dot {
-  fill: #ff9a5c;
+  fill: #ff6a13;
   stroke: #ffffff;
   stroke-width: 1.5;
-  filter: drop-shadow(0 0 4px #ff6a13);
-  transition: all 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity 0.4s ease-out;
 }
 
 .spider-axis-label {
   fill: var(--label-2, #b8b3ad);
   font-family: var(--font-app);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }

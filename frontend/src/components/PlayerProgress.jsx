@@ -18,7 +18,7 @@ export function PlayerBadge() {
   const openSheet = useUI(s => s.openSheet)
   return <button className="player-badge" onClick={() => openSheet(close => <CharacterSheetModal close={close} />)} aria-label={t('Open character. Level {0}, {1} of {2} XP', level.level, level.xpIntoCurrentLevel, level.xpNeededForCurrentLevel)}>
     <span className="player-avatar player-level-icon"><Icon name="bolt" /></span>
-    <span className="player-badge-info"><strong>{t('LEVEL {0}', level.level)}<Icon name="chevronRight" /></strong><span className="player-xp-track"><i style={{ width: `${level.progressPct}%` }} /></span><small>{level.xpIntoCurrentLevel} / {level.xpNeededForCurrentLevel} XP</small></span>
+    <span className="player-badge-info"><strong>{t('Level {0}', level.level)}<Icon name="chevronRight" /></strong><span className="player-xp-track"><i style={{ width: `${level.progressPct}%` }} /></span><small>{level.xpIntoCurrentLevel} / {level.xpNeededForCurrentLevel} XP</small></span>
   </button>
 }
 
@@ -38,7 +38,7 @@ export function GameRewards() {
   }, [reward])
   if (!reward) return null
   return <div className="game-reward" key={reward.id} role="status">
-    <span className="reward-emblem"><Icon name={reward.levelUp ? 'crown' : 'bolt'} /></span><span><strong>{reward.levelUp ? t('Level {0} unlocked!', reward.level) : t('Nice move!')}</strong><small>{t('+{0} XP earned', reward.xp)}</small></span>
+    <span className="reward-emblem"><Icon name={reward.levelUp ? 'crown' : 'bolt'} /></span><span><strong>{reward.levelUp ? t('Level {0} unlocked', reward.level) : t('XP earned')}</strong><small>{t('+{0} XP earned', reward.xp)}</small></span>
     <span className="reward-particles" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <i key={i} style={{ '--particle': i }} />)}</span>
   </div>
 }

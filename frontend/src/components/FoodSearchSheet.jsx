@@ -111,7 +111,7 @@ export function FoodSearchSheet({ meal = 'lunch', date, close }) {
   const handleLog = () => {
     if (!selectedFood) return
     logFood(date, targetMeal, selectedFood, Number(qty) || 1, unit)
-    toast(t('Added {0} to {1}!', selectedFood.name, targetMeal))
+    toast(t('Added {0} to {1}', selectedFood.name, targetMeal))
     close()
   }
 

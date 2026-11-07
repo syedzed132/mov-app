@@ -37,7 +37,7 @@
   z-index: 1;
   font-family: var(--font-app);
   font-size: 14px;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: #0a0a0a;
   pointer-events: none;
@@ -45,8 +45,8 @@
 }
 
 .swipe-complete-track.completed .swipe-complete-label {
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .swipe-complete-thumb {
@@ -60,7 +60,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(255, 106, 19, 0.45);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   cursor: grab;
   z-index: 2;
   transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2), background 0.2s;
