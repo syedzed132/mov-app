@@ -65,6 +65,10 @@
 .setup-option-check { display: grid; place-items: center; flex: 0 0 21px; width: 21px; height: 21px; border: 1px solid var(--label-3); border-radius: 50%; }
 .selected .setup-option-check { background: var(--acc); border-color: var(--acc); color: #20150d; animation: setup-check .24s var(--motion-spring); }
 .setup-option-check .icn { width: 12px; height: 12px; }
+.setup-focus-item { position: relative; display: grid; }
+.setup-focus-item.is-recommended { margin-top: 10px; }
+.setup-recommended-badge { position: absolute; top: -11px; inset-inline-start: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; background: var(--acc); color: #20150d; font-size: 10px; font-weight: 700; letter-spacing: .01em; }
+.setup-recommended-badge .icn { width: 11px; height: 11px; }
 .setup-option-panel { display: grid; gap: 10px; }
 .mov-setup .setup-option-panel .seg, .mov-setup .setup-days-card .seg { padding: 4px; border: 1px solid var(--surface-edge); border-radius: 15px; background: var(--surface); }
 .mov-setup .setup-option-panel .seg button, .mov-setup .setup-days-card .seg button { min-height: 44px; padding: 7px 5px; font-size: 10px; }

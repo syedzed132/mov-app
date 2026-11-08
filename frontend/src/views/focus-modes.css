@@ -1,0 +1,1171 @@
+/* MOV Focus Modes: Calorie count, Exercise only, and Full routine */
+
+.fmode-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 32px;
+}
+
+.fmode-card {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+  color: var(--label);
+}
+
+.fmode-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fmode-eyebrow {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--label-2);
+}
+
+.fmode-accent-pct {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--acc);
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-weight-card h2,
+.fmode-training-card h2,
+.fmode-combined-card h2,
+.fmode-switch-card h2 {
+  margin: 4px 0 12px;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.fmode-combined-card h2 {
+  margin: 0;
+}
+
+.fmode-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.fmode-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--acc);
+  transition: width 0.25s ease;
+}
+
+.fmode-track.burn > span {
+  background: #ff6b4a;
+}
+
+.fmode-track.sm {
+  height: 6px;
+}
+
+.fmode-card-foot {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--label-2);
+}
+
+.fmode-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--acc);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.fmode-inline-link .icn {
+  width: 14px;
+  height: 14px;
+}
+
+.fmode-cal-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fmode-cal-hero strong {
+  font-size: 36px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-cal-hero span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--label-2);
+}
+
+.fmode-full-btn {
+  width: 100%;
+  min-height: 50px;
+  justify-content: center;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fmode-photo-btn {
+  box-shadow: 0 3px 0 #9a3a07;
+}
+
+/* Meal rows */
+.fmode-meals-list {
+  display: grid;
+  gap: 10px;
+}
+
+.fmode-meal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 68px;
+  padding: 13px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+  color: var(--label);
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.15s ease;
+}
+
+.fmode-meal-row:active {
+  transform: scale(0.99);
+}
+
+.fmode-meal-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--acc-soft);
+  color: var(--acc);
+}
+
+.fmode-meal-icon .icn {
+  width: 20px;
+  height: 20px;
+}
+
+.fmode-meal-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fmode-meal-copy strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.fmode-meal-copy small {
+  font-size: 12px;
+  color: var(--label-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmode-meal-kcal {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--acc);
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-meal-add {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--acc);
+}
+
+/* Calorie burn card */
+.fmode-burn-number {
+  margin: 4px 0 12px;
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-burn-number small {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--label-2);
+}
+
+.fmode-flame-badge {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #ff6b4a 18%, transparent);
+  color: #ff6b4a;
+}
+
+.fmode-flame-badge .icn {
+  width: 22px;
+  height: 22px;
+}
+
+.fmode-burn-entries {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface-edge);
+}
+
+.fmode-burn-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fmode-burn-entry-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #ff6b4a 16%, transparent);
+  color: #ff6b4a;
+}
+
+.fmode-burn-entry-icon .icn {
+  width: 17px;
+  height: 17px;
+}
+
+.fmode-burn-entry-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.fmode-burn-entry-copy strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.fmode-burn-entry-copy small {
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+/* 7-day strip on Exercise Home */
+.fmode-week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.fmode-day-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 68px;
+  padding: 8px 4px;
+  border-radius: 16px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+  color: var(--label);
+  cursor: pointer;
+}
+
+.fmode-day-pill.selected {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: #1f140d;
+}
+
+.fmode-day-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.82;
+}
+
+.fmode-day-num {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-day-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.fmode-day-dot.on {
+  background: var(--acc);
+}
+
+.fmode-day-pill.selected .fmode-day-dot.on {
+  background: #1f140d;
+}
+
+/* Exercise list inside DayTrainingCard */
+.fmode-exercise-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.fmode-exercise-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--surface-edge);
+  font-size: 13px;
+}
+
+.fmode-exercise-num {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--acc-soft);
+  color: var(--acc);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fmode-exercise-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmode-exercise-sets {
+  font-size: 12px;
+  color: var(--label-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-muted-copy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--label-2);
+}
+
+.fmode-sport-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.fmode-sport-cta .icn {
+  width: 18px;
+  height: 18px;
+  color: var(--acc);
+}
+
+/* Combined card in Full routine mode */
+.fmode-dual-row + .fmode-dual-row {
+  margin-top: 12px;
+}
+
+.fmode-dual-head {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.fmode-dual-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--label-2);
+}
+
+.fmode-dual-label .icn {
+  width: 15px;
+  height: 15px;
+  color: var(--acc);
+}
+
+.fmode-dual-label.burn .icn {
+  color: #ff6b4a;
+}
+
+.fmode-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.fmode-section-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Go Full page */
+.fmode-hero-card {
+  padding: 22px 20px;
+  border-radius: 26px;
+  border: 1px solid var(--acc);
+  background: linear-gradient(165deg, #5d2b11 0%, #241711 58%, var(--surface) 100%);
+  color: var(--label);
+}
+
+.fmode-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  background: var(--acc);
+  color: #1f140d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.fmode-hero-pill .icn {
+  width: 13px;
+  height: 13px;
+}
+
+.fmode-hero-card h2 {
+  margin: 14px 0;
+  font-size: 26px;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.fmode-benefit-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+
+.fmode-benefit-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.fmode-benefit-list .icn {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--acc);
+}
+
+.fmode-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fmode-price-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: #171411d9;
+  color: var(--label);
+  text-align: start;
+  cursor: pointer;
+}
+
+.fmode-price-option.selected {
+  border-color: var(--acc);
+  background: color-mix(in srgb, var(--surface) 88%, var(--acc));
+}
+
+.fmode-price-badge {
+  position: absolute;
+  top: -9px;
+  inset-inline-end: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--acc);
+  color: #1f140d;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.fmode-price-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-2);
+}
+
+.fmode-price-amount {
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-price-option small {
+  font-size: 10px;
+  color: var(--label-2);
+}
+
+.fmode-hero-footnote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--label-2);
+  text-align: center;
+}
+
+.fmode-switch-card p {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--label-2);
+}
+
+/* Invite Friends Card */
+.fmode-invite-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.fmode-invite-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--acc-soft);
+  color: var(--acc);
+}
+
+.fmode-invite-icon .icn {
+  width: 20px;
+  height: 20px;
+}
+
+.fmode-invite-head h2 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.fmode-invite-head p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--label-2);
+}
+
+.fmode-invite-segments {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.fmode-invite-segments > span {
+  height: 7px;
+  border-radius: 99px;
+  background: var(--surface-3);
+}
+
+.fmode-invite-segments > span.on {
+  background: var(--acc);
+}
+
+.fmode-invite-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--label-2);
+  margin-bottom: 12px;
+}
+
+/* Group page */
+.fmode-group-banner {
+  padding: 20px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #ff9338 0%, #e85d0c 100%);
+  color: #1f140d;
+}
+
+.fmode-group-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.fmode-group-banner h2 {
+  margin: 6px 0 12px;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1f140d;
+}
+
+.fmode-group-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(31, 20, 13, 0.22);
+  overflow: hidden;
+}
+
+.fmode-group-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #1f140d;
+}
+
+.fmode-group-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.fmode-group-nudge {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(31, 20, 13, 0.18);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fmode-podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-top: 6px;
+}
+
+.fmode-podium-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.fmode-podium-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-edge);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fmode-podium-col.rank-1 .fmode-podium-avatar,
+.fmode-podium-col.is-you .fmode-podium-avatar {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: #1f140d;
+}
+
+.fmode-podium-name {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.fmode-podium-pedestal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 62px;
+  padding: 10px 6px;
+  border-radius: 16px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface-2);
+}
+
+.fmode-podium-col.rank-1 .fmode-podium-pedestal {
+  min-height: 78px;
+  border-color: var(--acc);
+  background: color-mix(in srgb, var(--surface-2) 85%, var(--acc));
+}
+
+.fmode-podium-rank {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fmode-podium-pct {
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+.fmode-rank-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fmode-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface-2);
+}
+
+.fmode-rank-row.is-you {
+  border-color: var(--acc);
+  background: color-mix(in srgb, var(--surface-2) 90%, var(--acc));
+}
+
+.fmode-rank-num {
+  width: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--label-2);
+  text-align: center;
+}
+
+.fmode-rank-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fmode-rank-row.is-you .fmode-rank-avatar {
+  background: var(--acc);
+  color: #1f140d;
+}
+
+.fmode-rank-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.fmode-rank-name {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.fmode-rank-bar {
+  height: 5px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.fmode-rank-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--acc);
+}
+
+.fmode-rank-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--acc);
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-group-footnote {
+  margin: 14px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--label-2);
+}
+
+/* Plan Day / Week / Month views */
+.fmode-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+}
+
+.fmode-date-nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.fmode-date-nav-center strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fmode-date-nav-center small {
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+.fmode-week-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fmode-week-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface);
+  color: var(--label);
+  text-align: start;
+  cursor: pointer;
+}
+
+.fmode-week-row.selected {
+  border-color: var(--acc);
+}
+
+.fmode-week-daycol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 38px;
+}
+
+.fmode-week-daycol span {
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+.fmode-week-daycol strong {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-week-midcol {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.fmode-week-routine {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.fmode-week-bars {
+  display: grid;
+  gap: 4px;
+}
+
+.fmode-week-kcalcol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-week-kcalcol strong.eaten {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--acc);
+}
+
+.fmode-week-kcalcol small.burned {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ff6b4a;
+}
+
+.fmode-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+.fmode-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fmode-legend .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.fmode-legend .dot.eaten,
+.fmode-month-dots .dot.eaten {
+  background: var(--acc);
+}
+
+.fmode-legend .dot.burned,
+.fmode-month-dots .dot.burned {
+  background: #ff6b4a;
+}
+
+.fmode-legend .hint {
+  margin-inline-start: auto;
+}
+
+.fmode-month-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-2);
+  margin-bottom: 8px;
+}
+
+.fmode-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.fmode-month-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--surface-edge);
+  background: var(--surface-2);
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fmode-month-cell.blank {
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.fmode-month-cell.selected {
+  border-color: var(--acc);
+  color: var(--acc);
+}
+
+.fmode-month-dots {
+  display: inline-flex;
+  gap: 4px;
+  min-height: 6px;
+}
+
+.fmode-month-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Stats Focus Mode Bar Chart */
+.fmode-barchart {
+  margin: 14px 0 12px;
+}
+
+.fmode-barchart-plot {
+  position: relative;
+  height: 156px;
+  padding-top: 14px;
+}
+
+.fmode-barchart-line {
+  position: absolute;
+  inset-inline: 0;
+  border-top: 1px dashed var(--acc);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fmode-barchart-line.burn {
+  border-top-color: #ff6b4a;
+}
+
+.fmode-barchart-line span {
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--acc);
+}
+
+.fmode-barchart-line.burn span {
+  color: #ff6b4a;
+}
+
+.fmode-barchart-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
+  align-items: end;
+  gap: 8px;
+  height: 100%;
+}
+
+.fmode-barchart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 6px;
+}
+
+.fmode-barchart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  flex: 1;
+}
+
+.fmode-bar {
+  flex: 1;
+  max-width: 16px;
+  border-radius: 6px 6px 2px 2px;
+  background: var(--acc);
+  transition: height 0.2s ease;
+}
+
+.fmode-bar.burn {
+  background: #ff6b4a;
+}
+
+.fmode-barchart-lbl {
+  font-size: 11px;
+  color: var(--label-2);
+}
+
+.fmode-stat-summary-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.fmode-stat-summary-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fmode-stat-summary-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fmode-stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+.fmode-stat-box strong {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fmode-stat-box small {
+  font-size: 11px;
+  color: var(--label-2);
+}

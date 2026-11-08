@@ -35,6 +35,16 @@ import { Brand } from '../components/Brand.jsx'
 import { workoutArtStyle } from '../lib/workout-art.js'
 import { firstWorkoutSheet } from '../components/FirstWorkoutSheet.jsx'
 import { needsFirstWorkout } from '../lib/first-workout.js'
+import { getDailyBurnTarget, getDayBurnSummary, getFocusMode } from '../lib/focus-mode.js'
+import {
+  CalorieBurnCard,
+  DayTrainingCard,
+  LogSportButton,
+  MealRowsList,
+  OpenPhotoEstimateButton,
+  WeightTargetCard
+} from '../components/FocusModeCards.jsx'
+import './focus-modes.css'
 
 // Home = what to do now + a quick glance. Deep charts & history live in Stats.
 export function HomeOverview() {
@@ -521,145 +531,217 @@ export default function Home() {
   const S = useStore(s => s.S)
   const user = useStore(s => s.user)
   const days = useNutrition(s => s.days)
-  const addWater = useNutrition(s => s.addWater)
   const openSheet = useUI(s => s.openSheet)
-  const toast = useUI(s => s.toast)
-  const todayActivities = (S.activities || []).filter(a => a.d === todayISO())
-  const openActivityLog = (cat = 'all') => openSheet(close => <ActivityLogSheet close={close} initialCategory={cat} />)
   const today = todayISO()
+  const [selectedDay, setSelectedDay] = useState(today)
   const day = days[today] || { entries: [], waterMl: 0 }
   const totals = computeDayTotals(day.entries || [])
   const targets = getActiveTargets(S)
+  const focusMode = getFocusMode(S)
+  const burnTarget = getDailyBurnTarget(S)
+  const burnSummary = getDayBurnSummary(S, today)
   const routines = effectiveRoutines(S, today)
-  const hasTodayWorkout = routines.some(r => r.ex.length > 0)
-  const chooseWorkout = !hasTodayWorkout && S.routines.some(r => r.ex.length > 0)
-  const firstWorkout = needsFirstWorkout(S)
-  const logWater = amount => { addWater(today, amount); toast(t('{0} ml water added', amount)) }
   const plannedWorkoutName = routines.map(r => r.name).join(' + ')
-  const next = nextTrainingDay(S, today)
-  const nextName = next?.routines.map(r => r.name).join(' + ')
-  const isRestDay = S.dayPlan[today] === 'rest' || (!plannedWorkoutName && !!next)
-  const planTitle = S.active?.name || plannedWorkoutName || (firstWorkout ? t('Your first workout') : isRestDay ? t('Rest day') : t('Your workout'))
-  const loggedToday = (S.workouts || []).filter(workout => workout.d === today)
-  const queued = queueOf(S)?.ids || []
-  const plannedDone = routines.every(routine => !queued.includes(routine.id) && loggedToday.some(workout => (Array.isArray(workout.routineIds) ? workout.routineIds : [workout.routineId]).includes(routine.id)))
-  const completed = !S.active && plannedDone ? loggedToday.at(-1) : null
-  const recovery = isRestDay && !S.active && !completed
-  const artwork = S.active || completed || (hasTodayWorkout ? routines : isRestDay ? { name: 'Recovery' } : null)
-  const workoutName = S.active?.name || (completed ? t('You showed up.') : isRestDay ? t('Reset. Recharge.') : hasTodayWorkout ? t('Find your strong.') : t('Make your next move.'))
-  const exerciseCount = S.active || completed ? ((S.active || completed).entries || []).length : routines.reduce((count, routine) => count + routine.ex.length, 0)
-  const register = async () => { const { RegisterSheet } = await import('./Login.jsx'); openSheet(close => <RegisterSheet close={close} />) }
-  return <div className="simple-home home-refined">
-    <div className="home-app-bar"><Brand /><PlayerBadge /></div>
-    <header className="simple-home-header"><div><p>{fmtDate(today, { weekday: 'long', month: 'short', day: 'numeric' })}{user?.name ? ` · ${user.name}` : ''}</p><h1 className="home-plan-title">{planTitle}<span>.</span></h1></div></header>
-    {next && !S.active && <button className="home-next-session" onClick={() => nav('/plan')} aria-label={t('Next workout: {0}, {1}', nextName, t(DAYN[next.weekday]))}><span>{t('Next up')}</span><b>{nextName}</b><small>{t(DAYN[next.weekday])}</small><Icon name="arrowRight" /></button>}
-    <div className="daily-grid">
-      <section className={'daily-action daily-workout' + (completed ? ' is-complete' : '')} style={workoutArtStyle(artwork)}>
-        <div className="workout-photo" aria-hidden="true" />
-        <div className="daily-action-heading"><span className="daily-icon"><Icon name={completed ? 'check' : recovery ? 'sparkles' : 'questTraining'} /></span><h2>{completed ? t('Logged today') : recovery ? t('Recovery is part of progress') : t('Your training')}</h2>{S.active && <span className="session-badge"><i />{t('In progress')}</span>}</div>
-        <div className="daily-workout-copy"><h3>{firstWorkout && !completed ? t('Your first move.') : workoutName}</h3><p>{S.active ? t('Pick up where you left off.') : completed ? t('{0} is in the books. Every session adds up.', completed.name || t('Your workout')) : isRestDay ? t('A lighter day today. Your next session is already lined up.') : hasTodayWorkout ? t('Your plan is ready. One set at a time.') : t('Three simple moves. No gym experience needed.')}</p></div>
-        <div className="workout-card-meta"><span><Icon name={completed ? 'check' : 'dumbbell'} />{exerciseCount ? tn('{0} exercise', '{0} exercises', exerciseCount) : completed ? t('Workout saved') : recovery ? t('Move at your own pace') : firstWorkout ? t('3 moves · No equipment') : t('A fresh start, whenever you’re ready')}</span></div>
-        <Button variant="primary" trailingIcon="arrowRight" onClick={() => completed ? workoutDetailSheet(completed) : S.active || chooseWorkout ? nav('/workout') : firstWorkout ? firstWorkoutSheet() : startFlow(hasTodayWorkout ? effectiveRoutineIds(S, today) : [])}>{S.active ? t('Resume workout') : completed ? t('View workout') : chooseWorkout ? t('Choose workout') : t('Start workout')}</Button>
-        {!S.active && !completed && <button className="home-quick-exercise" onClick={() => quickExerciseSheet()}>{t('Log an exercise')}<Icon name="plus" /></button>}
-      </section>
-      <section className="daily-action daily-water">
-        <div className="daily-action-heading"><span className="daily-icon"><Icon name="questWater" /></span><h2>{t('Water')}</h2></div>
-        <div className="daily-metric-row"><div><div className="daily-total" key={day.waterMl}>{((day.waterMl || 0) / 1000).toFixed(2).replace(/0$/, '')}<small> L</small></div><p className="daily-target">{t('of {0} L today', (targets.waterMl / 1000).toFixed(1))}</p></div><WaterGlass value={day.waterMl} target={targets.waterMl} /></div>
-        <div className="home-goal-track water-goal" role="progressbar" aria-label={t('Daily water goal')} aria-valuemin={0} aria-valuemax={targets.waterMl} aria-valuenow={Math.min(day.waterMl || 0, targets.waterMl)}><span style={{ width: `${Math.min(100, ((day.waterMl || 0) / targets.waterMl) * 100)}%` }} /></div>
-        <div className="daily-buttons"><Button variant="secondary" onClick={() => logWater(250)}>{t('+ 250 ml')}</Button><Button variant="secondary" onClick={() => logWater(500)}>{t('+ 500 ml')}</Button></div>
-      </section>
-      <section className="daily-action daily-calories">
-        <div className="daily-action-heading"><span className="daily-icon"><Icon name="questFuel" /></span><h2>{t('Calories')}</h2><button onClick={() => nav('/food')}>{t('Diary')}<Icon name="chevronRight" /></button></div>
-        <div className="daily-metric-row"><div><div className="daily-total">{Math.round(totals.calories).toLocaleString()}<small> kcal</small></div><p className="daily-target">{t('of {0} kcal today', targets.dailyCalories.toLocaleString())}</p></div><ProgressRing value={totals.calories} target={targets.dailyCalories}><Icon name="utensils" /></ProgressRing></div>
-        <div className="home-goal-track" role="progressbar" aria-label={t('Daily calorie goal')} aria-valuemin={0} aria-valuemax={targets.dailyCalories} aria-valuenow={Math.min(totals.calories, targets.dailyCalories)}><span style={{ width: `${Math.min(100, (totals.calories / targets.dailyCalories) * 100)}%` }} /></div>
-        <Button variant="secondary" icon="plus" onClick={() => openSheet(close => <FoodSearchSheet date={today} close={close} />)}>{t('Log food')}</Button>
-      </section>
 
-      {/* Sports, Activities & Recovery Section */}
-      <section className="daily-action daily-activities">
-        <div className="daily-action-heading">
-          <span className="daily-icon"><Icon name="trophy" /></span>
-          <h2>{t('Sports & Activities')}</h2>
-          <button onClick={() => openActivityLog()}>{t('All sports')}<Icon name="chevronRight" /></button>
+  const eatenKcal = Math.round(totals.calories || 0)
+  const remainingKcal = targets.dailyCalories - eatenKcal
+  const calPct = Math.min(100, Math.round((eatenKcal / Math.max(1, targets.dailyCalories)) * 100))
+  const burnPct = Math.min(100, Math.round((burnSummary.totalBurn / Math.max(1, burnTarget)) * 100))
+  const netToday = eatenKcal - burnSummary.totalBurn
+
+  // Build 7-day strip around today (starting 3 days before today, matching Thu..Wed in PDF)
+  const weekStripDays = []
+  const baseParts = today.split('-').map(Number)
+  const baseDate = new Date(baseParts[0], baseParts[1] - 1, baseParts[2])
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(baseDate)
+    d.setDate(baseDate.getDate() + i)
+    const iso = isoOf(d)
+    const hasPlan = effectiveRoutineIds(S, iso).length > 0
+    const hasLog = (S.workouts || []).some(w => w.d === iso) || (S.activities || []).some(a => a.d === iso)
+    weekStripDays.push({
+      iso,
+      weekday: t(DAYS[d.getDay()]),
+      num: d.getDate(),
+      hasDot: hasPlan || hasLog,
+      isSelected: iso === selectedDay
+    })
+  }
+
+  const headingTitle =
+    focusMode === 'calories'
+      ? t('Today')
+      : focusMode === 'exercise'
+        ? t('Move today')
+        : t('Your routine')
+
+  const register = async () => {
+    const { RegisterSheet } = await import('./Login.jsx')
+    openSheet(close => <RegisterSheet close={close} />)
+  }
+
+  return (
+    <div className="simple-home home-refined fmode-page" data-focus-mode={focusMode}>
+      <div className="home-app-bar">
+        <Brand />
+        <PlayerBadge />
+      </div>
+
+      <header className="simple-home-header">
+        <div>
+          <p>
+            {fmtDate(today, { weekday: 'long', month: 'short', day: 'numeric' })}
+            {user?.name ? ` · ${user.name}` : ''}
+          </p>
+          <h1 className="home-plan-title">
+            {headingTitle}<span>.</span>
+          </h1>
         </div>
+      </header>
 
-        <div className="daily-activities-top">
-          <div>
-            <div className="daily-total">
-              {todayActivities.reduce((sum, a) => sum + (Number(a.durationMin) || 0), 0)}
-              <small> min</small>
+      <WeightTargetCard S={S} />
+
+      {focusMode === 'calories' && (
+        <>
+          <section className="fmode-card fmode-cal-card" aria-label={t('Daily calories')}>
+            <div className="fmode-cal-hero">
+              <strong>{Math.abs(remainingKcal).toLocaleString()}</strong>
+              <span>{remainingKcal >= 0 ? t('kcal left') : t('kcal over')}</span>
             </div>
-            <p className="daily-target">
-              {todayActivities.length > 0
-                ? t('{0} kcal burned · +{1} XP today', todayActivities.reduce((s, a) => s + (a.calories || 0), 0), todayActivities.reduce((s, a) => s + (a.xpEarned || 0), 0))
-                : t('Padel, cricket, pickleball, swim, sauna & more')}
-            </p>
-          </div>
-          <div className="daily-buttons" style={{ width: 'auto', minWidth: 210 }}>
-            <Button variant="secondary" icon="plus" onClick={() => openActivityLog()}>{t('Log sport')}</Button>
-            <Button variant="secondary" icon="dumbbell" onClick={() => quickExerciseSheet()}>{t('Log exercise')}</Button>
-          </div>
-        </div>
+            <div className="fmode-track" role="progressbar" aria-valuemin={0} aria-valuemax={targets.dailyCalories} aria-valuenow={Math.min(eatenKcal, targets.dailyCalories)}>
+              <span style={{ width: `${calPct}%` }} />
+            </div>
+            <div className="fmode-row-between fmode-card-foot">
+              <span>{t('{0} eaten', eatenKcal.toLocaleString())}</span>
+              <span>{t('Target {0}', targets.dailyCalories.toLocaleString())}</span>
+            </div>
+          </section>
 
-        <div className="daily-activities-chips">
-          {[
-            { label: 'Padel', icon: 'tennis', cat: 'racquet' },
-            { label: 'Cricket', icon: 'cricket', cat: 'ball' },
-            { label: 'Pickleball', icon: 'tennis', cat: 'racquet' },
-            { label: 'Tennis', icon: 'tennis', cat: 'racquet' },
-            { label: 'Swimming', icon: 'swim', cat: 'water' },
-            { label: 'Sauna', icon: 'flame', cat: 'recovery' },
-            { label: 'Soccer', icon: 'trophy', cat: 'ball' },
-            { label: 'Combat', icon: 'boxing', cat: 'combat' }
-          ].map(item => (
-            <button
-              key={item.label}
-              type="button"
-              className="chip nocap"
-              onClick={() => openActivityLog(item.cat)}
-            >
-              <Icon name={item.icon} />
-              <span>{t(item.label)}</span>
-            </button>
-          ))}
-        </div>
+          <OpenPhotoEstimateButton date={today} />
+          <MealRowsList date={today} entries={day.entries || []} />
+        </>
+      )}
 
-        {todayActivities.length > 0 && (
-          <div className="daily-activities-logged">
-            {todayActivities.map(act => (
-              <div key={act.id} className="daily-activity-row">
-                <span className="lrow-i">
-                  <Icon name={act.icon || 'trophy'} />
-                </span>
-                <div className="grow" style={{ minWidth: 0 }}>
-                  <div className="tt" style={{ fontSize: 13, fontWeight: 700 }}>{act.name}</div>
-                  <div className="ss">{act.durationMin} min · {act.calories} kcal · +{act.xpEarned} XP</div>
-                </div>
-                <button
-                  type="button"
-                  className="iconbtn"
-                  style={{ color: 'var(--label-3)', width: 28, height: 28 }}
-                  onClick={() => {
-                    useStore.getState().update(s => { s.activities = (s.activities || []).filter(a => a.id !== act.id) })
-                    useUI.getState().toast(t('{0} removed', act.name))
-                  }}
-                  aria-label={t('Remove')}
-                >
-                  <Icon name="xmark" />
-                </button>
-              </div>
+      {focusMode === 'exercise' && (
+        <>
+          <CalorieBurnCard S={S} date={today} showEntries={false} />
+
+          <div className="fmode-week-strip" role="tablist" aria-label={t('Training week')}>
+            {weekStripDays.map(item => (
+              <button
+                key={item.iso}
+                type="button"
+                role="tab"
+                aria-selected={item.isSelected}
+                className={'fmode-day-pill' + (item.isSelected ? ' selected' : '')}
+                onClick={() => setSelectedDay(item.iso)}
+              >
+                <span className="fmode-day-lbl">{item.weekday}</span>
+                <strong className="fmode-day-num">{item.num}</strong>
+                <span className={'fmode-day-dot' + (item.hasDot ? ' on' : '')} />
+              </button>
             ))}
           </div>
-        )}
-      </section>
-    </div>
 
-    {/* Accessible compatibility anchors for startdoor tests */}
-    {!S.active && <button type="button" style={{ display: 'none' }} onClick={() => nav('/workout')}>{t('Choose a different workout')}</button>}
-    <div className="today-row" style={{ display: 'none' }} onClick={() => nav('/workout')}>
-      <span className="ttl">{S.active?.editingWorkoutId ? S.active.name : S.active ? `${S.active.name} (in progress)` : ''}</span>
-      <span className="tag">{S.active?.editingWorkoutId ? 'Edit' : S.active ? 'Resume' : ''}</span>
+          <DayTrainingCard
+            S={S}
+            date={selectedDay}
+            onEditPlan={() => nav('/plan')}
+          />
+
+          <LogSportButton />
+        </>
+      )}
+
+      {focusMode === 'full' && (
+        <>
+          <section className="fmode-card fmode-combined-card" aria-label={t('Today’s targets')}>
+            <div className="fmode-row-between" style={{ marginBottom: 12 }}>
+              <h2>{t('Today’s targets')}</h2>
+              <button type="button" className="fmode-inline-link" onClick={() => nav('/plan')}>
+                <span>{t('Plan')}</span>
+                <Icon name="chevronRight" />
+              </button>
+            </div>
+
+            <div className="fmode-dual-row">
+              <div className="fmode-row-between fmode-dual-head">
+                <span className="fmode-dual-label">
+                  <Icon name="utensils" />
+                  <span>{t('Calories eaten')}</span>
+                </span>
+                <strong>{eatenKcal.toLocaleString()} / {targets.dailyCalories.toLocaleString()} kcal</strong>
+              </div>
+              <div className="fmode-track">
+                <span style={{ width: `${calPct}%` }} />
+              </div>
+            </div>
+
+            <div className="fmode-dual-row">
+              <div className="fmode-row-between fmode-dual-head">
+                <span className="fmode-dual-label burn">
+                  <Icon name="flame" />
+                  <span>{t('Calories burned')}</span>
+                </span>
+                <strong>{burnSummary.totalBurn.toLocaleString()} / {burnTarget.toLocaleString()} kcal</strong>
+              </div>
+              <div className="fmode-track burn">
+                <span style={{ width: `${burnPct}%` }} />
+              </div>
+            </div>
+
+            <div className="fmode-row-between fmode-card-foot" style={{ marginTop: 12 }}>
+              <span>{t('Net today: {0} kcal', netToday.toLocaleString())}</span>
+              <span>
+                {remainingKcal >= 0
+                  ? t('{0} kcal left', remainingKcal.toLocaleString())
+                  : t('{0} kcal over', Math.abs(remainingKcal).toLocaleString())}
+              </span>
+            </div>
+          </section>
+
+          <div className="fmode-section-head">
+            <h3>{t('Food today')}</h3>
+            <OpenPhotoEstimateButton date={today} variant="inline" />
+          </div>
+          <MealRowsList date={today} entries={day.entries || []} />
+
+          <div className="fmode-section-head">
+            <h3>{t('Burned today')}</h3>
+            <button type="button" className="fmode-inline-link" onClick={() => nav('/plan')}>
+              <span>{plannedWorkoutName || t('Rest day')}</span>
+              <Icon name="chevronRight" />
+            </button>
+          </div>
+          <CalorieBurnCard S={S} date={today} showEntries />
+          <LogSportButton />
+        </>
+      )}
+
+      {/* Accessible compatibility anchors for startdoor tests */}
+      {!S.active && (
+        <button type="button" style={{ display: 'none' }} onClick={() => nav('/workout')}>
+          {t('Choose a different workout')}
+        </button>
+      )}
+      <div className="today-row" style={{ display: 'none' }} onClick={() => nav('/workout')}>
+        <span className="ttl">
+          {S.active?.editingWorkoutId ? S.active.name : S.active ? `${S.active.name} (in progress)` : ''}
+        </span>
+        <span className="tag">{S.active?.editingWorkoutId ? 'Edit' : S.active ? 'Resume' : ''}</span>
+      </div>
+      {!user && (
+        <section className="home-profile-card">
+          <Icon name="bolt" />
+          <div>
+            <h2>{t('Make your progress yours.')}</h2>
+            <p>{t('Create a profile to save your workouts and daily wins.')}</p>
+          </div>
+          <Button variant="primary" trailingIcon="arrowRight" onClick={register}>
+            {t('Create profile')}
+          </Button>
+        </section>
+      )}
     </div>
-    {!user && <section className="home-profile-card"><Icon name="bolt" /><div><h2>{t('Make your progress yours.')}</h2><p>{t('Create a profile to save your workouts and daily wins.')}</p></div><Button variant="primary" trailingIcon="arrowRight" onClick={register}>{t('Create profile')}</Button></section>}
-  </div>
+  )
 }

@@ -30,6 +30,8 @@ import {
   scheduleModeOf, queueRecovery, rotationIds, saveRotation, startNewPass, startPass, stopPass,
   chooseRotation, chooseFixedWeek, sequenceOf, isSimpleSequence, segmentAt, REST,
 } from '../lib/rotation.js'
+import FullRoutinePlanView from '../components/FullRoutinePlanView.jsx'
+import './focus-modes.css'
 
 // Plan has two views (v1.3.11): Schedule (how you train, and when) and Routines (what you
 // train). The last one you looked at comes back: a per-device convenience, never synced, so it
@@ -138,10 +140,16 @@ export default function Plan() {
   const coachMode = useStore(s => s.coachLocal?.mode)
   const user = useStore(s => s.user)
   const fileRef = useRef(null)
+  const [editingRoutines, setEditingRoutines] = useState(false)
   const [view, setViewState] = useState(() => queueRecovery(S) ? 'schedule' : (S.routines.length || S.scheduleMode || S.rotation || S.queue) ? readView() : 'routines')
   const setView = v => {
     setViewState(v)
     try { localStorage.setItem(PLAN_VIEW_KEY, v) } catch { /* private mode: the view just isn't remembered */ }
+  }
+
+  const isFullRoutinePlan = (S?.focusMode === 'full' || S?.profile?.focusMode === 'full') && !editingRoutines
+  if (isFullRoutinePlan) {
+    return <FullRoutinePlanView onEditRoutines={() => setEditingRoutines(true)} />
   }
 
   /* The Coach's way in from Plan: its own button in the header (a banner over the week was too
@@ -176,6 +184,13 @@ export default function Plan() {
   const mode = scheduleModeOf(S)
 
   return <div className="narrow plan">
+    {editingRoutines && (
+      <div style={{ marginBottom: 10 }}>
+        <Button size="sm" variant="ghost" icon="chevronLeft" onClick={() => setEditingRoutines(false)}>
+          {t('Back to daily plan')}
+        </Button>
+      </div>
+    )}
     <div className="hdr">
       <SeasonDeco spot="header-bats" />
       <div><h1>{t('Plan')}</h1><div className="sub">{mode === 'rotation' ? t('Your routines in a loop') : t('Your weekly routine')}</div></div>

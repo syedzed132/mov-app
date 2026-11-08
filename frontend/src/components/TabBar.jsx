@@ -1,12 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
-import { effectiveRoutineIds, effectiveRoutines } from '../lib/history.js'
-import { todayISO } from '../lib/format.js'
 import { t } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
 import { Brand } from './Brand.jsx'
-import Elapsed from './Elapsed.jsx'
 import { useConnectionTrouble } from './SyncBanner.jsx'
+import { getFocusMode } from '../lib/focus-mode.js'
 
 function Tab({ active, icon, label, onClick, dot }) {
   return (
@@ -16,7 +14,7 @@ function Tab({ active, icon, label, onClick, dot }) {
   )
 }
 
-export default function TabBar({ onStart }) {
+export default function TabBar() {
   const nav = useNavigate()
   const loc = useLocation()
   const S = useStore(s => s.S)
@@ -25,7 +23,20 @@ export default function TabBar({ onStart }) {
   const trouble = useConnectionTrouble()
   if (!user && !isGuest) return null
   const cur = loc.pathname.split('/')[1] || 'home'
-  const PARENT = { history: 'stats', 'structural-balance': 'stats', 'progress-photos': 'stats', measurements: 'stats', settings: 'home', checkin: 'home', muscles: 'library', library: 'library', food: 'home' }
+  const focusMode = getFocusMode(S)
+  const PARENT = {
+    history: 'stats',
+    'structural-balance': 'stats',
+    'progress-photos': 'stats',
+    measurements: 'stats',
+    settings: 'home',
+    checkin: 'home',
+    muscles: 'library',
+    library: 'library',
+    food: 'home',
+    workout: 'home',
+    plan: focusMode === 'full' ? 'plan' : 'home'
+  }
   const parent = cur === 'muscles' && loc.state?.from === '/stats' ? 'stats' : PARENT[cur]
   const on = k => cur === k || parent === k
 
@@ -33,27 +44,19 @@ export default function TabBar({ onStart }) {
     if (loc.pathname !== path || loc.search) nav(path, { replace: true })
   }
 
-  const running = !!S.active && cur !== 'workout' && !S.active.editingWorkoutId && !S.active.backfill && S.active.start > 0
-  const startWorkout = () => {
-    if (!S.active) {
-      if (effectiveRoutines(S, todayISO()).some(r => r.ex.length)) { onStart(effectiveRoutineIds(S, todayISO())); return }
-    }
-    nav('/workout')
-  }
-
   return (
     <nav id="tabbar" className="simple-nav" aria-label={t('Main navigation')}>
       <div className="desktop-brand"><Brand /></div>
       <Tab active={on('home')} icon="house" label={t('Home')} dot={trouble} onClick={() => switchTab('/home')} />
-      <Tab active={on('plan')} icon="calendar" label={t('Plan')} onClick={() => switchTab('/plan')} />
-      <button className={'start' + (S.active ? ' rec' : '') + (S.active && cur === 'workout' ? ' on' : '')} onClick={startWorkout}
-        aria-label={running ? t('Resume') : undefined}>
-        <span className="cir"><Icon name="play" /></span>
-        {running ? <span className="tab-time"><Elapsed start={S.active.start} /></span>
-          : <span>{S.active ? (cur === 'workout' ? t('Workout') : S.active.editingWorkoutId ? t('Edit workout') : t('Resume')) : t('Start')}</span>}
-      </button>
+      {focusMode === 'full' && (
+        <Tab active={on('plan')} icon="calendar" label={t('Plan')} onClick={() => switchTab('/plan')} />
+      )}
       <Tab active={on('stats')} icon="chart" label={t('Stats')} onClick={() => switchTab('/stats')} />
       <Tab active={on('library')} icon="dumbbell" label={t('Exercises')} onClick={() => switchTab('/library')} />
+      {focusMode !== 'full' && (
+        <Tab active={on('go-full')} icon="rocket" label={t('Go Full')} onClick={() => switchTab('/go-full')} />
+      )}
+      <Tab active={on('group')} icon="trophy" label={t('Group')} onClick={() => switchTab('/group')} />
     </nav>
   )
 }

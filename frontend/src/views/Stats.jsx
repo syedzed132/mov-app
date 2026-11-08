@@ -33,6 +33,9 @@ import { anchorsByWorkout, resolveSetRir } from '../lib/recovery.js'
 import { Button, Segmented, SelectRow } from '../components/ui.jsx'
 import { useNutrition } from '../store/useNutrition.js'
 import { calculateNutrientSum } from '../lib/nutrition/totals.js'
+import { getFocusMode } from '../lib/focus-mode.js'
+import FocusStatsChartCard, { computeFoodLoggingStats } from '../components/FocusStatsChartCard.jsx'
+import './focus-modes.css'
 import { weeklySummarySheet } from '../components/WeeklySummaryModal.jsx'
 import { tappable } from '../lib/use-sheet-keyboard.js'
 import { isWarmupRow } from '../lib/workout-model.js'
@@ -553,6 +556,10 @@ export function NutritionHistoryCard({ S }) {
 export default function Stats() {
   const nav = useNavigate()
   const S = useStore(s => s.S)
+  const nutritionDays = useNutrition(s => s.days)
+  const focusMode = getFocusMode(S)
+  const isCaloriesOnly = focusMode === 'calories'
+  const foodStats = useMemo(() => computeFoodLoggingStats(nutritionDays), [nutritionDays])
   const [range, setRange] = useState(90)
   // Plan's "Weekly muscle volume" row lands here (/stats?focus=weekly-volume). The router is a
   // HashRouter, so the query sits in the hash; the scroll waits a frame for the page's own
@@ -800,7 +807,7 @@ export default function Stats() {
   if (showRel) exOpts.push({ value: 'bodyweight', label: t('Bodyweight') })
 
   return <>
-    <div className="hdr"><SeasonDeco spot="stats-hdr" /><div><h1>{t('Progress')}</h1><div className="sub">{t('Your activity, over time.')}</div></div>
+    <div className="hdr"><SeasonDeco spot="stats-hdr" /><div><h1>{t('Progress')}</h1><div className="sub">{isCaloriesOnly ? t('Your eating, over time.') : t('Your activity, over time.')}</div></div>
       <div className="row" style={{ gap: 8 }}>
         <button className="iconbtn" onClick={weeklySummarySheet} aria-label={t('Weekly summary')} title={t('Weekly summary')}><Icon name="clipboard" /></button>
         <button className="iconbtn" onClick={reportSheet} aria-label={t('Performance report')} title={t('Performance report')}><Icon name="note" /></button>
@@ -808,51 +815,64 @@ export default function Stats() {
       </div></div>
 
     <div className="tiles">
-      <div className="tile"><div className="l"><Icon name="dumbbell" />{t('Workouts')}</div><div className="v">{workouts.length}</div></div>
-      <div className="tile"><div className="l"><Icon name="calendar" />{t('This month')}</div><div className="v">{monthW}</div></div>
-      <div className="tile"><div className="l"><Icon name="flame" />{t('Week streak')}</div><div className="v">{streakWeeks(S)}</div></div>
+      {isCaloriesOnly ? <>
+        <div className="tile"><div className="l"><Icon name="utensils" />{t('Days logged')}</div><div className="v">{foodStats.totalDays}</div></div>
+        <div className="tile"><div className="l"><Icon name="calendar" />{t('This month')}</div><div className="v">{foodStats.monthDays}</div></div>
+        <div className="tile"><div className="l"><Icon name="flame" />{t('Day streak')}</div><div className="v">{foodStats.streak}</div></div>
+      </> : <>
+        <div className="tile"><div className="l"><Icon name="dumbbell" />{t('Workouts')}</div><div className="v">{workouts.length}</div></div>
+        <div className="tile"><div className="l"><Icon name="calendar" />{t('This month')}</div><div className="v">{monthW}</div></div>
+        <div className="tile"><div className="l"><Icon name="flame" />{t('Week streak')}</div><div className="v">{streakWeeks(S)}</div></div>
+      </>}
       <div className="tile"><div className="l"><Icon name="scale" />{t('Weight 30d')}</div><div className="v" style={{ fontSize: 22, color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : (bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30) + ' ' + S.unit}</div></div>
       {/* Everything ever lifted (Discord): imports included, warm-ups only when the profile
           counts them (#719). Full width, since a few hundred sessions make a long number. */}
-      {lifetime > 0 && <div className="tile" style={{ gridColumn: '1 / -1' }} data-lifetime-volume><SeasonDeco spot="stats-tile" /><div className="l"><Icon name="plate" />{t('Lifted in total')}</div><div className="v">{fmtVol(Math.round(lifetime), S.unit)}</div></div>}
+      {!isCaloriesOnly && lifetime > 0 && <div className="tile" style={{ gridColumn: '1 / -1' }} data-lifetime-volume><SeasonDeco spot="stats-tile" /><div className="l"><Icon name="plate" />{t('Lifted in total')}</div><div className="v">{fmtVol(Math.round(lifetime), S.unit)}</div></div>}
     </div>
+
+    <FocusStatsChartCard S={S} />
 
     <div className="card">
       <SeasonDeco spot="stats-heatmap" />
-      <h2>{t('Activity (last 12 months)')}</h2>
+      <h2>{isCaloriesOnly ? t('Logging (last 12 months)') : t('Activity (last 12 months)')}</h2>
       <Heatmap
         S={S}
         metric={S.heatmapMetric === 'vol' ? 'vol' : 'time'}
         onMetricChange={metric => useStore.getState().update(s => { s.heatmapMetric = metric })}
         onDay={iso => { const ws = workouts.filter(w => workoutDay(w) === iso); if (ws.length === 1) workoutDetailSheet(ws[0]); else if (ws.length) calendarSheet(iso); else dayOverrideSheet(iso) }}
       />
+      {isCaloriesOnly && (
+        <div className="small muted" style={{ marginTop: 8 }}>
+          {t('{0} days logged · {1} this year', foodStats.totalDays, foodStats.yearDays)}
+        </div>
+      )}
     </div>
 
-    {(workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
-    {S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
-    {workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {!isCaloriesOnly && (workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
+    {!isCaloriesOnly && S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
+    {!isCaloriesOnly && workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Structural balance')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/structural-balance')}>{t('Open')}</Button>
     </div>}
-    {(workouts.length > 0 || dayPhotosOf(S).length > 0) && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {!isCaloriesOnly && (workouts.length > 0 || dayPhotosOf(S).length > 0) && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Progress photos')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{t('Every progress photo, lined up by date, for any day. Plus a before/after slider.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/progress-photos')}>{t('Open')}</Button>
     </div>}
-    <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
+    {!isCaloriesOnly && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
       <SeasonDeco spot="stats-peek" />
       <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Body measurements')}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{(S.measurements || []).length
           ? t('Last check-in {0}', fmtDate(S.measurements[S.measurements.length - 1].d, true))
           : t('Waist, arms, body fat and anything else you measure, each with its own curve.')}</div></div>
       <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/measurements')}>{t('Open')}</Button>
-    </div>
-    {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
+    </div>}
+    {!isCaloriesOnly && (hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
     <NutritionHistoryCard S={S} />
 
-    <div className="cols">
+    <div className={isCaloriesOnly ? '' : 'cols'}>
       <div className="card">
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
           <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
@@ -873,7 +893,7 @@ export default function Stats() {
         <SeasonDeco spot="stats-web" />
       </div>
 
-      <div className="card">
+      {!isCaloriesOnly && <div className="card">
         <h2>{t('Exercise progress')}</h2>
         {exHist.length ? <>
           <div className="sect-b" style={{ marginBottom: 10 }}>
@@ -934,10 +954,10 @@ export default function Stats() {
             {t('A fuller dot means less left in the tank. The same weight at a lower {0} is progress the line alone doesn’t show.', hd)}
           </div>}
         </> : <div className="muted small">{t('Finish your first workout and your progress curves will show up here.')}</div>}
-      </div>
+      </div>}
     </div>
 
-    {workouts.length > 0 && <>
+    {!isCaloriesOnly && workouts.length > 0 && <>
       <div className="row between" style={{ marginBottom: 10 }}>
         <h4 className="sec" style={{ margin: 0 }}>{t('Recent workouts')}</h4>
         <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={() => nav('/history')}>{t('All')} {workouts.length}</Button>

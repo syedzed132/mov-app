@@ -15,6 +15,13 @@ import '../training-flow.css'
 import { MeasurementUnitChoice, rememberWeightUnit } from '../components/UnitChoice.jsx'
 import { convertBodyWeight } from '../lib/units.js'
 import { heightInFeet, heightInCm } from '../lib/height-units.js'
+import { todayISO } from '../lib/format.js'
+import {
+  FOCUS_MODES,
+  calculateDailyBurnTarget,
+  getRecommendedFocus,
+  setFocusModeInDraft
+} from '../lib/focus-mode.js'
 
 const inRange = (value, min, max) => Number.isFinite(value) && value >= min && value <= max
 
@@ -25,7 +32,7 @@ export default function Onboarding() {
   const previousInputs = S?.targetHistory?.at(-1)?.inputs || {}
   const firstSetup = !S?.profile?.onboardedAt && !S?.onboardedAt
 
-  const [step, setStep] = useState(1) // 1: Stats, 2: Goal, 3: Activity, 4: Plan Review
+  const [step, setStep] = useState(1) // 1: Stats, 2: Goal, 3: Activity, 4: Plan Review, 5: Focus
   const headingRef = useRef(null)
   useEffect(() => { window.scrollTo(0, 0); headingRef.current?.focus({ preventScroll: true }) }, [step])
 
@@ -51,6 +58,16 @@ export default function Onboarding() {
   const [dietPreference, setDietPreference] = useState(previousInputs.dietPreference || 'balanced')
   const existingTraining = hasExistingTrainingPlan(S)
   const [useSuggestedWorkouts, setUseSuggestedWorkouts] = useState(() => !hasExistingTrainingPlan(S))
+  const recommendedFocus = useMemo(
+    () => getRecommendedFocus({ goal, activityLevel, trainingDays, experience, useSuggestedWorkouts }),
+    [goal, activityLevel, trainingDays, experience, useSuggestedWorkouts]
+  )
+  const [focusMode, setFocusMode] = useState(() => S?.focusMode || S?.profile?.focusMode || null)
+  const selectedFocus = focusMode || recommendedFocus.mode
+  const burnTarget = useMemo(
+    () => calculateDailyBurnTarget({ activityLevel, trainingDays, goal }),
+    [activityLevel, trainingDays, goal]
+  )
   const [saving, setSaving] = useState(false)
   const [metricsChecked, setMetricsChecked] = useState(false)
   const [goalChecked, setGoalChecked] = useState(false)
@@ -113,11 +130,13 @@ export default function Onboarding() {
     let workoutsAdded = false
 
     update(draft => {
+      setFocusModeInDraft(draft, selectedFocus)
       draft.profile = {
         ...(draft.profile || {}),
         age: Number(age),
         sex,
         heightCm: Number(heightCm),
+        focusMode: selectedFocus,
         onboardedAt: new Date().toISOString()
       }
       draft.goal = {
@@ -128,9 +147,16 @@ export default function Onboarding() {
         experience,
         updatedAt: new Date().toISOString()
       }
+      if (displayTargetWeight != null && goal !== 'maintenance') {
+        draft.targetW = Number(displayTargetWeight)
+      }
+      if ((!Array.isArray(draft.bodyweight) || draft.bodyweight.length === 0) && Number.isFinite(Number(displayWeight))) {
+        draft.bodyweight = [{ d: todayISO(), w: Number(displayWeight) }]
+      }
       draft.targetHistory = targetHistory
       draft.targets = {
         dailyCalories: plan.calories,
+        dailyBurn: burnTarget,
         proteinGrams: plan.macros.proteinG,
         carbsGrams: plan.macros.carbsG,
         fatGrams: plan.macros.fatG,
@@ -144,6 +170,7 @@ export default function Onboarding() {
       }
       draft.dailyTargets = {
         calories: plan.calories,
+        burnCalories: burnTarget,
         proteinG: plan.macros.proteinG,
         carbsG: plan.macros.carbsG,
         fatG: plan.macros.fatG,
@@ -168,7 +195,7 @@ export default function Onboarding() {
   const nextStep = () => {
     if (step === 1) { setMetricsChecked(true); if (metricsError) return }
     if (step === 2) { setGoalChecked(true); if (goalError) return }
-    setStep(value => Math.min(4, value + 1))
+    setStep(value => Math.min(5, value + 1))
   }
   const error = step === 1 && metricsChecked ? metricsError : step === 2 && goalChecked ? goalError : ''
   const metricInvalid = valid => metricsChecked && !valid ? 'true' : undefined
@@ -177,14 +204,14 @@ export default function Onboarding() {
   return <div className="narrow s-onboarding mov-setup">
     <div className="setup-map" aria-hidden="true"><BackgroundTexture /></div>
     <header className="setup-header">
-      <div className="setup-topline"><Brand /><span className="setup-step-count">{t('Step {0} of 4', step)}</span></div>
-      <div className="setup-progress" role="progressbar" aria-label={t('Plan setup')} aria-valuemin={1} aria-valuemax={4} aria-valuenow={step}>
-        {[1, 2, 3, 4].map(s => <span key={s} className={s <= step ? 'done' : ''} />)}
+      <div className="setup-topline"><Brand /><span className="setup-step-count">{t('Step {0} of 5', step)}</span></div>
+      <div className="setup-progress" role="progressbar" aria-label={t('Plan setup')} aria-valuemin={1} aria-valuemax={5} aria-valuenow={step}>
+        {[1, 2, 3, 4, 5].map(s => <span key={s} className={s <= step ? 'done' : ''} />)}
       </div>
       <div className="setup-intro" key={step}>
-        <p className="setup-eyebrow">{[t('Your starting point'), t('Your direction'), t('Your routine'), t('Made for you')][step - 1]}</p>
-        <h1 ref={headingRef} tabIndex={-1}>{[t('Built around you.'), t('What moves you?'), t('Find your rhythm.'), t('You’re ready to move.')][step - 1]}</h1>
-        <p className="setup-description">{[t('A few details for your daily targets.'), t('Choose the goal that feels right for you.'), t('A plan that fits your everyday life.'), t('A starting point you can adjust anytime.')][step - 1]}</p>
+        <p className="setup-eyebrow">{[t('Your starting point'), t('Your direction'), t('Your routine'), t('Made for you'), t('Your focus')][step - 1]}</p>
+        <h1 ref={headingRef} tabIndex={-1}>{[t('Built around you.'), t('What moves you?'), t('Find your rhythm.'), t('You’re ready to move.'), t('Pick your path.')][step - 1]}</h1>
+        <p className="setup-description">{[t('A few details for your daily targets.'), t('Choose the goal that feels right for you.'), t('A plan that fits your everyday life.'), t('A starting point you can adjust anytime.'), t('Start with what matters most. You can switch anytime.')][step - 1]}</p>
       </div>
     </header>
 
@@ -281,6 +308,7 @@ export default function Onboarding() {
           <dl className="setup-target-details">
             <div><dt>{t('BMR')}</dt><dd>{plan.bmr.toLocaleString()} kcal</dd></div>
             <div><dt>{t('Maintenance (TDEE)')}</dt><dd>{plan.tdee.toLocaleString()} kcal</dd></div>
+            <div><dt>{t('Daily Burn Target')}</dt><dd>{burnTarget.toLocaleString()} kcal</dd></div>
             <div><dt>{t('Water Target')}</dt><dd>{(plan.health.waterMl / 1000).toFixed(1)} L</dd></div>
             <div><dt>{t('Fibre Target')}</dt><dd>{plan.health.fibreG} g</dd></div>
           </dl>
@@ -288,13 +316,50 @@ export default function Onboarding() {
           <p className="setup-timeline">{t('These are estimates. You can adjust your targets anytime.')}</p>
         </details>
       </>}
+
+      {step === 5 && <>
+        <div className="setup-ready-card">
+          <span className="setup-ready-icon"><Icon name="flame" /></span>
+          <div>
+            <b>{t('Your daily target: {0} kcal', plan.calories.toLocaleString())}</b>
+            <p>{t(recommendedFocus.reason)}</p>
+          </div>
+        </div>
+        <div className="setup-option-list setup-focus-list" role="group" aria-label={t('Choose your focus')}>
+          {FOCUS_MODES.map(option => {
+            const isRecommended = option.value === recommendedFocus.mode
+            return (
+              <div key={option.value} className={'setup-focus-item' + (isRecommended ? ' is-recommended' : '')}>
+                {isRecommended && (
+                  <div className="setup-recommended-badge">
+                    <Icon name="arrowDown" />
+                    <span>{t('Recommended for you')}</span>
+                  </div>
+                )}
+                <SetupOption
+                  option={{
+                    value: option.value,
+                    label: t(option.label),
+                    detail: t(option.detail),
+                    icon: option.icon
+                  }}
+                  selected={selectedFocus === option.value}
+                  onClick={() => setFocusMode(option.value)}
+                />
+              </div>
+            )
+          })}
+        </div>
+      </>}
     </div>
 
     <footer className="setup-footer">
       {error && <div id={step === 1 ? 'setup-metrics-error' : 'setup-goal-error'} role="alert" className="setup-error"><Icon name="xmark" /><span>{error}</span></div>}
       <div className="setup-footer-buttons">
         {step > 1 && <Button variant="secondary" onClick={() => setStep(value => value - 1)} disabled={saving}>{step === 4 ? t('Adjust') : t('Back')}</Button>}
-        <Button variant="primary" trailingIcon={step === 4 ? 'check' : 'arrowRight'} onClick={step === 4 ? finishOnboarding : nextStep} disabled={saving}>{step === 4 ? saving ? t('Saving…') : t('Let’s get moving') : step === 3 ? t('Review my plan') : t('Continue')}</Button>
+        <Button variant="primary" trailingIcon={step === 5 ? 'check' : 'arrowRight'} onClick={step === 5 ? finishOnboarding : nextStep} disabled={saving}>
+          {step === 5 ? (saving ? t('Saving…') : t('Let’s get moving')) : step === 4 ? t('Choose my focus') : step === 3 ? t('Review my plan') : t('Continue')}
+        </Button>
       </div>
       <Button className="setup-skip" variant="ghost" onClick={leaveSetup} disabled={saving}>{firstSetup ? t('Skip setup and start logging') : t('Back to Settings')}</Button>
     </footer>
